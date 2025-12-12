@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 export default function LandingPage() {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-black">
+    <div className="relative h-screen w-full overflow-hidden bg-black">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -21,7 +21,7 @@ export default function LandingPage() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4">
+      <div className="relative z-10 flex h-screen items-center justify-center px-4">
         <div className="text-center">
           {/* Logo/Brand Name with Animation */}
           <motion.div
@@ -29,10 +29,10 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <h1 className="font-cloister mb-8 text-7xl font-bold tracking-wider text-white md:text-9xl">
+            <h1 className="font-cloister mb-4 text-5xl font-bold tracking-wider text-white sm:text-7xl md:mb-8 md:text-9xl">
               ATLANTIC
             </h1>
-            <h2 className="font-cloister mb-16 text-4xl font-light tracking-[0.3em] text-white/90 md:text-5xl">
+            <h2 className="font-cloister mb-8 text-3xl font-light tracking-[0.3em] text-white/90 sm:text-4xl md:mb-16 md:text-5xl">
               AVE
             </h2>
           </motion.div>

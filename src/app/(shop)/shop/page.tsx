@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { mockProducts } from '@/data/products';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Product } from '@/types/product';
 
 export default function ShopPage() {
@@ -54,8 +54,7 @@ export default function ShopPage() {
       <div className="container-custom py-16">
         {loading && (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600">Načítám produkty ze Shopify...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
           </div>
         )}
 
@@ -128,7 +127,7 @@ export default function ShopPage() {
                   {/* Product Info */}
                   <div className="space-y-3 pt-4">
                     <div>
-                      <h3 className="font-cloister text-2xl font-bold tracking-tight uppercase mb-1 group-hover:tracking-wide transition-all duration-300">
+                      <h3 className="text-2xl font-bold tracking-tight uppercase mb-1 group-hover:tracking-wide transition-all duration-300">
                         {product.name}
                       </h3>
                       <div className="w-12 h-0.5 bg-black group-hover:w-20 transition-all duration-300" />

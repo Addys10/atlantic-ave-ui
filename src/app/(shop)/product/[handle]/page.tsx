@@ -138,8 +138,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
   if (loading) {
     return (
       <div className="container-custom py-20 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-gray-600">Načítám produkt ze Shopify...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
       </div>
     );
   }
@@ -177,7 +176,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                 <Check size={20} />
               </motion.div>
               <span className="font-medium text-lg">
-                Produkt <span className="font-cloister">{product.name}</span> byl vložen do košíku
+                Produkt {product.name} byl vložen do košíku
               </span>
             </motion.div>
           )}
@@ -263,7 +262,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="font-cloister text-5xl font-bold mb-4 uppercase tracking-tight"
+              className="text-5xl font-bold mb-4 uppercase tracking-tight"
             >
               {product.name}
             </motion.h1>
