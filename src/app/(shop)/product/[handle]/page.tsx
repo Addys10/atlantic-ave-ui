@@ -155,7 +155,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
   }
 
   return (
-    <div className="relative bg-secondary min-h-screen py-12">
+    <div className="relative bg-secondary min-h-screen py-2 sm:py-2">
       <div className="container-custom">
         {/* Luxusní notifikace */}
         <AnimatePresence>
@@ -186,8 +186,9 @@ export default function ProductDetail({ params }: { params: { handle: string } }
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
+          className="mb-4"
         >
-          <Link href="/shop" className="text-primary hover:underline mb-6 inline-block">
+          <Link href="/shop" className="text-primary hover:underline inline-block">
             ← Zpět na produkty
           </Link>
         </motion.div>
@@ -206,7 +207,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="relative h-[600px] rounded-lg overflow-hidden bg-gray-100"
+              className="relative h-[400px] sm:h-[500px] lg:h-[600px] rounded-lg overflow-hidden bg-gray-100"
             >
               <Image
                 src={product.images?.[selectedImageIndex] || product.image}

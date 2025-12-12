@@ -37,20 +37,7 @@ export default function ShopPage() {
   }, []);
 
   return (
-    <div className="relative min-h-screen">
-      {/* Background Image */}
-      <div className="fixed inset-0 -z-10">
-        <Image
-          src="/images/nfl.png"
-          alt="Background"
-          fill
-          className="object-cover"
-          priority
-          quality={100}
-        />
-        <div className="absolute inset-0 bg-white/65" />
-      </div>
-
+    <div className="relative min-h-screen bg-gray-50">
       <div className="container-custom py-16">
         {loading && (
           <div className="text-center py-12">
