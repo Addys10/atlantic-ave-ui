@@ -10,6 +10,13 @@ const cloister = localFont({
 export const metadata: Metadata = {
   title: "Atlantic Ave - Premium Fashion",
   description: "Luxury streetwear and fashion",
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    apple: '/apple-icon.png',
+  },
 };
 
 export default function RootLayout({
