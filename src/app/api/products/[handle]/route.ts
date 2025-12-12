@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getProductByHandle } from '@/lib/shopify';
 
+// Revalidate každých 120 sekund (detaily produktů se mění méně často)
+export const revalidate = 120;
+
 export async function GET(
   request: Request,
   { params }: { params: { handle: string } }
@@ -15,7 +18,11 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=240',
+      },
+    });
   } catch (error) {
     console.error('Error fetching product:', error);
     return NextResponse.json(
