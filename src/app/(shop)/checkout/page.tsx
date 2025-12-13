@@ -161,56 +161,29 @@ export default function CheckoutPage() {
 
           {/* Checkout Section */}
           <div className="bg-white rounded-lg p-8 shadow-lg">
-            <h2 className="text-2xl font-semibold mb-6">Pokračovat k platbě</h2>
+            <div className="text-center py-12">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4">
+                  <ShoppingBag size={40} className="text-gray-400" />
+                </div>
+              </div>
 
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-700">{error}</p>
-              </div>
-            )}
+              <h2 className="text-3xl font-bold mb-4 text-gray-800">Již brzy!</h2>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                E-shop je aktuálně v přípravě. Platby budou aktivovány v nejbližší době.
+              </p>
 
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center gap-3 text-gray-700">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Zabezpečená platba přes Shopify</span>
+              <div className="inline-block px-6 py-3 bg-gray-100 rounded-lg text-gray-700 font-medium mb-8">
+                Coming Soon
               </div>
-              <div className="flex items-center gap-3 text-gray-700">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Platební karty, Apple Pay, Google Pay</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-700">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Ochrana kupujících</span>
+
+              <div className="space-y-3 text-sm text-gray-500 mb-8">
+                <p>Mezitím si můžete prohlédnout náš sortiment</p>
               </div>
             </div>
 
-            <button
-              onClick={handleCheckout}
-              disabled={loading || cart.length === 0}
-              className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  Přesměrování...
-                </span>
-              ) : (
-                'Pokračovat k platbě'
-              )}
-            </button>
-
-            <p className="text-sm text-gray-500 text-center mt-4">
-              Budete přesměrováni na zabezpečený Shopify checkout
-            </p>
-
-            <div className="mt-6 pt-6 border-t">
-              <Link href="/shop" className="text-primary hover:underline text-center block">
+            <div className="pt-6 border-t">
+              <Link href="/shop" className="text-primary hover:underline text-center block font-medium">
                 ← Pokračovat v nákupu
               </Link>
             </div>
