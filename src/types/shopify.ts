@@ -3,6 +3,7 @@ export interface ShopifyProduct {
   id: string;
   title: string;
   description: string;
+  descriptionHtml?: string;
   handle: string;
   priceRange: {
     minVariantPrice: {
@@ -33,6 +34,7 @@ export interface ShopifyVariant {
     currencyCode: string;
   };
   availableForSale: boolean;
+  quantityAvailable?: number;
 }
 
 // Shopify Cart Types

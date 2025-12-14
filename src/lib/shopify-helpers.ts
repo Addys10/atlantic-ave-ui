@@ -19,7 +19,7 @@ export function mapShopifyProductToProduct(shopifyProduct: ShopifyProduct): Prod
   return {
     id: shopifyProduct.id,
     name: shopifyProduct.title,
-    description: shopifyProduct.description || '',
+    description: shopifyProduct.descriptionHtml || shopifyProduct.description || '',
     price: price,
     image: firstImage,
     images: allImages.length > 0 ? allImages : [firstImage],

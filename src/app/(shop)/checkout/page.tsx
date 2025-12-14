@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, ShoppingBag } from 'lucide-react';
+import { Trash2, ShoppingBag, Plus, Minus } from 'lucide-react';
 
 interface CartItem {
   id: string;
@@ -13,6 +13,8 @@ interface CartItem {
   selectedSize: string;
   quantity: number;
   variantId?: string;
+  availableQuantity?: number;
+  handle?: string;
 }
 
 export default function CheckoutPage() {
@@ -20,6 +22,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [checkoutUrl, setCheckoutUrl] = useState('');
+  const [stockLoading, setStockLoading] = useState<{[key: number]: boolean}>({});
 
   useEffect(() => {
     // Načteme košík ze sessionStorage
@@ -32,10 +35,69 @@ export default function CheckoutPage() {
     const cartData: CartItem[] = JSON.parse(cartJson);
     setCart(cartData);
     setLoading(false);
+
+    // Fetchneme aktuální skladové zásoby pro každý produkt
+    fetchStockInfo(cartData);
   }, []);
+
+  const fetchStockInfo = async (cartItems: CartItem[]) => {
+    for (let i = 0; i < cartItems.length; i++) {
+      const item = cartItems[i];
+      if (!item.handle) continue;
+
+      try {
+        const response = await fetch(`/api/products/${item.handle}`);
+        if (!response.ok) continue;
+
+        const data = await response.json();
+        if (!data.productByHandle) continue;
+
+        // Najdeme variantu pro vybranou velikost
+        const variant = data.productByHandle.variants.edges.find(
+          (edge: any) => edge.node.title === item.selectedSize
+        );
+
+        if (variant?.node.quantityAvailable !== undefined) {
+          // Aktualizujeme košík s dostupným množstvím
+          setCart(prevCart => {
+            const newCart = [...prevCart];
+            newCart[i] = {
+              ...newCart[i],
+              availableQuantity: variant.node.quantityAvailable
+            };
+            sessionStorage.setItem('cart', JSON.stringify(newCart));
+            return newCart;
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching stock info:', error);
+      }
+    }
+  };
 
   const removeFromCart = (index: number) => {
     const newCart = cart.filter((_, i) => i !== index);
+    setCart(newCart);
+    sessionStorage.setItem('cart', JSON.stringify(newCart));
+  };
+
+  const updateQuantity = (index: number, newQuantity: number) => {
+    if (newQuantity < 1) {
+      // Pokud je množství menší než 1, odstraníme produkt
+      removeFromCart(index);
+      return;
+    }
+
+    const item = cart[index];
+
+    // Kontrola dostupnosti skladem
+    if (item.availableQuantity !== undefined && newQuantity > item.availableQuantity) {
+      alert(`Lze objednat maximálně ${item.availableQuantity} kusů této velikosti.`);
+      return;
+    }
+
+    const newCart = [...cart];
+    newCart[index].quantity = newQuantity;
     setCart(newCart);
     sessionStorage.setItem('cart', JSON.stringify(newCart));
   };
@@ -124,20 +186,48 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex-grow">
                     <h3 className="font-semibold">{item.name}</h3>
-                    <p className="text-gray-600 text-sm">Velikost: {item.selectedSize}</p>
-                    <p className="text-gray-600 text-sm">Množství: {item.quantity}×</p>
+                    <p className="text-gray-600 text-sm mb-2">Velikost: {item.selectedSize}</p>
+
+                    {/* Quantity Controls */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => updateQuantity(index, item.quantity - 1)}
+                        className="w-7 h-7 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+                        title="Snížit množství"
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span className="text-sm font-medium min-w-[24px] text-center">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => updateQuantity(index, item.quantity + 1)}
+                        disabled={item.availableQuantity !== undefined && item.quantity >= item.availableQuantity}
+                        className="w-7 h-7 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={item.availableQuantity !== undefined && item.quantity >= item.availableQuantity
+                          ? `Maximální dostupné množství: ${item.availableQuantity}`
+                          : "Zvýšit množství"}
+                      >
+                        <Plus size={14} />
+                      </button>
+                      <button
+                        onClick={() => removeFromCart(index)}
+                        className="ml-2 text-red-500 hover:text-red-700 transition-colors"
+                        title="Odstranit z košíku"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                    {item.availableQuantity !== undefined && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Skladem: {item.availableQuantity} ks
+                      </p>
+                    )}
                   </div>
-                  <div className="flex flex-col items-end justify-between">
+                  <div className="flex flex-col items-end justify-start">
                     <div className="font-semibold">
                       {item.price * item.quantity} Kč
                     </div>
-                    <button
-                      onClick={() => removeFromCart(index)}
-                      className="text-red-500 hover:text-red-700 transition-colors"
-                      title="Odstranit z košíku"
-                    >
-                      <Trash2 size={18} />
-                    </button>
                   </div>
                 </div>
               ))}
@@ -148,11 +238,7 @@ export default function CheckoutPage() {
                 <span>Mezisoučet</span>
                 <span>{getTotalPrice()} Kč</span>
               </div>
-              <div className="flex justify-between text-gray-600">
-                <span>Doprava</span>
-                <span className="text-green-600">Vypočítá se při platbě</span>
-              </div>
-              <div className="flex justify-between text-xl font-bold border-t pt-4">
+              <div className="flex justify-between text-xl font-bold pt-2">
                 <span>Celkem</span>
                 <span>{getTotalPrice()} Kč</span>
               </div>

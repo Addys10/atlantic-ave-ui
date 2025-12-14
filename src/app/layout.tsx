@@ -8,8 +8,8 @@ const cloister = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Atlantic Ave - Premium Fashion",
-  description: "Luxury streetwear and fashion",
+  title: "Atlantic Ave",
+  description: "Streetwear",
   icons: {
     icon: [
       { url: '/favicon.ico' },

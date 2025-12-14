@@ -45,6 +45,7 @@ export const GET_PRODUCTS_QUERY = `
                   currencyCode
                 }
                 availableForSale
+                quantityAvailable
               }
             }
           }
@@ -61,6 +62,7 @@ export const GET_PRODUCT_BY_HANDLE_QUERY = `
       id
       title
       description
+      descriptionHtml
       handle
       priceRange {
         minVariantPrice {
@@ -86,6 +88,7 @@ export const GET_PRODUCT_BY_HANDLE_QUERY = `
               currencyCode
             }
             availableForSale
+            quantityAvailable
           }
         }
       }
@@ -308,6 +311,34 @@ export const GET_CART_QUERY = `
   }
 `;
 
+// GraphQL query pro načtení shop policies
+export const GET_SHOP_POLICIES_QUERY = `
+  query GetShopPolicies {
+    shop {
+      privacyPolicy {
+        title
+        body
+        handle
+      }
+      refundPolicy {
+        title
+        body
+        handle
+      }
+      shippingPolicy {
+        title
+        body
+        handle
+      }
+      termsOfService {
+        title
+        body
+        handle
+      }
+    }
+  }
+`;
+
 // Helper funkce pro fetch produktů
 export async function getProducts(limit = 10) {
   const { data, errors } = await shopifyClient.request(GET_PRODUCTS_QUERY, {
@@ -389,6 +420,18 @@ export async function getCart(cartId: string) {
   if (errors) {
     console.error('Shopify API errors:', errors);
     throw new Error('Nepodařilo se načíst košík');
+  }
+
+  return data;
+}
+
+// Helper funkce pro načtení shop policies
+export async function getShopPolicies() {
+  const { data, errors } = await shopifyClient.request(GET_SHOP_POLICIES_QUERY);
+
+  if (errors) {
+    console.error('Shopify API errors:', errors);
+    throw new Error('Nepodařilo se načíst obchodní podmínky');
   }
 
   return data;
