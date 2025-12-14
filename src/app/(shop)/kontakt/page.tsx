@@ -29,7 +29,7 @@ export default function KontaktPage() {
                     href="mailto:info@atlanticave.cz"
                     className="text-primary hover:underline"
                   >
-                    info@atlanticave.cz
+                      marekmikulik@email.cz
                   </a>
                 </div>
               </div>
@@ -45,7 +45,7 @@ export default function KontaktPage() {
                     href="tel:+420123456789"
                     className="text-primary hover:underline"
                   >
-                    +420 123 456 789
+                    +420 792 750 942
                   </a>
                   <p className="text-sm text-gray-600 mt-1">
                     Po–Pá: 9:00–17:00
@@ -61,9 +61,9 @@ export default function KontaktPage() {
                 <div>
                   <h3 className="font-semibold text-lg mb-1">Adresa</h3>
                   <p className="text-gray-700">
-                    Atlantic Ave s.r.o.<br />
-                    Example Street 123<br />
-                    120 00 Praha 2
+                    Atlantic Ave<br />
+                    Oty Synka 1876/8<br />
+                    708 00 Ostrava-Poruba
                   </p>
                 </div>
               </div>

@@ -33,7 +33,7 @@ export default function Footer() {
 
           {/* Právní informace */}
           <div className="col-span-2 md:col-span-1">
-            <h4 className="font-semibold mb-2 md:mb-3 text-sm md:text-base">Právní informace</h4>
+            <h4 className="font-semibold mb-2 md:mb-3 text-sm md:text-base">Podmínky a zásady</h4>
             <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-300">
               <li><Link href="/policies/podminky-sluzby" className="hover:text-white transition-colors">Obchodní podmínky</Link></li>
               <li><Link href="/policies/ochrana-osobnich-udaju" className="hover:text-white transition-colors">Ochrana osobních údajů</Link></li>
