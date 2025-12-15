@@ -373,41 +373,46 @@ export default function ProductDetail({ params }: { params: { handle: string } }
               <div className="flex flex-wrap gap-3">
                 {product.sizes.map((size, index) => (
                   <motion.button
-                    key={size}
+                    key={size.name}
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8 + index * 0.1 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setSelectedSize(size)}
+                    whileHover={size.available ? { scale: 1.05 } : {}}
+                    whileTap={size.available ? { scale: 0.95 } : {}}
+                    onClick={() => size.available && setSelectedSize(size.name)}
+                    disabled={!size.available}
                     className={`px-8 py-4 border-2 rounded-lg font-bold transition-all ${
-                      selectedSize === size
+                      !size.available
+                        ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed line-through'
+                        : selectedSize === size.name
                         ? 'border-black bg-black text-white'
                         : 'border-gray-300 hover:border-black'
                     }`}
                   >
-                    {size}
+                    {size.name}
                   </motion.button>
                 ))}
               </div>
             </motion.div>
 
-            {/* Add to Cart Button */}
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleAddToCart}
-              disabled={isAdding}
-              className={`btn-primary w-full text-lg flex items-center justify-center gap-3 ${
-                isAdding ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-            >
-              <ShoppingCart size={22} />
-              <span>{isAdding ? 'Přidávání...' : 'Vložit do košíku'}</span>
-            </motion.button>
+            {/* Add to Cart Button - zobrazit jen pokud existuje alespoň jedna dostupná velikost */}
+            {product.sizes.some(size => size.available) && (
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleAddToCart}
+                disabled={isAdding}
+                className={`btn-primary w-full text-lg flex items-center justify-center gap-3 ${
+                  isAdding ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                <ShoppingCart size={22} />
+                <span>{isAdding ? 'Přidávání...' : 'Vložit do košíku'}</span>
+              </motion.button>
+            )}
           </div>
         </motion.div>
       </div>

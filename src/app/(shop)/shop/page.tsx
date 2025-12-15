@@ -128,12 +128,14 @@ export default function ShopPage() {
                         <div className="text-white text-center px-4">
                           <p className="text-sm mb-3">Dostupné velikosti</p>
                           <div className="flex gap-2 justify-center mb-4">
-                            {product.sizes.map((size) => (
+                            {product.sizes
+                              .filter(size => size.available)
+                              .map((size) => (
                               <span
-                                key={size}
+                                key={size.name}
                                 className="border border-white px-3 py-1 text-sm"
                               >
-                                {size}
+                                {size.name}
                               </span>
                             ))}
                           </div>

@@ -5,7 +5,10 @@ export interface Product {
   price: number;
   image: string;
   images?: string[]; // Všechny obrázky produktu
-  sizes: string[];
+  sizes: Array<{
+    name: string;
+    available: boolean;
+  }>;
   category: string;
   handle?: string; // Shopify product handle
   variantId?: string; // Shopify variant ID

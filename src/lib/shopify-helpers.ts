@@ -11,10 +11,11 @@ export function mapShopifyProductToProduct(shopifyProduct: ShopifyProduct): Prod
   // Získáme všechny obrázky produktu
   const allImages = shopifyProduct.images.edges.map(edge => edge.node.url);
 
-  // Získáme všechny dostupné velikosti z variant (předpokládáme, že title varianty = velikost)
-  const sizes = shopifyProduct.variants.edges
-    .filter(edge => edge.node.availableForSale)
-    .map(edge => edge.node.title);
+  // Získáme všechny velikosti včetně vyprodaných (title varianty = velikost)
+  const sizes = shopifyProduct.variants.edges.map(edge => ({
+    name: edge.node.title,
+    available: edge.node.availableForSale,
+  }));
 
   return {
     id: shopifyProduct.id,
@@ -23,7 +24,7 @@ export function mapShopifyProductToProduct(shopifyProduct: ShopifyProduct): Prod
     price: price,
     image: firstImage,
     images: allImages.length > 0 ? allImages : [firstImage],
-    sizes: sizes.length > 0 ? sizes : ['One Size'],
+    sizes: sizes.length > 0 ? sizes : [{ name: 'One Size', available: true }],
     category: 'Oblečení', // Můžeš rozšířit o product tags nebo collections
     handle: shopifyProduct.handle,
   };
