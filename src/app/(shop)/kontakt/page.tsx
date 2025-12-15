@@ -29,7 +29,7 @@ export default function KontaktPage() {
                     href="mailto:info@atlanticave.cz"
                     className="text-primary hover:underline"
                   >
-                      marekmikulik@email.cz
+                      atlanticave-eshop@seznam.cz
                   </a>
                 </div>
               </div>
