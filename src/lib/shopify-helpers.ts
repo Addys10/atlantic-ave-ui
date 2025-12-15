@@ -35,13 +35,3 @@ export function mapShopifyProductToProduct(shopifyProduct: ShopifyProduct): Prod
 export function mapShopifyProducts(shopifyProducts: ShopifyProduct[]): Product[] {
   return shopifyProducts.map(mapShopifyProductToProduct);
 }
-
-/**
- * Získá ID varianty podle velikosti
- */
-export function getVariantIdBySize(shopifyProduct: ShopifyProduct, size: string): string | undefined {
-  const variant = shopifyProduct.variants.edges.find(
-    edge => edge.node.title === size && edge.node.availableForSale
-  );
-  return variant?.node.id;
-}

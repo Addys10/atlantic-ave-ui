@@ -21,8 +21,6 @@ export default function CheckoutPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [checkoutUrl, setCheckoutUrl] = useState('');
-  const [stockLoading, setStockLoading] = useState<{[key: number]: boolean}>({});
 
   useEffect(() => {
     // Načteme košík ze sessionStorage
