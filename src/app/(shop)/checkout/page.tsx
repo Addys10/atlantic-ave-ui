@@ -102,8 +102,14 @@ export default function CheckoutPage() {
     sessionStorage.setItem('cart', JSON.stringify(newCart));
   };
 
-  const getTotalPrice = () => {
+  const SHIPPING_COST = 129;
+
+  const getSubtotal = () => {
     return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  };
+
+  const getTotalPrice = () => {
+    return getSubtotal() + SHIPPING_COST;
   };
 
   const handleCheckout = async () => {
@@ -236,9 +242,13 @@ export default function CheckoutPage() {
             <div className="border-t pt-4 space-y-2">
               <div className="flex justify-between text-gray-600">
                 <span>Mezisoučet</span>
-                <span>{getTotalPrice()} Kč</span>
+                <span>{getSubtotal()} Kč</span>
               </div>
-              <div className="flex justify-between text-xl font-bold pt-2">
+              <div className="flex justify-between text-gray-600">
+                <span>Doprava</span>
+                <span>{SHIPPING_COST} Kč</span>
+              </div>
+              <div className="flex justify-between text-xl font-bold pt-2 border-t">
                 <span>Celkem</span>
                 <span>{getTotalPrice()} Kč</span>
               </div>

@@ -3,8 +3,30 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect } from 'react';
 
 export default function LandingPage() {
+  // Nastavit theme-color pro iOS Safari safe areas
+  useEffect(() => {
+    // Přidat meta tag pro černé safe areas
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', '#000000');
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = '#000000';
+      document.head.appendChild(meta);
+    }
+
+    // Cleanup - vrátit zpět na bílou při unmount
+    return () => {
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#ffffff');
+      }
+    };
+  }, []);
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
       {/* Background Image with Overlay */}
