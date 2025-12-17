@@ -38,6 +38,9 @@ export async function generateMetadata({ params }: PolicyPageProps) {
   };
 }
 
+// Revalidate každých 5 minut (300 sekund) - stránka se automaticky aktualizuje
+export const revalidate = 300;
+
 export default async function PolicyPage({ params }: PolicyPageProps) {
   const policyKey = policyTypeMap[params.type];
 
