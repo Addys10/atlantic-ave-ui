@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect } from 'react';
 
@@ -59,28 +58,53 @@ export default function LandingPage() {
             </h2>
           </motion.div>
 
-          {/* Enter Button with Animation */}
+          {/* Coming Soon */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col items-center gap-6"
           >
-            <Link href="/shop">
-              <motion.button
-                whileHover={{ scale: 1.05, letterSpacing: '0.15em' }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-                className="group relative overflow-hidden border-2 border-white bg-transparent px-12 py-4 text-lg font-light tracking-widest text-white transition-all duration-300 hover:bg-white hover:text-black"
+            <div className="h-px w-24 bg-white/40" />
+            <p className="text-sm font-light tracking-[0.4em] text-white/70 uppercase">
+              Coming Soon
+            </p>
+            <div className="h-px w-24 bg-white/40" />
+          </motion.div>
+
+          {/* Be ready + Instagram */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.2, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-10 flex flex-col items-center gap-5"
+          >
+            <p className="text-xs font-light tracking-[0.25em] text-white/30 uppercase">
+              Be ready.
+            </p>
+            <a
+              href="https://www.instagram.com/atlantic_ave_100th_"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 transition-colors duration-300 hover:text-white/90"
+              aria-label="Instagram"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <motion.span
-                  className="relative z-10"
-                  initial={{ opacity: 1 }}
-                  whileHover={{ opacity: 1 }}
-                >
-                  VSTOUPIT
-                </motion.span>
-              </motion.button>
-            </Link>
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
+              </svg>
+            </a>
           </motion.div>
         </div>
       </div>
