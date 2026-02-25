@@ -7,7 +7,7 @@ const accessToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || '
 
 export const shopifyClient = createStorefrontApiClient({
   storeDomain,
-  apiVersion: process.env.NEXT_PUBLIC_SHOPIFY_API_VERSION || '2025-01',
+  apiVersion: process.env.NEXT_PUBLIC_SHOPIFY_API_VERSION || '2026-01',
   publicAccessToken: accessToken,
 });
 

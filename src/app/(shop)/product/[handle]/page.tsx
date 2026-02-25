@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -163,15 +163,15 @@ export default function ProductDetail({ params }: { params: { handle: string } }
     setLightboxOpen(false);
   };
 
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     if (!product?.images) return;
     setLightboxImageIndex((prev) => (prev + 1) % product.images!.length);
-  };
+  }, [product]);
 
-  const prevImage = () => {
+  const prevImage = useCallback(() => {
     if (!product?.images) return;
     setLightboxImageIndex((prev) => (prev - 1 + product.images!.length) % product.images!.length);
-  };
+  }, [product]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -183,7 +183,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxOpen, product]);
+  }, [lightboxOpen, nextImage, prevImage]);
 
   if (loading) {
     return (

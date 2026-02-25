@@ -17,13 +17,13 @@ export const metadata: Metadata = {
     ],
     apple: '/apple-icon.png',
   },
-  themeColor: '#ffffff',
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
+  themeColor: '#ffffff',
 };
 
 export default function RootLayout({
