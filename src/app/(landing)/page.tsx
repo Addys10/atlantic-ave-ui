@@ -31,10 +31,10 @@ export default function LandingPage() {
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/images/formula.png"
+          src="/images/nfl-hero.jpg"
           alt="Background"
           fill
-          className="object-cover opacity-40"
+          className="object-cover opacity-50"
           priority
           quality={100}
         />
