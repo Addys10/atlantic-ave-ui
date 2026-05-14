@@ -1,496 +1,284 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Check, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '@/types/product';
-import ProductDescriptionAccordion from '@/components/ProductDescriptionAccordion';
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  selectedSize: string;
-  quantity: number;
-  variantId?: string;
-  availableQuantity?: number;
-  handle?: string;
-}
+import { CartItem } from '@/types/cart';
 
 export default function ProductDetail({ params }: { params: { handle: string } }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedSize, setSelectedSize] = useState<string>('');
-  const [showNotification, setShowNotification] = useState(false);
-  const [isAdding, setIsAdding] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxImageIndex, setLightboxImageIndex] = useState(0);
+  const [selectedSize, setSelectedSize] = useState('');
+  const [thumb, setThumb] = useState(0);
+  const [adding, setAdding] = useState(false);
+  const [toast, setToast] = useState(false);
+  const [lens, setLens] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  const imgContainerRef = useRef<HTMLDivElement>(null);
+
+  const LENS_SIZE = 190;
+  const ZOOM = 2.6;
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setLens({ x: e.clientX - rect.left, y: e.clientY - rect.top, w: rect.width, h: rect.height });
+  }
 
   useEffect(() => {
     async function loadProduct() {
       try {
-        const response = await fetch(`/api/products/${params.handle}`);
-
-        if (!response.ok) {
-          setProduct(null);
-          setLoading(false);
-          return;
-        }
-
-        const data = await response.json();
-
-        if (!data.productByHandle) {
-          setProduct(null);
-          setLoading(false);
-          return;
-        }
-
-        const { mapShopifyProductToProduct } = await import('@/lib/shopify-helpers');
-        const mappedProduct = mapShopifyProductToProduct(data.productByHandle);
-        setProduct(mappedProduct);
-      } catch (error) {
-        console.error('Error loading product:', error);
+        const res = await fetch(`/api/products/${params.handle}`, { cache: 'no-store' });
+        if (!res.ok) { setProduct(null); setLoading(false); return; }
+        setProduct(await res.json());
+      } catch {
         setProduct(null);
       } finally {
         setLoading(false);
       }
     }
-
     loadProduct();
+
+    // Refresh stock when user returns to this tab (e.g. after Stripe checkout)
+    function onVisible() {
+      if (document.visibilityState === 'visible') loadProduct();
+    }
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
   }, [params.handle]);
 
-  const handleAddToCart = async () => {
-    if (!selectedSize) {
-      alert('Prosím vyberte velikost');
-      return;
-    }
+  function handleAddToCart() {
+    if (!selectedSize || !product || adding) return;
+    const sizeObj = product.sizes.find(s => s.name === selectedSize);
+    if (!sizeObj?.id) return;
 
-    if (!product) return;
+    setAdding(true);
+    const cart: CartItem[] = JSON.parse(localStorage.getItem('cart') ?? '[]');
+    const idx = cart.findIndex(i => i.variantId === sizeObj.id);
 
-    setIsAdding(true);
-
-    // Získáme variantId a skladové informace pokud produkt pochází ze Shopify
-    let variantId = product.variantId;
-    let availableQuantity: number | undefined = undefined;
-
-    if (product.handle && !variantId) {
-      try {
-        const response = await fetch(`/api/products/${product.handle}`);
-        const data = await response.json();
-
-        if (data.productByHandle) {
-          const variant = data.productByHandle.variants.edges.find(
-            (edge: any) => edge.node.title === selectedSize
-          );
-          if (variant) {
-            variantId = variant.node.id;
-            availableQuantity = variant.node.quantityAvailable;
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching variant:', error);
-      }
-    }
-
-    // Získáme aktuální košík
-    const cartJson = sessionStorage.getItem('cart');
-    const cart: CartItem[] = cartJson ? JSON.parse(cartJson) : [];
-
-    // Přidáme produkt do košíku
-    const existingItemIndex = cart.findIndex(
-      (item) => item.id === product.id && item.selectedSize === selectedSize
-    );
-
-    if (existingItemIndex > -1) {
-      // Kontrola dostupnosti před zvýšením množství
-      const newQuantity = cart[existingItemIndex].quantity + 1;
-      if (availableQuantity !== undefined && newQuantity > availableQuantity) {
-        alert(`Lze objednat maximálně ${availableQuantity} kusů této velikosti. Již máte ${cart[existingItemIndex].quantity} v košíku.`);
-        setIsAdding(false);
-        return;
-      }
-      // Zvýšíme množství
-      cart[existingItemIndex].quantity = newQuantity;
+    if (idx > -1) {
+      cart[idx].quantity += 1;
     } else {
-      // Kontrola dostupnosti před přidáním
-      if (availableQuantity !== undefined && availableQuantity < 1) {
-        alert('Tato velikost není momentálně skladem.');
-        setIsAdding(false);
-        return;
-      }
-      // Přidáme novou položku
       cart.push({
-        id: product.id,
+        productId: product.id,
+        variantId: sizeObj.id,
+        slug: product.slug,
         name: product.name,
         price: product.price,
         image: product.image,
         selectedSize,
         quantity: 1,
-        variantId,
-        availableQuantity,
-        handle: product.handle,
       });
     }
 
-    // Uložíme košík
-    sessionStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cartUpdated'));
 
-    // Zobrazíme notifikaci
-    setShowNotification(true);
+    setToast(true);
+    setTimeout(() => { setSelectedSize(''); setAdding(false); }, 300);
+    setTimeout(() => setToast(false), 3000);
+  }
 
-    // Resetujeme výběr velikosti
-    setTimeout(() => {
-      setSelectedSize('');
-      setIsAdding(false);
-    }, 300);
-
-    // Skryjeme notifikaci po 3 sekundách
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 3000);
-  };
-
-  const openLightbox = (index: number) => {
-    setLightboxImageIndex(index);
-    setLightboxOpen(true);
-  };
-
-  const closeLightbox = () => {
-    setLightboxOpen(false);
-  };
-
-  const nextImage = useCallback(() => {
-    if (!product?.images) return;
-    setLightboxImageIndex((prev) => (prev + 1) % product.images!.length);
-  }, [product]);
-
-  const prevImage = useCallback(() => {
-    if (!product?.images) return;
-    setLightboxImageIndex((prev) => (prev - 1 + product.images!.length) % product.images!.length);
-  }, [product]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!lightboxOpen) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowRight') nextImage();
-      if (e.key === 'ArrowLeft') prevImage();
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxOpen, nextImage, prevImage]);
+  const images = product?.images?.length ? product.images : product?.image ? [product.image] : [];
 
   if (loading) {
     return (
-      <div className="container-custom py-20 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+      <div className="flex justify-center items-center min-h-screen bg-[#0a0a0a]">
+        <div className="animate-spin rounded-full h-7 w-7 border-b border-bone" />
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="container-custom py-20 text-center">
-        <div className="mb-6">
-          <svg className="w-20 h-20 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <h1 className="text-3xl font-bold mb-4 text-gray-900">Produkt nenalezen</h1>
-        <p className="text-gray-600 mb-8">
-          Omlouváme se, ale tento produkt není dostupný nebo se nepodařilo načíst jeho informace.
-        </p>
-        <Link href="/shop" className="btn-primary">
-          Zpět na produkty
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#0a0a0a] gap-6">
+        <p className="font-mono text-[11px] tracking-[0.22em] uppercase text-dim">Produkt nenalezen</p>
+        <Link href="/shop" className="font-mono text-[11px] tracking-[0.22em] uppercase text-bone underline underline-offset-4">
+          ← Zpět na shop
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="relative bg-secondary min-h-screen py-2 sm:py-2">
-      <div className="container-custom">
-        {/* Notifikace */}
-        <AnimatePresence>
-          {showNotification && (
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed bottom-6 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-8 z-50 max-w-md mx-auto"
-            >
-              <div className="bg-white text-gray-900 px-4 py-3 md:px-6 md:py-4 rounded-xl shadow-2xl border border-gray-200 flex items-center gap-3">
-                <motion.div
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.1, duration: 0.4 }}
-                  className="bg-green-500 rounded-full p-1.5 flex-shrink-0"
-                >
-                  <Check size={18} className="text-white" />
-                </motion.div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm md:text-base mb-0.5">
-                    Přidáno do košíku
-                  </p>
-                  <p className="text-xs md:text-sm text-gray-600 truncate">
-                    {product.name}
-                  </p>
-                </div>
-                <Link
-                  href="/checkout"
-                  className="text-xs md:text-sm font-medium text-primary hover:underline whitespace-nowrap flex-shrink-0"
-                >
-                  Zobrazit košík →
-                </Link>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+    <div className="bg-[#0a0a0a] min-h-screen">
 
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mb-4"
-        >
-          <Link href="/shop" className="text-primary hover:underline inline-block">
-            ← Zpět na produkty
-          </Link>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white rounded-lg p-8 shadow-lg"
-        >
-          {/* Image Gallery */}
-          <div className="space-y-4">
-            {/* Main Image */}
-            <motion.div
-              key={selectedImageIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="relative h-[400px] sm:h-[500px] lg:h-[600px] rounded-lg overflow-hidden bg-gray-100 cursor-pointer group"
-              onClick={() => openLightbox(selectedImageIndex)}
-            >
-              <Image
-                src={product.images?.[selectedImageIndex] || product.image}
-                alt={`${product.name} - obrázek ${selectedImageIndex + 1}`}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                priority={selectedImageIndex === 0}
-              />
-              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
-            </motion.div>
-
-            {/* Thumbnails */}
-            {product.images && product.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-3">
-                {product.images.map((image, index) => (
-                  <motion.button
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3 + index * 0.1 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setSelectedImageIndex(index)}
-                    className={`relative h-24 rounded-lg overflow-hidden cursor-pointer transition-all ${
-                      selectedImageIndex === index
-                        ? 'ring-4 ring-black ring-offset-2'
-                        : 'ring-2 ring-gray-200 hover:ring-gray-400'
-                    }`}
-                  >
-                    <Image
-                      src={image}
-                      alt={`${product.name} thumbnail ${index + 1}`}
-                      fill
-                      className="object-cover"
-                    />
-                  </motion.button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Product Info */}
-          <div className="flex flex-col justify-center">
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-sm text-gray-500 mb-2 uppercase tracking-wider"
-            >
-              {product.category}
-            </motion.p>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-5xl font-bold mb-4 uppercase tracking-tight"
-            >
-              {product.name}
-            </motion.h1>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex items-baseline gap-2 mb-6"
-            >
-              <span className="text-4xl font-bold">{product.price}</span>
-              <span className="text-2xl text-gray-600">Kč</span>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="mb-8"
-            >
-              <ProductDescriptionAccordion htmlContent={product.description} />
-            </motion.div>
-
-            {/* Size Selection */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="mb-8"
-            >
-              <label className="block text-lg font-semibold mb-4 uppercase tracking-wide">
-                Vyberte velikost:
-              </label>
-              <div className="flex flex-wrap gap-3">
-                {product.sizes.map((size, index) => (
-                  <motion.button
-                    key={size.name}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.8 + index * 0.1 }}
-                    whileHover={size.available ? { scale: 1.05 } : {}}
-                    whileTap={size.available ? { scale: 0.95 } : {}}
-                    onClick={() => size.available && setSelectedSize(size.name)}
-                    disabled={!size.available}
-                    className={`px-8 py-4 border-2 rounded-lg font-bold transition-all ${
-                      !size.available
-                        ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed line-through'
-                        : selectedSize === size.name
-                        ? 'border-black bg-black text-white'
-                        : 'border-gray-300 hover:border-black'
-                    }`}
-                  >
-                    {size.name}
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Add to Cart Button - zobrazit jen pokud existuje alespoň jedna dostupná velikost */}
-            {product.sizes.some(size => size.available) && (
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleAddToCart}
-                disabled={isAdding}
-                className={`btn-primary w-full text-lg flex items-center justify-center gap-3 ${
-                  isAdding ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                <ShoppingCart size={22} />
-                <span>{isAdding ? 'Přidávání...' : 'Vložit do košíku'}</span>
-              </motion.button>
-            )}
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Lightbox */}
+      {/* Toast */}
       <AnimatePresence>
-        {lightboxOpen && (
+        {toast && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center"
-            onClick={closeLightbox}
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ duration: 0.36, ease: [0.2, 0.7, 0.2, 1] }}
+            className="fixed bottom-7 left-1/2 -translate-x-1/2 z-50 bg-bone text-[#0a0a0a] px-5 py-3.5 font-mono text-[11px] tracking-[0.22em] uppercase flex items-center gap-5 whitespace-nowrap shadow-2xl"
           >
-            {/* Close Button */}
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ delay: 0.1 }}
-              onClick={closeLightbox}
-              className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
-            >
-              <X size={40} />
-            </motion.button>
-
-            {/* Image */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.3 }}
-              className="relative w-[90vw] h-[90vh] max-w-6xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Image
-                src={product.images?.[lightboxImageIndex] || product.image}
-                alt={`${product.name} - obrázek ${lightboxImageIndex + 1}`}
-                fill
-                className="object-contain"
-                priority
-              />
-            </motion.div>
-
-            {/* Navigation Arrows */}
-            {product.images && product.images.length > 1 && (
-              <>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    prevImage();
-                  }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3"
-                >
-                  <ChevronLeft size={32} />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    nextImage();
-                  }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-3"
-                >
-                  <ChevronRight size={32} />
-                </button>
-              </>
-            )}
-
-            {/* Image Counter */}
-            {product.images && product.images.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-lg">
-                {lightboxImageIndex + 1} / {product.images.length}
-              </div>
-            )}
+            <span>{product.name} — přidáno</span>
+            <Link href="/checkout" className="border-b border-[#0a0a0a]/40 hover:border-[#0a0a0a] transition-colors">
+              Košík →
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Layout: gallery | info */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] min-h-[calc(100vh-58px)]">
+
+        {/* Gallery */}
+        <div className="flex flex-col lg:border-r border-line">
+          {/* Main image */}
+          <div
+            ref={imgContainerRef}
+            className="relative aspect-[4/5] border-b border-line overflow-hidden"
+            style={{ cursor: lens ? 'none' : 'crosshair' }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setLens(null)}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={thumb}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="absolute inset-0"
+              >
+                <Image
+                  src={images[thumb] ?? product.image}
+                  alt={product.name}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Loupe lens */}
+            {lens && (
+              <div
+                className="absolute rounded-full pointer-events-none border border-bone/25 shadow-[0_0_0_1px_rgba(244,241,234,0.08),0_8px_40px_rgba(0,0,0,0.7)]"
+                style={{
+                  width: LENS_SIZE,
+                  height: LENS_SIZE,
+                  left: lens.x - LENS_SIZE / 2,
+                  top: lens.y - LENS_SIZE / 2,
+                  backgroundImage: `url(${images[thumb] ?? product.image})`,
+                  backgroundSize: `${lens.w * ZOOM}px ${lens.h * ZOOM}px`,
+                  backgroundPosition: `-${lens.x * ZOOM - LENS_SIZE / 2}px -${lens.y * ZOOM - LENS_SIZE / 2}px`,
+                  backgroundRepeat: 'no-repeat',
+                  zIndex: 10,
+                }}
+              />
+            )}
+          </div>
+
+          {/* Thumbnails */}
+          {images.length > 1 && (
+            <div className="grid grid-cols-4">
+              {images.map((src, i) => (
+                <button
+                  key={i}
+                  onClick={() => setThumb(i)}
+                  className={`relative aspect-square border-r border-line last:border-r-0 overflow-hidden transition-opacity duration-200 ${
+                    i === thumb ? 'opacity-100' : 'opacity-40 hover:opacity-80'
+                  }`}
+                >
+                  <Image src={src} alt={`${product.name} ${i + 1}`} fill className="object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Sticky info panel */}
+        <aside className="lg:sticky lg:top-[68px] lg:h-[calc(100vh-68px)] lg:overflow-y-auto flex flex-col gap-8 p-8 md:p-12">
+
+          {/* Breadcrumbs */}
+          <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase text-dim">
+            <Link href="/shop" className="hover:text-bone transition-colors">Shop</Link>
+            <span className="text-mute">/</span>
+            <span className="text-mute">{product.category}</span>
+            <span className="text-mute">/</span>
+            <span className="text-bone truncate">{product.name}</span>
+          </div>
+
+          {/* Name + category */}
+          <div>
+            <h1 className="font-anton text-[clamp(52px,5.5vw,88px)] uppercase leading-[0.88] tracking-tight text-bone">
+              {product.name}
+            </h1>
+            <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-dim mt-4">
+              {product.category}
+            </div>
+          </div>
+
+          {/* Price */}
+          <div className="font-mono text-[15px] tracking-[0.06em] text-bone">
+            {product.price.toLocaleString('cs-CZ')} Kč
+          </div>
+
+          {/* Sizes */}
+          <div className="flex flex-col gap-3">
+            <h5 className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim font-normal flex justify-between">
+              <span>Velikost{selectedSize ? ` — ${selectedSize}` : ''}</span>
+            </h5>
+            <div className="grid grid-cols-5 gap-[6px]">
+              {product.sizes.map(size => {
+                const isOut = !size.available;
+                const isOn = selectedSize === size.name;
+                return (
+                  <button
+                    key={size.name}
+                    disabled={isOut}
+                    onClick={() => setSelectedSize(size.name)}
+                    className={`py-4 font-mono text-[12px] tracking-[0.16em] uppercase text-center border transition-all duration-200
+                      ${isOut
+                        ? 'border-line text-mute cursor-not-allowed'
+                        : isOn
+                        ? 'border-bone bg-bone text-[#0a0a0a]'
+                        : 'border-line text-dim hover:text-bone hover:border-dim'
+                      }`}
+                    style={isOut ? {
+                      background: 'repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,107,102,0.12) 4px 5px)',
+                    } : undefined}
+                  >
+                    {size.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* CTA */}
+          <button
+            disabled={!selectedSize || adding}
+            onClick={handleAddToCart}
+            className="w-full py-[22px] bg-bone text-[#0a0a0a] font-mono text-[12px] tracking-[0.26em] uppercase border border-bone hover:bg-[#0a0a0a] hover:text-bone transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {adding ? 'Přidáno →' : selectedSize ? 'Přidat do košíku' : 'Vyberte velikost'}
+          </button>
+
+          {/* Description */}
+          {product.description && (
+            <div
+              className="font-sans text-[13px] leading-[1.7] text-dim border-t border-line pt-6 [&_h2]:font-mono [&_h2]:text-[10px] [&_h2]:tracking-[0.22em] [&_h2]:uppercase [&_h2]:text-dim [&_h2]:mb-3 [&_p]:mb-3"
+              dangerouslySetInnerHTML={{ __html: product.description }}
+            />
+          )}
+
+          {/* Footer notes */}
+          <div className="border-t border-line pt-6 flex flex-col gap-3 mt-auto">
+            <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-mute">
+              ⊕ Doprava 3–5 pracovních dní · 129 Kč
+            </div>
+            <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-mute">
+              ⊕ Limitovaná edice — po vyprodání nebude restockováno
+            </div>
+          </div>
+
+        </aside>
+      </div>
+
     </div>
   );
 }

@@ -6,182 +6,317 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Product } from '@/types/product';
 
+function availableCount(product: Product) {
+  return product.sizes.filter(s => s.available).length;
+}
+
 export default function ShopPage() {
-  const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Detekce mobile zařízení
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-
     async function loadProducts() {
       try {
-        const response = await fetch('/api/products');
-        if (!response.ok) throw new Error('Failed to fetch products');
-
-        const data = await response.json();
-        const { mapShopifyProducts } = await import('@/lib/shopify-helpers');
-        const shopifyProducts = data.products.edges.map((edge: any) => edge.node);
-        const mappedProducts = mapShopifyProducts(shopifyProducts);
-
-        setProducts(mappedProducts);
-        setError(false);
-      } catch (error) {
-        console.error('Error loading products:', error);
+        const response = await fetch('/api/products', { cache: 'no-store' });
+        if (!response.ok) throw new Error();
+        const data: Product[] = await response.json();
+        setProducts(data);
+      } catch {
         setError(true);
       } finally {
         setLoading(false);
       }
     }
-
     loadProducts();
 
-    return () => window.removeEventListener('resize', checkMobile);
+    // Refresh when user returns to this tab (e.g. after completing Stripe checkout)
+    function onVisible() {
+      if (document.visibilityState === 'visible') loadProducts();
+    }
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-gray-50">
-      <div className="container-custom py-16">
-        {loading && (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          </div>
-        )}
+    <div className="min-h-screen bg-[#0a0a0a]">
 
-        {/* Error State */}
-        {!loading && error && (
-          <div className="max-w-md mx-auto text-center py-20">
-            <div className="mb-6">
-              <svg className="w-20 h-20 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h2 className="text-3xl font-bold mb-4 text-gray-900">Něco se pokazilo</h2>
-            <p className="text-gray-600 mb-8">
-              Omlouváme se, ale nepodařilo se načíst produkty. Zkuste to prosím později.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="btn-primary"
+      {loading && (
+        <div className="flex justify-center py-40">
+          <div className="animate-spin rounded-full h-7 w-7 border-b border-bone" />
+        </div>
+      )}
+
+      {!loading && error && (
+        <div className="text-center py-40">
+          <p className="font-mono text-[11px] tracking-[0.22em] uppercase text-dim mb-6">
+            Nepodařilo se načíst produkty
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="font-mono text-[11px] tracking-[0.22em] uppercase text-bone underline underline-offset-4"
+          >
+            Zkusit znovu
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && products.length === 0 && (
+        <div className="min-h-[calc(100vh-68px)] flex flex-col items-center justify-center px-6 text-center gap-0">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center gap-3 mb-10"
+          >
+            <div className="h-px w-8 bg-line" />
+            <span className="font-mono text-[10px] tracking-[0.38em] uppercase text-mute">Připravujeme</span>
+            <div className="h-px w-8 bg-line" />
+          </motion.div>
+
+          <div className="overflow-hidden mb-2">
+            <motion.p
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="font-anton uppercase text-bone leading-[0.88] tracking-tight"
+              style={{ fontSize: 'clamp(72px, 16vw, 180px)' }}
             >
-              Zkusit znovu
-            </button>
+              Drop
+            </motion.p>
           </div>
-        )}
-
-        {/* Products Grid */}
-        {!loading && !error && products.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-12">
-          {products.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.6,
-                delay: index * 0.1,
-                ease: [0.22, 1, 0.36, 1],
+          <div className="overflow-hidden mb-10">
+            <motion.p
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              transition={{ duration: 0.8, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
+              className="font-anton uppercase leading-[0.88] tracking-tight"
+              style={{
+                fontSize: 'clamp(72px, 16vw, 180px)',
+                WebkitTextStroke: '1.5px #f4f1ea',
+                color: 'transparent',
               }}
             >
-              <Link href={`/product/${product.handle || product.id}`}>
+              02
+            </motion.p>
+          </div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+            className="font-mono text-[11px] tracking-[0.2em] leading-relaxed uppercase text-dim mb-8 max-w-[32ch]"
+          >
+            Nový drop se připravuje.<br />Sleduj nás na Instagramu pro první info.
+          </motion.p>
+
+          <motion.a
+            href="https://www.instagram.com/atlantic_ave_100th_"
+            target="_blank"
+            rel="noopener noreferrer"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.45 }}
+            className="inline-flex items-center gap-3 font-mono text-[11px] tracking-[0.26em] uppercase text-bone border border-bone/30 hover:border-bone px-6 py-3.5 transition-colors duration-200"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+              <circle cx="12" cy="12" r="4" />
+              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
+            </svg>
+            Sledovat →
+          </motion.a>
+        </div>
+      )}
+
+      {!loading && !error && products.length > 0 && (
+        <>
+          {/* Header strip */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="border-b border-line px-6 md:px-14 py-3.5 flex items-center justify-between"
+          >
+            <span className="font-mono text-[10px] tracking-[0.28em] uppercase text-dim">Kolekce</span>
+            <span className="font-mono text-[10px] tracking-[0.28em] uppercase text-dim">
+              {products.length}&nbsp;
+              {products.length === 1 ? 'produkt' : products.length < 5 ? 'produkty' : 'produktů'}
+            </span>
+          </motion.div>
+
+          {/* ── Mobile: 2-column card grid ── */}
+          <div className="md:hidden grid grid-cols-2 gap-[1px] bg-line border-t border-line">
+            {products.map((product, index) => {
+              const soldOut = availableCount(product) === 0;
+              return (
                 <motion.div
-                  {...(!isMobile && { whileHover: { y: -8 } })}
-                  transition={{ duration: 0.3 }}
-                  className="group cursor-pointer"
-                  onMouseEnter={() => !isMobile && setHoveredProduct(product.id)}
-                  onMouseLeave={() => !isMobile && setHoveredProduct(null)}
+                  key={product.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.07 }}
+                  className="bg-[#0a0a0a]"
                 >
-                  {/* Product Image */}
-                  <div className="relative aspect-[1/1] mb-4 overflow-hidden bg-gray-100">
-                    <motion.div
-                      {...(!isMobile && { whileHover: { scale: 1.05 } })}
-                      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                      className="w-full h-full"
-                    >
+                  <Link href={`/product/${product.slug}`} className="group block">
+                    <div className="relative aspect-[3/4] overflow-hidden">
                       <Image
                         src={product.image}
                         alt={product.name}
                         fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                        sizes="50vw"
                       />
-                    </motion.div>
-
-                    {/* Quick View Overlay - Only on Desktop */}
-                    {!isMobile && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{
-                          opacity: hoveredProduct === product.id ? 1 : 0,
-                        }}
-                        transition={{ duration: 0.3 }}
-                        className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center space-y-4 pointer-events-none"
-                      >
-                        <div className="text-white text-center px-4">
-                          <p className="text-sm mb-3">Dostupné velikosti</p>
-                          <div className="flex gap-2 justify-center mb-4">
-                            {product.sizes
-                              .filter(size => size.available)
-                              .map((size) => (
-                              <span
-                                key={size.name}
-                                className="border border-white px-3 py-1 text-sm"
-                              >
-                                {size.name}
-                              </span>
-                            ))}
-                          </div>
-                          <div className="text-sm font-medium tracking-wider">
-                            ZOBRAZIT DETAIL
-                          </div>
+                      {soldOut && (
+                        <div className="absolute inset-0 bg-[#0a0a0a]/55 flex items-end p-3">
+                          <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-dim">
+                            Vyprodáno
+                          </span>
                         </div>
-                      </motion.div>
-                    )}
-                  </div>
-
-                  {/* Product Info */}
-                  <div className="space-y-3 pt-4">
-                    <div>
-                      <h3 className={`text-2xl font-bold tracking-tight uppercase mb-1 transition-all duration-300 ${!isMobile ? 'group-hover:tracking-wide' : ''}`}>
+                      )}
+                    </div>
+                    <div className="p-3 pb-4 border-t border-line">
+                      <h3 className="font-anton text-[22px] uppercase leading-[0.9] text-bone mb-1">
                         {product.name}
                       </h3>
-                      <div className={`w-12 h-0.5 bg-black transition-all duration-300 ${!isMobile ? 'group-hover:w-20' : ''}`} />
+                      {product.subtitle && (
+                        <p className="font-mono text-[9px] leading-relaxed text-dim mb-2 line-clamp-2">
+                          {product.subtitle}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[11px] text-bone">
+                          {product.price.toLocaleString('cs-CZ')} Kč
+                        </span>
+                        <span className="font-mono text-[11px] text-dim group-hover:text-bone group-hover:translate-x-0.5 transition-all duration-300 inline-block">
+                          →
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-bold tracking-tight">
-                        {product.price}
-                      </span>
-                      <span className="text-lg text-gray-600 font-medium">Kč</span>
-                    </div>
-                    {!isMobile && (
-                      <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{
-                          opacity: hoveredProduct === product.id ? 1 : 0,
-                          x: hoveredProduct === product.id ? 0 : -10,
-                        }}
-                        transition={{ duration: 0.2 }}
-                        className="text-sm text-gray-500 uppercase tracking-wider font-medium"
-                      >
-                        Zobrazit více →
-                      </motion.div>
-                    )}
-                  </div>
+                  </Link>
                 </motion.div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-        )}
-      </div>
+              );
+            })}
+          </div>
+
+          {/* ── Desktop: alternating editorial rows ── */}
+          <section className="hidden md:flex flex-col border-t border-line">
+            {products.map((product, index) => {
+              const flip = index % 2 !== 0;
+              const soldOut = availableCount(product) === 0;
+
+              return (
+                <motion.article
+                  key={product.id}
+                  initial={{ opacity: 0, y: 36 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                  className="border-b border-line last:border-b-0"
+                >
+                  <Link href={`/product/${product.slug}`} className="group block">
+                    <div
+                      className="grid grid-cols-2 min-h-[72vh]"
+                      style={flip ? { direction: 'rtl' } : undefined}
+                    >
+                      {/* Image */}
+                      <div
+                        style={flip ? { direction: 'ltr' } : undefined}
+                        className="relative overflow-hidden"
+                      >
+                        <motion.div
+                          className="absolute inset-0"
+                          whileHover={{ scale: 1.035 }}
+                          transition={{ duration: 1.2, ease: [0.2, 0.6, 0.2, 1] }}
+                        >
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                            sizes="50vw"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0a]/25 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                        </motion.div>
+
+                        {soldOut && (
+                          <div className="absolute bottom-7 left-7 font-mono text-[10px] tracking-[0.24em] uppercase text-dim border border-line px-3 py-1.5 bg-[#0a0a0a]/70 backdrop-blur-sm">
+                            Vyprodáno
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Info panel */}
+                      <div
+                        style={flip ? { direction: 'ltr' } : undefined}
+                        className="flex flex-col justify-center px-12 lg:px-16 py-12 bg-[#0a0a0a] relative"
+                      >
+                        {/* Index */}
+                        <span className="absolute top-7 right-8 font-mono text-[11px] tracking-[0.2em] text-mute select-none">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+
+                        {/* Name */}
+                        <h2 className="font-anton text-[clamp(42px,5vw,90px)] uppercase leading-[0.88] tracking-tight text-bone">
+                          {product.name}
+                        </h2>
+
+                        {/* Subtitle */}
+                        {product.subtitle && (
+                          <p className="font-mono text-[11px] leading-[1.7] text-dim mt-4 max-w-[32ch]">
+                            {product.subtitle}
+                          </p>
+                        )}
+
+                        {/* Divider */}
+                        <div className="h-px w-full bg-line my-7" />
+
+                        {/* Sizes with stock */}
+                        <div className="flex flex-wrap gap-[5px]">
+                          {product.sizes.filter(s => s.available).map(size => (
+                            <div
+                              key={size.name}
+                              className="border border-line font-mono tracking-[0.1em] uppercase text-dim w-14 py-2.5 text-center group-hover:border-[#2e2e2e] transition-colors flex flex-col items-center gap-0.5"
+                            >
+                              <span className="text-[11px] text-bone">{size.name}</span>
+                              <span className="text-[9px] text-mute">{size.stock}&thinsp;ks</span>
+                            </div>
+                          ))}
+                          {product.sizes.filter(s => !s.available).map(size => (
+                            <div
+                              key={size.name}
+                              className="font-mono tracking-[0.1em] uppercase text-mute w-14 py-2.5 text-center flex flex-col items-center gap-0.5"
+                              style={{
+                                border: '1px solid #1a1a1a',
+                                background: 'repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,107,102,0.09) 4px 5px)',
+                              }}
+                            >
+                              <span className="text-[11px]">{size.name}</span>
+                              <span className="text-[9px]">—</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-px w-full bg-line my-7" />
+
+                        {/* Price + CTA */}
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono text-[17px] tracking-tight text-bone">
+                            {product.price.toLocaleString('cs-CZ')} Kč
+                          </span>
+                          <div className="inline-flex items-center gap-3 pb-[5px] border-b border-bone font-mono text-[10px] tracking-[0.24em] uppercase text-bone group-hover:gap-[20px] transition-all duration-300">
+                            <span>Zobrazit kus</span>
+                            <span>→</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.article>
+              );
+            })}
+          </section>
+        </>
+      )}
     </div>
   );
 }

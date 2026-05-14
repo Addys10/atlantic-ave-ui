@@ -1,224 +1,250 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingBag, ShoppingCart, ChevronDown, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
+import { CartItem } from '@/types/cart';
 
-interface DropdownItem {
-  label: string;
-  href: string;
-}
-
-interface MenuItem {
-  label: string;
-  href?: string;
-  icon?: React.ReactNode;
-  dropdown?: DropdownItem[];
-}
+const SHIPPING = 129;
 
 export default function Navbar() {
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileDropdownOpen, setMobileDropdownOpen] = useState<string | null>(null);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartCount, setCartCount] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [showCart, setShowCart] = useState(false);
+  const hideTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  const menuItems: MenuItem[] = [
-    {
-      label: 'Obchod',
-      icon: <ShoppingBag size={20} />,
-      dropdown: [
-        { label: 'Všechny produkty', href: '/shop' },
-        { label: 'Kontakt', href: '/kontakt' },
-      ]
-    },
-    {
-      label: 'Košík',
-      href: '/checkout',
-      icon: <ShoppingCart size={20} />,
+  function readCart() {
+    try {
+      const raw = localStorage.getItem('cart');
+      if (!raw) { setCartCount(0); setCartItems([]); return; }
+      const items: CartItem[] = JSON.parse(raw);
+      setCartCount(items.reduce((sum, i) => sum + i.quantity, 0));
+      setCartItems(items);
+    } catch {
+      setCartCount(0);
+      setCartItems([]);
     }
-  ];
+  }
 
-  const handleMouseEnter = (label: string) => {
-    setOpenDropdown(label);
-  };
+  useEffect(() => {
+    readCart();
+    window.addEventListener('storage', readCart);
+    window.addEventListener('focus', readCart);
+    window.addEventListener('cartUpdated', readCart);
+    return () => {
+      window.removeEventListener('storage', readCart);
+      window.removeEventListener('focus', readCart);
+      window.removeEventListener('cartUpdated', readCart);
+    };
+  }, []);
 
-  const handleMouseLeave = () => {
-    setOpenDropdown(null);
-  };
+  function onCartEnter() {
+    clearTimeout(hideTimer.current);
+    setShowCart(true);
+  }
+
+  function onCartLeave() {
+    hideTimer.current = setTimeout(() => setShowCart(false), 180);
+  }
+
+  const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
+
+  const linkCls = 'font-mono text-[11px] tracking-[0.18em] uppercase text-dim hover:text-bone transition-colors duration-200';
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className="container-custom">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="font-cloister text-2xl font-bold text-primary tracking-wider">
-            ATLANTIC AVE
-          </Link>
+    <>
+      <nav className="sticky top-0 z-50 border-b border-line"
+           style={{ background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(14px)' }}>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center px-7 h-[68px]">
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            {menuItems.map((item) => (
-              <div
-                key={item.label}
-                className="relative"
-                onMouseEnter={() => item.dropdown && handleMouseEnter(item.label)}
-                onMouseLeave={handleMouseLeave}
-              >
-                {item.dropdown ? (
-                  <button
-                    className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors"
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                    <ChevronDown
-                      size={16}
-                      className={`transition-transform ${openDropdown === item.label ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-                ) : (
-                  <Link
-                    href={item.href!}
-                    className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors"
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                  </Link>
-                )}
-
-                {/* Dropdown Menu */}
-                {item.dropdown && openDropdown === item.label && (
-                  <div className="absolute top-full left-0 pt-2">
-                    <div className="w-56 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-                      {item.dropdown.map((dropdownItem) => (
-                        <Link
-                          key={dropdownItem.href}
-                          href={dropdownItem.href}
-                          className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors"
-                          onClick={() => setOpenDropdown(null)}
-                        >
-                          {dropdownItem.label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+          {/* Left */}
+          <div className="flex items-center gap-7">
+            <Link href="/shop" className={linkCls}>Shop</Link>
           </div>
 
-          {/* Mobile Hamburger Button */}
-          <button
-            className="md:hidden text-gray-700 hover:text-primary transition-colors"
-            onClick={() => setMobileMenuOpen(true)}
-          >
-            <Menu size={28} />
-          </button>
-        </div>
-      </div>
+          {/* Center */}
+          <Link href="/" aria-label="Atlantic Ave">
+            <span className="font-cloister text-xl md:text-2xl font-bold text-bone tracking-[0.22em] uppercase select-none whitespace-nowrap">
+              Atlantic Ave
+            </span>
+          </Link>
 
-      {/* Mobile Menu */}
+          {/* Right — desktop with cart dropdown */}
+          <div className="hidden md:flex items-center justify-end gap-7">
+            <Link href="/behind-the-brand" className={linkCls}>Behind the brand</Link>
+            <Link href="/kontakt" className={linkCls}>Kontakt</Link>
+
+            {/* Cart trigger */}
+            <div
+              className="relative"
+              onMouseEnter={onCartEnter}
+              onMouseLeave={onCartLeave}
+            >
+              <Link href="/checkout" className={`${linkCls} flex items-center gap-2`}>
+                Košík
+                <span className="inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[10px] font-bold rounded-full w-[18px] h-[18px] leading-none">
+                  {cartCount}
+                </span>
+              </Link>
+
+              <AnimatePresence>
+                {showCart && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.18, ease: [0.2, 0.7, 0.2, 1] }}
+                    className="absolute top-[calc(100%+14px)] right-0 w-[320px] border border-line z-50"
+                    style={{ background: '#0f0f0f' }}
+                    onMouseEnter={onCartEnter}
+                    onMouseLeave={onCartLeave}
+                  >
+                    {cartItems.length === 0 ? (
+                      <div className="px-5 py-8 flex flex-col items-center gap-3">
+                        <span className="font-anton text-[48px] text-line leading-none select-none">∅</span>
+                        <p className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim">Košík je prázdný</p>
+                        <Link
+                          href="/shop"
+                          className="font-mono text-[10px] tracking-[0.22em] uppercase text-bone border-b border-bone/40 hover:border-bone transition-colors pb-px"
+                        >
+                          Přejít do shopu →
+                        </Link>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Header */}
+                        <div className="px-4 py-3 border-b border-line flex justify-between items-center">
+                          <span className="font-mono text-[10px] tracking-[0.26em] uppercase text-dim">
+                            Košík
+                          </span>
+                          <span className="font-mono text-[10px] tracking-[0.18em] text-mute">
+                            {cartCount} {cartCount === 1 ? 'kus' : cartCount < 5 ? 'kusy' : 'kusů'}
+                          </span>
+                        </div>
+
+                        {/* Items — max 4 shown */}
+                        <div className="divide-y divide-line">
+                          {cartItems.slice(0, 4).map(item => (
+                            <div key={item.variantId} className="flex items-center gap-3 px-4 py-3">
+                              <div className="relative w-11 h-[58px] flex-shrink-0 overflow-hidden bg-line">
+                                <Image src={item.image} alt={item.name} fill className="object-cover" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-anton text-[15px] uppercase leading-tight text-bone truncate">
+                                  {item.name}
+                                </p>
+                                <p className="font-mono text-[10px] tracking-[0.1em] uppercase text-dim mt-0.5">
+                                  {item.selectedSize} · {item.quantity}&thinsp;ks
+                                </p>
+                              </div>
+                              <div className="font-mono text-[12px] text-bone flex-shrink-0">
+                                {(item.price * item.quantity).toLocaleString('cs-CZ')} Kč
+                              </div>
+                            </div>
+                          ))}
+                          {cartItems.length > 4 && (
+                            <div className="px-4 py-2">
+                              <span className="font-mono text-[10px] tracking-[0.14em] text-mute">
+                                + {cartItems.length - 4} další {cartItems.length - 4 === 1 ? 'položka' : 'položky'}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="border-t border-line px-4 py-4 flex flex-col gap-3">
+                          <div className="flex justify-between items-baseline">
+                            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim">Mezisoučet</span>
+                            <span className="font-mono text-[13px] text-bone">{subtotal.toLocaleString('cs-CZ')} Kč</span>
+                          </div>
+                          <div className="flex justify-between items-baseline">
+                            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim">Doprava</span>
+                            <span className="font-mono text-[11px] text-dim">{SHIPPING} Kč</span>
+                          </div>
+                          <Link
+                            href="/checkout"
+                            className="mt-1 w-full py-3.5 bg-bone text-[#0a0a0a] font-mono text-[11px] tracking-[0.26em] uppercase text-center border border-bone hover:bg-[#0f0f0f] hover:text-bone transition-colors duration-200 block"
+                          >
+                            Do košíku →
+                          </Link>
+                        </div>
+                      </>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Right — mobile */}
+          <div className="flex md:hidden items-center justify-end gap-5">
+            <Link href="/checkout" className={`${linkCls} flex items-center gap-1.5`}>
+              Košík
+              <span className="inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[10px] font-bold rounded-full w-[18px] h-[18px] leading-none">
+                {cartCount}
+              </span>
+            </Link>
+            <button onClick={() => setMobileOpen(true)} className="text-dim hover:text-bone transition-colors">
+              <Menu size={18} />
+            </button>
+          </div>
+
+        </div>
+      </nav>
+
+      {/* Mobile slide-out */}
       <AnimatePresence>
-        {mobileMenuOpen && (
+        {mobileOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-              onClick={() => setMobileMenuOpen(false)}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 bg-black/75 z-[60]"
+              onClick={() => setMobileOpen(false)}
             />
-
-            {/* Slide-in Menu */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="fixed top-0 right-0 bottom-0 w-80 bg-white shadow-2xl z-50 md:hidden overflow-y-auto"
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed top-0 right-0 bottom-0 w-64 z-[70] flex flex-col border-l border-line"
+              style={{ background: '#0a0a0a' }}
             >
-              {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b">
-                <h2 className="font-cloister text-xl font-bold text-primary tracking-wider">
-                  MENU
-                </h2>
-                <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-gray-700 hover:text-primary transition-colors"
-                >
-                  <X size={28} />
+              <div className="flex items-center justify-between px-6 h-[68px] border-b border-line">
+                <span className="font-cloister text-sm text-bone tracking-widest uppercase">Menu</span>
+                <button onClick={() => setMobileOpen(false)} className="text-dim hover:text-bone transition-colors">
+                  <X size={16} />
                 </button>
               </div>
-
-              {/* Menu Items */}
-              <div className="p-4">
-                {menuItems.map((item) => (
-                  <div key={item.label} className="mb-2">
-                    {item.dropdown ? (
-                      <>
-                        <button
-                          onClick={() =>
-                            setMobileDropdownOpen(
-                              mobileDropdownOpen === item.label ? null : item.label
-                            )
-                          }
-                          className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            {item.icon}
-                            <span className="font-medium">{item.label}</span>
-                          </div>
-                          <ChevronDown
-                            size={20}
-                            className={`transition-transform ${
-                              mobileDropdownOpen === item.label ? 'rotate-180' : ''
-                            }`}
-                          />
-                        </button>
-
-                        {/* Mobile Dropdown */}
-                        <AnimatePresence>
-                          {mobileDropdownOpen === item.label && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.2 }}
-                              className="overflow-hidden"
-                            >
-                              <div className="ml-4 mt-1 space-y-1">
-                                {item.dropdown.map((dropdownItem) => (
-                                  <Link
-                                    key={dropdownItem.href}
-                                    href={dropdownItem.href}
-                                    className="block px-4 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-lg transition-colors"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                  >
-                                    {dropdownItem.label}
-                                  </Link>
-                                ))}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </>
-                    ) : (
-                      <Link
-                        href={item.href!}
-                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {item.icon}
-                        <span className="font-medium">{item.label}</span>
-                      </Link>
-                    )}
-                  </div>
+              <div className="flex flex-col gap-1 p-5 pt-6">
+                {[
+                  { label: 'Shop', href: '/shop' },
+                  { label: 'Behind the brand', href: '/behind-the-brand' },
+                  { label: 'Kontakt', href: '/kontakt' },
+                  { label: 'Košík', href: '/checkout' },
+                ].map(item => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="px-3 py-3 font-mono text-[11px] tracking-[0.18em] uppercase text-dim hover:text-bone transition-colors"
+                  >
+                    {item.label}
+                  </Link>
                 ))}
+                <div className="px-3 py-3 font-mono text-[11px] tracking-[0.18em] uppercase text-mute">
+                  Drop 02
+                </div>
               </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
-    </nav>
+    </>
   );
 }

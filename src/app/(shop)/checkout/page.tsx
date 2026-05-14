@@ -3,313 +3,324 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, ShoppingBag, Plus, Minus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CartItem } from '@/types/cart';
 
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  selectedSize: string;
-  quantity: number;
-  variantId?: string;
-  availableQuantity?: number;
-  handle?: string;
-}
+const SHIPPING = 129;
 
 export default function CheckoutPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [hydrated, setHydrated] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Načteme košík ze sessionStorage
-    const cartJson = sessionStorage.getItem('cart');
-    if (!cartJson) {
-      setLoading(false);
-      return;
-    }
-
-    const cartData: CartItem[] = JSON.parse(cartJson);
-    setCart(cartData);
-    setLoading(false);
-
-    // Fetchneme aktuální skladové zásoby pro každý produkt
-    fetchStockInfo(cartData);
+    const raw = localStorage.getItem('cart');
+    setCart(raw ? JSON.parse(raw) : []);
+    setHydrated(true);
   }, []);
 
-  const fetchStockInfo = async (cartItems: CartItem[]) => {
-    for (let i = 0; i < cartItems.length; i++) {
-      const item = cartItems[i];
-      if (!item.handle) continue;
+  function persist(next: CartItem[]) {
+    setCart(next);
+    localStorage.setItem('cart', JSON.stringify(next));
+    window.dispatchEvent(new Event('cartUpdated'));
+  }
 
-      try {
-        const response = await fetch(`/api/products/${item.handle}`);
-        if (!response.ok) continue;
+  function removeItem(index: number) {
+    persist(cart.filter((_, i) => i !== index));
+  }
 
-        const data = await response.json();
-        if (!data.productByHandle) continue;
+  function updateQty(index: number, qty: number) {
+    if (qty < 1) { removeItem(index); return; }
+    const next = [...cart];
+    next[index] = { ...next[index], quantity: qty };
+    persist(next);
+  }
 
-        // Najdeme variantu pro vybranou velikost
-        const variant = data.productByHandle.variants.edges.find(
-          (edge: any) => edge.node.title === item.selectedSize
-        );
+  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const total = subtotal + SHIPPING;
+  const totalQty = cart.reduce((s, i) => s + i.quantity, 0);
 
-        if (variant?.node.quantityAvailable !== undefined) {
-          // Aktualizujeme košík s dostupným množstvím
-          setCart(prevCart => {
-            const newCart = [...prevCart];
-            newCart[i] = {
-              ...newCart[i],
-              availableQuantity: variant.node.quantityAvailable
-            };
-            sessionStorage.setItem('cart', JSON.stringify(newCart));
-            return newCart;
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching stock info:', error);
-      }
-    }
-  };
-
-  const removeFromCart = (index: number) => {
-    const newCart = cart.filter((_, i) => i !== index);
-    setCart(newCart);
-    sessionStorage.setItem('cart', JSON.stringify(newCart));
-  };
-
-  const updateQuantity = (index: number, newQuantity: number) => {
-    if (newQuantity < 1) {
-      // Pokud je množství menší než 1, odstraníme produkt
-      removeFromCart(index);
-      return;
-    }
-
-    const item = cart[index];
-
-    // Kontrola dostupnosti skladem
-    if (item.availableQuantity !== undefined && newQuantity > item.availableQuantity) {
-      alert(`Lze objednat maximálně ${item.availableQuantity} kusů této velikosti.`);
-      return;
-    }
-
-    const newCart = [...cart];
-    newCart[index].quantity = newQuantity;
-    setCart(newCart);
-    sessionStorage.setItem('cart', JSON.stringify(newCart));
-  };
-
-  const SHIPPING_COST = 129;
-
-  const getSubtotal = () => {
-    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  };
-
-  const getTotalPrice = () => {
-    return getSubtotal() + SHIPPING_COST;
-  };
-
-  const handleCheckout = async () => {
+  async function handleCheckout() {
     setLoading(true);
     setError('');
-
     try {
-      // Připravíme items pro Shopify Cart API
-      const lines = cart.map(item => ({
-        merchandiseId: item.variantId || item.id, // Použij variantId pokud existuje
-        quantity: item.quantity,
-      }));
-
-      // Vytvoříme košík v Shopify
-      const response = await fetch('/api/cart/create', {
+      const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lines }),
+        body: JSON.stringify({ items: cart }),
       });
-
-      if (!response.ok) {
-        throw new Error('Nepodařilo se vytvořit košík');
-      }
-
-      const data = await response.json();
-
-      if (data.cartCreate?.cart?.checkoutUrl) {
-        // Přesměrujeme na Shopify checkout
-        window.location.href = data.cartCreate.cart.checkoutUrl;
-      } else if (data.cartCreate?.userErrors?.length > 0) {
-        setError(data.cartCreate.userErrors[0].message);
+      const data = await res.json();
+      if (res.status === 409) {
+        const list = (data.items as string[])?.join(', ') ?? '';
+        setError(`Tyto položky nejsou skladem: ${list}.`);
         setLoading(false);
-      } else {
-        setError('Nepodařilo se získat checkout URL');
-        setLoading(false);
+        return;
       }
-    } catch (err) {
-      console.error('Checkout error:', err);
-      setError('Došlo k chybě při vytváření objednávky. Zkuste to prosím znovu.');
+      if (!res.ok) throw new Error(data.error || 'Chyba');
+      window.location.href = data.url;
+    } catch {
+      setError('Nepodařilo se vytvořit objednávku. Zkuste to znovu.');
       setLoading(false);
     }
-  };
+  }
 
-  if (cart.length === 0 && !loading) {
+  if (!hydrated) {
     return (
-      <div className="container-custom py-20 text-center">
-        <div className="flex justify-center mb-6">
-          <ShoppingBag size={64} className="text-gray-400" />
-        </div>
-        <h1 className="text-3xl font-bold mb-4">Košík je prázdný</h1>
-        <p className="text-gray-600 mb-8">Nejdřív si vyberte produkt</p>
-        <Link href="/shop" className="btn-primary">
-          Přejít na produkty
-        </Link>
+      <div className="flex justify-center items-center min-h-screen bg-[#0a0a0a]">
+        <div className="animate-spin rounded-full h-7 w-7 border-b border-bone" />
+      </div>
+    );
+  }
+
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center gap-6 px-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="font-anton text-[100px] md:text-[140px] text-line leading-none select-none"
+        >
+          ∅
+        </motion.div>
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="font-mono text-[11px] tracking-[0.22em] uppercase text-dim"
+        >
+          Košík je prázdný
+        </motion.p>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          <Link
+            href="/shop"
+            className="inline-flex items-center gap-3 pb-[6px] border-b border-bone font-mono text-[11px] tracking-[0.24em] uppercase text-bone hover:gap-5 transition-all duration-300"
+          >
+            <span>Přejít do shopu</span>
+            <span>→</span>
+          </Link>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="bg-secondary min-h-screen py-12">
-      <div className="container-custom">
-        <h1 className="text-4xl font-bold mb-8 text-center">Košík</h1>
+    <div className="min-h-screen bg-[#0a0a0a]">
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* Order Summary */}
-          <div className="bg-white rounded-lg p-8 shadow-lg h-fit">
-            <h2 className="text-2xl font-semibold mb-6">Souhrn objednávky</h2>
+      {/* Step breadcrumb */}
+      <div className="border-b border-line px-7 md:px-14 h-12 flex items-center gap-0">
+        {['Shop', 'Košík', 'Platba'].map((step, i) => (
+          <div key={step} className="flex items-center gap-0">
+            {i > 0 && <span className="font-mono text-[10px] text-mute mx-3">—</span>}
+            <span className={`font-mono text-[10px] tracking-[0.22em] uppercase ${i === 1 ? 'text-bone' : 'text-mute'}`}>
+              {step}
+            </span>
+          </div>
+        ))}
+        <div className="ml-auto font-mono text-[10px] tracking-[0.18em] uppercase text-mute">
+          {totalQty} {totalQty === 1 ? 'kus' : totalQty < 5 ? 'kusy' : 'kusů'}
+        </div>
+      </div>
 
-            {/* Cart Items */}
-            <div className="space-y-4 mb-6">
-              {cart.map((item, index) => (
-                <div key={index} className="flex gap-4 pb-4 border-b">
-                  <div className="relative w-20 h-20 rounded overflow-hidden flex-shrink-0">
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      fill
-                      className="object-cover"
-                    />
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px]">
+
+        {/* ── Items list ── */}
+        <div className="lg:border-r border-line">
+          <AnimatePresence initial={false}>
+            {cart.map((item, index) => (
+              <motion.div
+                key={item.variantId}
+                layout
+                initial={{ opacity: 0, x: -16 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -16, height: 0 }}
+                transition={{ duration: 0.28, ease: [0.2, 0.7, 0.2, 1] }}
+                className="border-b border-line group"
+              >
+                <div className="grid grid-cols-[auto_1fr] gap-0">
+
+                  {/* Index stripe */}
+                  <div className="w-12 md:w-16 flex items-start justify-center pt-6 border-r border-line">
+                    <span className="font-mono text-[11px] tracking-[0.1em] text-mute select-none">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
                   </div>
-                  <div className="flex-grow">
-                    <h3 className="font-semibold">{item.name}</h3>
-                    <p className="text-gray-600 text-sm mb-2">Velikost: {item.selectedSize}</p>
 
-                    {/* Quantity Controls */}
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => updateQuantity(index, item.quantity - 1)}
-                        className="w-7 h-7 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 transition-colors"
-                        title="Snížit množství"
-                      >
-                        <Minus size={14} />
-                      </button>
-                      <span className="text-sm font-medium min-w-[24px] text-center">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(index, item.quantity + 1)}
-                        disabled={item.availableQuantity !== undefined && item.quantity >= item.availableQuantity}
-                        className="w-7 h-7 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        title={item.availableQuantity !== undefined && item.quantity >= item.availableQuantity
-                          ? `Maximální dostupné množství: ${item.availableQuantity}`
-                          : "Zvýšit množství"}
-                      >
-                        <Plus size={14} />
-                      </button>
-                      <button
-                        onClick={() => removeFromCart(index)}
-                        className="ml-2 text-red-500 hover:text-red-700 transition-colors"
-                        title="Odstranit z košíku"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                  {/* Content */}
+                  <div className="p-5 md:p-7 flex gap-5 md:gap-7">
+
+                    {/* Image */}
+                    <Link href={`/product/${item.slug}`} className="block flex-shrink-0">
+                      <div className="relative w-20 md:w-28 aspect-[4/5] overflow-hidden bg-line">
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                        />
+                      </div>
+                    </Link>
+
+                    {/* Details */}
+                    <div className="flex-1 flex flex-col gap-2 min-w-0">
+                      <div>
+                        <Link href={`/product/${item.slug}`}>
+                          <h3 className="font-anton text-[clamp(22px,3vw,32px)] uppercase leading-[0.92] text-bone hover:text-dim transition-colors">
+                            {item.name}
+                          </h3>
+                        </Link>
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-dim border border-line px-2.5 py-1">
+                            {item.selectedSize}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Qty + remove */}
+                      <div className="flex items-center justify-between mt-auto pt-2">
+                        <div className="flex items-center border border-line">
+                          <button
+                            onClick={() => updateQty(index, item.quantity - 1)}
+                            className="w-9 h-9 flex items-center justify-center font-mono text-dim hover:text-bone hover:bg-line transition-colors text-[16px]"
+                            aria-label="Snížit množství"
+                          >
+                            −
+                          </button>
+                          <span className="w-9 h-9 flex items-center justify-center font-mono text-[12px] text-bone border-x border-line">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateQty(index, item.quantity + 1)}
+                            className="w-9 h-9 flex items-center justify-center font-mono text-dim hover:text-bone hover:bg-line transition-colors text-[16px]"
+                            aria-label="Zvýšit množství"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-5">
+                          <span className="font-mono text-[14px] tracking-[0.04em] text-bone">
+                            {(item.price * item.quantity).toLocaleString('cs-CZ')} Kč
+                          </span>
+                          <button
+                            onClick={() => removeItem(index)}
+                            className="font-mono text-[10px] tracking-[0.18em] uppercase text-mute hover:text-[#c0392b] transition-colors"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    {item.availableQuantity !== undefined && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Skladem: {item.availableQuantity} ks
-                      </p>
-                    )}
                   </div>
-                  <div className="flex flex-col items-end justify-start">
-                    <div className="font-semibold">
-                      {item.price * item.quantity} Kč
-                    </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {/* Back link */}
+          <div className="px-7 md:px-[calc(64px+28px)] py-6">
+            <Link
+              href="/shop"
+              className="font-mono text-[10px] tracking-[0.18em] uppercase text-mute hover:text-bone transition-colors"
+            >
+              ← Pokračovat v nákupu
+            </Link>
+          </div>
+        </div>
+
+        {/* ── Order summary ── */}
+        <div className="lg:sticky lg:top-[68px] lg:h-[calc(100vh-68px)] lg:overflow-y-auto">
+          <div className="p-7 md:p-10 flex flex-col gap-6 h-full">
+
+            <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-dim font-normal border-b border-line pb-5">
+              Souhrn objednávky
+            </h2>
+
+            {/* Error */}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="border border-[#c0392b]/40 bg-[#c0392b]/5 px-4 py-3 font-mono text-[11px] tracking-[0.12em] text-[#c0392b]"
+                >
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Condensed item list in summary */}
+            <div className="flex flex-col gap-3">
+              {cart.map(item => (
+                <div key={item.variantId} className="flex items-center gap-3">
+                  <div className="relative w-10 h-[52px] flex-shrink-0 overflow-hidden bg-line">
+                    <Image src={item.image} alt={item.name} fill className="object-cover" />
                   </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-anton text-[14px] uppercase leading-tight text-bone truncate">{item.name}</p>
+                    <p className="font-mono text-[10px] tracking-[0.1em] text-dim mt-0.5">
+                      {item.selectedSize} · {item.quantity}&thinsp;ks
+                    </p>
+                  </div>
+                  <span className="font-mono text-[12px] text-dim flex-shrink-0">
+                    {(item.price * item.quantity).toLocaleString('cs-CZ')} Kč
+                  </span>
                 </div>
               ))}
             </div>
 
-            <div className="border-t pt-4 space-y-2">
-              <div className="flex justify-between text-gray-600">
+            {/* Totals */}
+            <div className="border-t border-line pt-5 flex flex-col gap-2.5 mt-auto">
+              <div className="flex justify-between font-mono text-[11px] tracking-[0.16em] uppercase text-dim">
                 <span>Mezisoučet</span>
-                <span>{getSubtotal()} Kč</span>
+                <span>{subtotal.toLocaleString('cs-CZ')} Kč</span>
               </div>
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between font-mono text-[11px] tracking-[0.16em] uppercase text-dim">
                 <span>Doprava</span>
-                <span>{SHIPPING_COST} Kč</span>
-              </div>
-              <div className="flex justify-between text-xl font-bold pt-2 border-t">
-                <span>Celkem</span>
-                <span>{getTotalPrice()} Kč</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Checkout Section */}
-          <div className="bg-white rounded-lg p-8 shadow-lg">
-            <h2 className="text-2xl font-semibold mb-6">Pokračovat k platbě</h2>
-
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-700">{error}</p>
-              </div>
-            )}
-
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center gap-3 text-gray-700">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Zabezpečená platba přes Shopify</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-700">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Platební karty, Apple Pay, Google Pay</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-700">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Ochrana kupujících</span>
+                <span>{SHIPPING} Kč</span>
               </div>
             </div>
 
+            <div className="border-t border-bone/30 pt-4 flex justify-between items-baseline">
+              <span className="font-mono text-[11px] tracking-[0.22em] uppercase text-bone">Celkem</span>
+              <span className="font-anton text-[32px] uppercase leading-none text-bone">
+                {total.toLocaleString('cs-CZ')}&thinsp;<span className="text-[22px]">Kč</span>
+              </span>
+            </div>
+
+            {/* CTA */}
             <button
               onClick={handleCheckout}
               disabled={loading || cart.length === 0}
-              className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-[22px] bg-bone text-[#0a0a0a] font-mono text-[12px] tracking-[0.26em] uppercase border border-bone hover:bg-[#0a0a0a] hover:text-bone transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed group"
             >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  Přesměrování...
-                </span>
-              ) : (
-                'Pokračovat k platbě'
-              )}
+              <span className="inline-flex items-center gap-3 group-hover:gap-5 transition-all duration-300">
+                {loading ? 'Přesměrování...' : 'Pokračovat k platbě'}
+                {!loading && <span>→</span>}
+              </span>
             </button>
 
-            <p className="text-sm text-gray-500 text-center mt-4">
-              Budete přesměrováni na zabezpečený Shopify checkout
-            </p>
-
-            <div className="mt-6 pt-6 border-t">
-              <Link href="/shop" className="text-primary hover:underline text-center block">
-                ← Pokračovat v nákupu
-              </Link>
+            {/* Trust */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-center gap-2 font-mono text-[10px] tracking-[0.14em] uppercase text-mute">
+                <span>⊕</span>
+                <span>Zabezpečená platba přes Stripe</span>
+              </div>
+              <div className="flex items-center justify-center gap-2 font-mono text-[10px] tracking-[0.14em] uppercase text-mute">
+                <span>⊕</span>
+                <span>Apple Pay · Google Pay · Karta</span>
+              </div>
             </div>
+
           </div>
         </div>
+
       </div>
     </div>
   );

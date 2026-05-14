@@ -1,99 +1,103 @@
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 export const metadata = {
   title: 'Kontakt | Atlantic Ave',
   description: 'Kontaktujte nás',
 };
 
+const contacts = [
+  {
+    icon: Mail,
+    label: 'Email',
+    value: 'atlanticave-eshop@seznam.cz',
+    href: 'mailto:atlanticave-eshop@seznam.cz',
+    note: null,
+  },
+  {
+    icon: Phone,
+    label: 'Telefon',
+    value: '+420 792 750 942',
+    href: 'tel:+420792750942',
+    note: 'Po–Pá: 9:00–17:00',
+  },
+  {
+    icon: MapPin,
+    label: 'Adresa',
+    value: 'Oty Synka 1876/8, 708 00 Ostrava-Poruba',
+    href: null,
+    note: null,
+  },
+];
+
+const faq = [
+  {
+    q: 'Kdy obdržím odpověď?',
+    a: 'Na dotazy odpovídáme do 24 hodin v pracovních dnech.',
+  },
+  {
+    q: 'Mohu zrušit objednávku?',
+    a: 'Ano, objednávku lze zrušit do 24 hodin od vytvoření. Kontaktujte nás emailem nebo telefonicky.',
+  },
+];
+
 export default function KontaktPage() {
   return (
-    <div className="bg-secondary min-h-screen py-12">
-      <div className="container-custom max-w-4xl">
-        <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
-          <h1 className="text-4xl font-bold mb-8 text-gray-900">Kontakt</h1>
+    <div className="min-h-screen bg-[#0a0a0a]">
+      <div className="border-b border-line px-8 py-6">
+        <span className="font-mono text-[11px] tracking-[0.4em] uppercase text-dim">Kontakt</span>
+      </div>
 
-          <div className="space-y-6">
-            <p className="text-gray-700 text-lg">
-              Máte dotaz nebo potřebujete pomoc? Neváhejte nás kontaktovat.
-            </p>
+      <div className="max-w-2xl mx-auto px-8 py-20 flex flex-col gap-16">
 
-            <div className="grid gap-6 mt-8">
-              {/* Email */}
-              <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                <div className="p-3 bg-primary/10 rounded-full">
-                  <Mail className="text-primary" size={24} />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-1">Email</h3>
-                  <a
-                    href="mailto:info@atlanticave.cz"
-                    className="text-primary hover:underline"
-                  >
-                      atlanticave-eshop@seznam.cz
-                  </a>
-                </div>
+        {/* Contact rows */}
+        <div className="flex flex-col">
+          {contacts.map(({ icon: Icon, label, value, href, note }, i) => (
+            <div
+              key={label}
+              className={`flex items-start gap-6 py-8 ${i < contacts.length - 1 ? 'border-b border-line' : ''}`}
+            >
+              <div className="mt-0.5 text-dim flex-shrink-0">
+                <Icon size={16} />
               </div>
-
-              {/* Telefon */}
-              <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                <div className="p-3 bg-primary/10 rounded-full">
-                  <Phone className="text-primary" size={24} />
+              <div className="flex flex-col gap-1">
+                <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-mute">
+                  {label}
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-1">Telefon</h3>
+                {href ? (
                   <a
-                    href="tel:+420123456789"
-                    className="text-primary hover:underline"
+                    href={href}
+                    className="font-mono text-[13px] tracking-[0.06em] text-bone hover:text-dim transition-colors"
                   >
-                    +420 792 750 942
+                    {value}
                   </a>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Po–Pá: 9:00–17:00
-                  </p>
-                </div>
-              </div>
-
-              {/* Adresa */}
-              <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                <div className="p-3 bg-primary/10 rounded-full">
-                  <MapPin className="text-primary" size={24} />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-1">Adresa</h3>
-                  <p className="text-gray-700">
-                    Atlantic Ave<br />
-                    Oty Synka 1876/8<br />
-                    708 00 Ostrava-Poruba
-                  </p>
-                </div>
+                ) : (
+                  <span className="font-mono text-[13px] tracking-[0.06em] text-bone">
+                    {value}
+                  </span>
+                )}
+                {note && (
+                  <span className="font-mono text-[11px] tracking-[0.12em] uppercase text-mute mt-1">
+                    {note}
+                  </span>
+                )}
               </div>
             </div>
-
-            <div className="mt-8 pt-8 border-t">
-              <h2 className="text-2xl font-semibold mb-4">
-                Často kladené dotazy
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">
-                    Kdy obdržím odpověď?
-                  </h3>
-                  <p className="text-gray-700">
-                    Na dotazy odpovídáme do 24 hodin v pracovních dnech.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">
-                    Mohu zrušit objednávku?
-                  </h3>
-                  <p className="text-gray-700">
-                    Ano, objednávku lze zrušit do 24 hodin od vytvoření. Kontaktujte nás emailem nebo telefonicky.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
+
+        {/* FAQ */}
+        <div className="flex flex-col gap-8">
+          <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-dim">
+            Časté dotazy
+          </div>
+          {faq.map(({ q, a }) => (
+            <div key={q} className="flex flex-col gap-2 border-b border-line pb-8">
+              <h3 className="font-mono text-[12px] tracking-[0.08em] text-bone">{q}</h3>
+              <p className="font-mono text-[12px] tracking-[0.06em] leading-relaxed text-dim">{a}</p>
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );

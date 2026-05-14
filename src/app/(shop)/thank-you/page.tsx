@@ -6,135 +6,96 @@ import { useSearchParams } from 'next/navigation';
 
 function ThankYouContent() {
   const searchParams = useSearchParams();
-  const [paymentStatus, setPaymentStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const paymentIntent = searchParams.get('payment_intent');
+  const sessionId = searchParams.get('session_id');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
 
   useEffect(() => {
-    if (paymentIntent) {
-      // Zde můžete volitelně ověřit platbu na backendu
-      setPaymentStatus('success');
-
-      // Vyčistíme sessionStorage
-      sessionStorage.removeItem('cart');
+    if (sessionId) {
+      localStorage.removeItem('cart');
+      window.dispatchEvent(new Event('cartUpdated'));
+      setStatus('success');
     } else {
-      // Pokud není payment_intent, pravděpodobně jsme byli přesměrováni ze Shopify checkout
-      setPaymentStatus('success');
-      sessionStorage.removeItem('cart');
+      setStatus('error');
     }
-  }, [paymentIntent]);
+  }, [sessionId]);
 
-  if (paymentStatus === 'loading') {
+  if (status === 'loading') {
     return (
-      <div className="container-custom py-20 text-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
-        <p className="text-gray-600 mt-4">Ověřuji platbu...</p>
+      <div className="flex justify-center items-center min-h-screen bg-[#0a0a0a]">
+        <div className="animate-spin rounded-full h-7 w-7 border-b border-bone" />
       </div>
     );
   }
 
-  if (paymentStatus === 'error') {
+  if (status === 'error') {
     return (
-      <div className="container-custom py-20 text-center">
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-12">
-          <div className="text-6xl mb-6">❌</div>
-          <h1 className="text-4xl font-bold mb-4 text-red-600">Chyba platby</h1>
-          <p className="text-gray-600 mb-8">
-            Při zpracování platby došlo k chybě. Zkuste to prosím znovu.
-          </p>
-          <Link href="/shop" className="btn-primary">
-            Zpět na shop
-          </Link>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#0a0a0a] gap-6 px-6">
+        <p className="font-mono text-[11px] tracking-[0.22em] uppercase text-accent">Chyba platby</p>
+        <p className="font-mono text-[11px] tracking-[0.14em] uppercase text-dim text-center max-w-xs">
+          Při zpracování platby došlo k chybě. Zkuste to prosím znovu.
+        </p>
+        <Link
+          href="/checkout"
+          className="inline-flex items-center gap-3 pb-[6px] border-b border-bone font-mono text-[11px] tracking-[0.24em] uppercase text-bone hover:gap-5 transition-all duration-300"
+        >
+          <span>Zpět do košíku</span>
+          <span>→</span>
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="bg-secondary min-h-screen py-20">
-      <div className="container-custom">
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-12 text-center">
-          {/* Success Icon */}
-          <div className="mb-8">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <svg
-                className="w-12 h-12 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-          </div>
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-6">
+      <div className="w-full max-w-lg flex flex-col gap-10">
 
-          <h1 className="text-4xl font-bold mb-4 text-green-600">
-            Děkujeme za objednávku!
-          </h1>
-
-          <p className="text-xl text-gray-600 mb-8">
-            Vaše platba byla úspěšně zpracována
-          </p>
-
-          {paymentIntent && (
-            <div className="bg-gray-50 rounded-lg p-6 mb-8">
-              <p className="text-sm text-gray-500 mb-2">Číslo platby</p>
-              <p className="font-mono text-sm break-all">{paymentIntent}</p>
-            </div>
-          )}
-
-          <div className="space-y-4 text-left mb-8">
-            <div className="flex items-start gap-3">
-              <div className="text-green-600 mt-1">✓</div>
-              <div>
-                <p className="font-semibold">Potvrzení e-mailem</p>
-                <p className="text-gray-600 text-sm">
-                  Potvrzení objednávky jsme vám odeslali na e-mail
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="text-green-600 mt-1">✓</div>
-              <div>
-                <p className="font-semibold">Expedice objednávky</p>
-                <p className="text-gray-600 text-sm">
-                  Vaši objednávku expedujeme do 2 pracovních dnů
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="text-green-600 mt-1">✓</div>
-              <div>
-                <p className="font-semibold">Zpracování přes Shopify</p>
-                <p className="text-gray-600 text-sm">
-                  Vaše objednávka je zabezpečená a můžete ji sledovat ve vašem Shopify účtu
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/shop" className="btn-primary">
-              Zpět na shop
-            </Link>
-          </div>
+        {/* Top line */}
+        <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-dim text-center">
+          ⊕ Platba potvrzena
         </div>
 
-        {/* Additional Info */}
-        <div className="max-w-2xl mx-auto mt-8 text-center text-gray-600">
-          <p className="mb-2">
-            Máte otázku k objednávce? Kontaktujte nás na{' '}
-            <a href="mailto:info@atlanticave.cz" className="text-primary hover:underline">
-              info@atlanticave.cz
-            </a>
-          </p>
-          <p className="text-sm">
-            Nebo volejte na telefonním čísle +420 123 456 789
-          </p>
+        {/* Headline */}
+        <div className="text-center">
+          <h1 className="font-anton text-[clamp(56px,8vw,100px)] uppercase leading-[0.88] tracking-tight text-bone">
+            Díky za<br />objednávku
+          </h1>
+        </div>
+
+        {/* Details */}
+        <div className="border-t border-line pt-8 flex flex-col gap-4">
+          {[
+            'Objednávka přijata a zpracována',
+            'Expedice do 2 pracovních dnů',
+            'Platba zpracována přes Stripe',
+          ].map(line => (
+            <div key={line} className="flex items-center gap-4 font-mono text-[11px] tracking-[0.14em] uppercase text-dim">
+              <span className="text-bone">⊕</span>
+              <span>{line}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Session ID */}
+        {sessionId && (
+          <div className="border border-line px-4 py-3">
+            <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-mute mb-1">Číslo objednávky</div>
+            <div className="font-mono text-[11px] text-dim break-all">{sessionId}</div>
+          </div>
+        )}
+
+        {/* CTA */}
+        <Link
+          href="/shop"
+          className="w-full py-[22px] bg-bone text-[#0a0a0a] font-mono text-[12px] tracking-[0.26em] uppercase border border-bone hover:bg-[#0a0a0a] hover:text-bone transition-colors duration-200 text-center"
+        >
+          Zpět do shopu →
+        </Link>
+
+        <div className="font-mono text-[10px] tracking-[0.14em] uppercase text-mute text-center">
+          Otázky? Napište nám na{' '}
+          <a href="mailto:info@atlanticave.cz" className="text-dim hover:text-bone transition-colors">
+            info@atlanticave.cz
+          </a>
         </div>
       </div>
     </div>
@@ -144,9 +105,8 @@ function ThankYouContent() {
 export default function ThankYouPage() {
   return (
     <Suspense fallback={
-      <div className="container-custom py-20 text-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
-        <p className="text-gray-600 mt-4">Načítání...</p>
+      <div className="flex justify-center items-center min-h-screen bg-[#0a0a0a]">
+        <div className="animate-spin rounded-full h-7 w-7 border-b border-bone" />
       </div>
     }>
       <ThankYouContent />

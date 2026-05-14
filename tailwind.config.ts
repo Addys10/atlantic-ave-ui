@@ -9,11 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#1a1a1a",
-        secondary: "#f5f5f5",
+        bone: "#f4f1ea",
+        line: "#1f1f1f",
+        dim: "#8a8a85",
+        mute: "#6b6b66",
+        accent: "#cf3a17",
       },
       fontFamily: {
         cloister: ["var(--font-cloister)"],
+        anton: ["var(--font-anton)", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
     },
   },

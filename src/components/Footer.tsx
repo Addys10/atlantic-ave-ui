@@ -2,52 +2,55 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-primary text-white mt-auto">
-      <div className="container-custom py-8 md:py-12">
-        {/* Nadpis */}
-        <div className="mb-6 md:mb-8">
-          <h3 className="font-cloister text-xl md:text-2xl font-bold tracking-wider">
-            ATLANTIC AVE
-          </h3>
-        </div>
+    <footer className="border-t border-line bg-[#0a0a0a]">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr] gap-0 px-8 py-14 border-b border-line">
 
-        {/* Odkazy - 2 sloupce na mobilu, 3 na desktopu */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
-          {/* Navigace */}
-          <div>
-            <h4 className="font-semibold mb-2 md:mb-3 text-sm md:text-base">Navigace</h4>
-            <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-300">
-              <li><Link href="/shop" className="hover:text-white transition-colors">Obchod</Link></li>
-              <li><Link href="/kontakt" className="hover:text-white transition-colors">Kontakt</Link></li>
-            </ul>
-          </div>
-
-          {/* Zákaznický servis */}
-          <div>
-            <h4 className="font-semibold mb-2 md:mb-3 text-sm md:text-base">Zákaznický servis</h4>
-            <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-300">
-              <li><Link href="/policies/vraceni-penez" className="hover:text-white transition-colors">Vrácení zboží</Link></li>
-              <li><Link href="/policies/dorucovani" className="hover:text-white transition-colors">Doprava</Link></li>
-            </ul>
-          </div>
-
-          {/* Právní informace */}
-          <div className="col-span-2 md:col-span-1">
-            <h4 className="font-semibold mb-2 md:mb-3 text-sm md:text-base">Podmínky a zásady</h4>
-            <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-300">
-              <li><Link href="/policies/podminky-sluzby" className="hover:text-white transition-colors">Obchodní podmínky</Link></li>
-              <li><Link href="/policies/ochrana-osobnich-udaju" className="hover:text-white transition-colors">Ochrana osobních údajů</Link></li>
-              <li><Link href="/pravni-upozorneni" className="hover:text-white transition-colors">Právní upozornění</Link></li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Copyright */}
-        <div className="border-t border-gray-700 pt-4 md:pt-6 text-center">
-          <p className="text-xs md:text-sm text-gray-400">
-            &copy; {new Date().getFullYear()} Atlantic Ave. Všechna práva vyhrazena.
+        {/* Brand */}
+        <div className="flex flex-col gap-4 pb-10 md:pb-0 md:border-r border-line">
+          <span className="font-cloister text-base text-bone tracking-[0.22em] uppercase select-none">
+            Atlantic Ave
+          </span>
+          <p className="font-mono text-[11px] tracking-[0.12em] leading-relaxed text-mute max-w-[200px]">
+            Limitované edice.<br />Po vyprodání nebude restockováno.
           </p>
         </div>
+
+        {/* Navigation */}
+        <div className="flex flex-col gap-4 py-10 md:py-0 md:px-12 border-t md:border-t-0 md:border-r border-line">
+          <div className="font-mono text-[10px] tracking-[0.26em] uppercase text-mute mb-1">Navigace</div>
+          {[
+            { label: 'Shop', href: '/shop' },
+            { label: 'Kontakt', href: '/kontakt' },
+          ].map(({ label, href }) => (
+            <Link key={href} href={href} className="font-mono text-[11px] tracking-[0.18em] uppercase text-dim hover:text-bone transition-colors">
+              {label}
+            </Link>
+          ))}
+        </div>
+
+        {/* Legal */}
+        <div className="flex flex-col gap-4 pt-10 md:pt-0 md:px-12 border-t md:border-t-0 border-line">
+          <div className="font-mono text-[10px] tracking-[0.26em] uppercase text-mute mb-1">Podmínky</div>
+          {[
+            { label: 'Vrácení zboží', href: '/policies/vraceni-penez' },
+            { label: 'Doprava', href: '/policies/dorucovani' },
+            { label: 'Obchodní podmínky', href: '/policies/podminky-sluzby' },
+            { label: 'Ochrana osobních údajů', href: '/policies/ochrana-osobnich-udaju' },
+            { label: 'Právní upozornění', href: '/pravni-upozorneni' },
+          ].map(({ label, href }) => (
+            <Link key={href} href={href} className="font-mono text-[11px] tracking-[0.18em] uppercase text-dim hover:text-bone transition-colors">
+              {label}
+            </Link>
+          ))}
+        </div>
+
+      </div>
+
+      {/* Copyright */}
+      <div className="px-8 py-5">
+        <p className="font-mono text-[10px] tracking-[0.22em] uppercase text-mute">
+          &copy; {new Date().getFullYear()} Atlantic Ave — Všechna práva vyhrazena
+        </p>
       </div>
     </footer>
   );
