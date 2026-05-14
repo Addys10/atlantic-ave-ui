@@ -58,7 +58,28 @@ export default function Navbar() {
     <>
       <nav className="sticky top-0 z-50 border-b border-line"
            style={{ background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(14px)' }}>
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center px-7 h-[68px]">
+        {/* Mobile layout */}
+        <div className="flex md:hidden items-center justify-between px-7 h-[68px]">
+          <Link href="/" aria-label="Atlantic Ave">
+            <span className="font-cloister text-xl font-bold text-bone tracking-[0.22em] uppercase select-none whitespace-nowrap">
+              Atlantic Ave
+            </span>
+          </Link>
+          <div className="flex items-center gap-5">
+            <Link href="/checkout" className={`${linkCls} flex items-center gap-1.5`}>
+              Košík
+              <span className="inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[10px] font-bold rounded-full w-[18px] h-[18px] leading-none">
+                {cartCount}
+              </span>
+            </Link>
+            <button onClick={() => setMobileOpen(true)} className="text-dim hover:text-bone transition-colors">
+              <Menu size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Desktop layout */}
+        <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center px-7 h-[68px]">
 
           {/* Left */}
           <div className="flex items-center gap-7">
@@ -67,13 +88,13 @@ export default function Navbar() {
 
           {/* Center */}
           <Link href="/" aria-label="Atlantic Ave">
-            <span className="font-cloister text-xl md:text-2xl font-bold text-bone tracking-[0.22em] uppercase select-none whitespace-nowrap">
+            <span className="font-cloister text-2xl font-bold text-bone tracking-[0.22em] uppercase select-none whitespace-nowrap">
               Atlantic Ave
             </span>
           </Link>
 
           {/* Right — desktop with cart dropdown */}
-          <div className="hidden md:flex items-center justify-end gap-7">
+          <div className="flex items-center justify-end gap-7">
             <Link href="/behind-the-brand" className={linkCls}>Behind the brand</Link>
             <Link href="/kontakt" className={linkCls}>Kontakt</Link>
 
@@ -177,19 +198,6 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
             </div>
-          </div>
-
-          {/* Right — mobile */}
-          <div className="flex md:hidden items-center justify-end gap-5">
-            <Link href="/checkout" className={`${linkCls} flex items-center gap-1.5`}>
-              Košík
-              <span className="inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[10px] font-bold rounded-full w-[18px] h-[18px] leading-none">
-                {cartCount}
-              </span>
-            </Link>
-            <button onClick={() => setMobileOpen(true)} className="text-dim hover:text-bone transition-colors">
-              <Menu size={18} />
-            </button>
           </div>
 
         </div>

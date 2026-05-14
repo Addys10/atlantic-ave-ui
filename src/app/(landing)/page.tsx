@@ -101,7 +101,7 @@ export default function LandingPage() {
               animate={{ y: 0 }}
               transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
               className="font-cloister uppercase text-white leading-[0.85] tracking-[0.08em] select-none"
-              style={{ fontSize: 'clamp(62px, 11vw, 148px)' }}
+              style={{ fontSize: 'clamp(44px, 11vw, 148px)' }}
             >
               Atlantic
             </motion.h1>
@@ -115,7 +115,7 @@ export default function LandingPage() {
             >
               <span
                 className="font-cloister uppercase text-white leading-[0.85] tracking-[0.08em] select-none"
-                style={{ fontSize: 'clamp(62px, 11vw, 148px)' }}
+                style={{ fontSize: 'clamp(44px, 11vw, 148px)' }}
               >
                 Ave
               </span>
@@ -144,16 +144,6 @@ export default function LandingPage() {
             </Link>
           </motion.div>
         </div>
-
-        {/* Bottom-right: year */}
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1 }}
-          className="absolute bottom-12 md:bottom-16 right-7 md:right-12 z-[10] font-mono text-[10px] tracking-[0.3em] text-white/18 select-none"
-        >
-          MMXXV
-        </motion.span>
 
         {/* Scroll indicator */}
         <motion.div
@@ -222,7 +212,7 @@ export default function LandingPage() {
             </h2>
           </div>
 
-          <div className="flex flex-col gap-5 md:items-end">
+          <div className="flex flex-col gap-5 items-start md:items-end">
             <p className="font-mono text-[12px] tracking-[0.1em] leading-relaxed text-[#7a7a74] max-w-[36ch] md:text-right">
               Nový drop se připravuje.<br />
               Sleduj nás na Instagramu pro první info.
