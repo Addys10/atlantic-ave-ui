@@ -94,38 +94,21 @@ export default function ProductEditPage() {
     if (!name.trim() || !slug.trim() || !price) { setError('Vyplňte název, slug a cenu'); return; }
     setSaving(true);
     const productData = { name: name.trim(), subtitle: subtitle.trim(), slug: slug.trim(), price: parseFloat(price), category, description_html: description, active, images };
-    let productId = isNew ? null : (params.id as string);
 
     if (isNew) {
-      const { data, error: insertError } = await supabase.from('products').insert(productData).select('id').single();
-      if (insertError || !data) { setError('Chyba: ' + (insertError?.message ?? '')); setSaving(false); return; }
-      productId = data.id;
+      const res = await fetch('/api/admin/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productData, variants }),
+      });
+      if (!res.ok) { const j = await res.json(); setError('Chyba: ' + (j.error ?? res.statusText)); setSaving(false); return; }
     } else {
-      const { error: updateError } = await supabase.from('products').update(productData).eq('id', productId);
-      if (updateError) { setError('Chyba: ' + updateError.message); setSaving(false); return; }
-    }
-
-    // Upsert current variants (update existing by id, insert new ones without id)
-    if (variants.length > 0) {
-      const { error: variantError } = await supabase.from('product_variants').upsert(
-        variants.map(v => ({
-          ...(v.id ? { id: v.id } : {}),
-          product_id: productId,
-          size: v.size,
-          stock: v.stock,
-        }))
-      );
-      if (variantError) { setError('Chyba variant: ' + variantError.message); setSaving(false); return; }
-    }
-
-    // Delete variants that were removed — skip any that have order history (FK 23503)
-    const keepIds = new Set(variants.filter(v => v.id).map(v => v.id!));
-    const toDelete = origVariantIds.current.filter(id => !keepIds.has(id));
-    for (const id of toDelete) {
-      const { error: delError } = await supabase.from('product_variants').delete().eq('id', id);
-      if (delError && delError.code !== '23503') {
-        console.error(`Failed to delete variant ${id}:`, delError);
-      }
+      const res = await fetch(`/api/admin/products/${params.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productData, variants, origVariantIds: origVariantIds.current }),
+      });
+      if (!res.ok) { const j = await res.json(); setError('Chyba: ' + (j.error ?? res.statusText)); setSaving(false); return; }
     }
 
     router.push('/admin/products');
@@ -133,12 +116,13 @@ export default function ProductEditPage() {
 
   async function handleDelete() {
     if (!confirm(`Smazat produkt "${name}"? Tato akce je nevratná.`)) return;
-    const { error: delError } = await supabase.from('products').delete().eq('id', params.id as string);
-    if (delError) {
-      if (delError.code === '23503') {
+    const res = await fetch(`/api/admin/products/${params.id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const j = await res.json();
+      if (j.code === '23503') {
         setError('Tento produkt nelze smazat — je součástí existujících objednávek. Deaktivuj ho místo toho (přepínač Viditelnost výše) — bude skrytý v shopu, ale záznamy objednávek zůstanou zachovány.');
       } else {
-        setError('Chyba při mazání: ' + delError.message);
+        setError('Chyba při mazání: ' + (j.error ?? res.statusText));
       }
       return;
     }
