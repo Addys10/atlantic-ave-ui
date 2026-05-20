@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
-import { Package, ShoppingBag, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Menu, X } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -36,6 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (pathname === '/admin/login') return <>{children}</>;
 
   const navItems = [
+    { href: '/admin', label: 'Přehled', icon: <LayoutDashboard size={17} />, exact: true },
     { href: '/admin/products', label: 'Produkty', icon: <Package size={17} /> },
     { href: '/admin/orders', label: 'Objednávky', icon: <ShoppingBag size={17} /> },
   ];
@@ -54,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             href={item.href}
             onClick={onNavClick}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-              pathname.startsWith(item.href)
+              (item.exact ? pathname === item.href : pathname.startsWith(item.href))
                 ? 'bg-gray-900 text-white'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
             }`}
@@ -63,6 +64,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {item.label}
           </Link>
         ))}
+
+        <div className="pt-2">
+          <Link
+            href="/admin/orders/new"
+            onClick={onNavClick}
+            className={`flex items-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium transition-colors border ${
+              pathname === '/admin/orders/new'
+                ? 'bg-gray-900 text-white border-gray-900'
+                : 'text-gray-700 border-gray-200 hover:border-gray-400 hover:text-gray-900'
+            }`}
+          >
+            <span className="text-base leading-none">+</span>
+            Nová objednávka
+          </Link>
+        </div>
       </nav>
 
       <div className="p-3 border-t border-gray-200">

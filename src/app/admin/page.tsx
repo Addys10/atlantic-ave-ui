@@ -1,10 +1,286 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { TrendingUp, ShoppingBag, Clock, Package, AlertTriangle, ArrowRight } from 'lucide-react';
 
-export default function AdminPage() {
-  const router = useRouter();
-  useEffect(() => { router.replace('/admin/products'); }, [router]);
-  return null;
+interface StatsData {
+  totalRevenue: number;
+  totalOrders: number;
+  pendingOrders: number;
+  productCount: number;
+}
+
+interface LowStockItem {
+  productName: string;
+  productSlug: string;
+  size: string;
+  stock: number;
+}
+
+interface RecentOrder {
+  id: string;
+  customer_name: string | null;
+  customer_email: string | null;
+  total: number;
+  status: string;
+  created_at: string;
+  itemCount: number;
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  pending: 'Čeká',
+  paid: 'Zaplaceno',
+  shipped: 'Odesláno',
+  cancelled: 'Zrušeno',
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  pending: 'bg-amber-100 text-amber-700',
+  paid: 'bg-green-100 text-green-700',
+  shipped: 'bg-blue-100 text-blue-700',
+  cancelled: 'bg-red-100 text-red-600',
+};
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('cs-CZ', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function shortId(id: string) {
+  return '#' + id.slice(0, 6).toUpperCase();
+}
+
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<StatsData | null>(null);
+  const [lowStock, setLowStock] = useState<LowStockItem[]>([]);
+  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { loadDashboard(); }, []);
+
+  async function loadDashboard() {
+    const [ordersRes, productsRes, variantsRes] = await Promise.all([
+      supabase
+        .from('orders')
+        .select('id, total, status, customer_name, customer_email, created_at, order_items(id)')
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('products')
+        .select('id, name, slug, active')
+        .eq('active', true),
+      supabase
+        .from('product_variants')
+        .select('id, size, stock, product_id, products(name, slug)')
+        .lte('stock', 3)
+        .order('stock', { ascending: true }),
+    ]);
+
+    const orders = (ordersRes.data ?? []) as {
+      id: string; total: number; status: string;
+      customer_name: string | null; customer_email: string | null;
+      created_at: string; order_items: { id: string }[];
+    }[];
+
+    const paidOrders = orders.filter(o => o.status === 'paid' || o.status === 'shipped');
+    const revenue = paidOrders.reduce((sum, o) => sum + o.total, 0);
+    const pending = orders.filter(o => o.status === 'pending').length;
+
+    setStats({
+      totalRevenue: revenue,
+      totalOrders: orders.length,
+      pendingOrders: pending,
+      productCount: (productsRes.data ?? []).length,
+    });
+
+    const variants = (variantsRes.data ?? []) as unknown as {
+      id: string; size: string; stock: number;
+      products: { name: string; slug: string } | null;
+    }[];
+
+    setLowStock(
+      variants
+        .filter(v => v.products)
+        .map(v => ({
+          productName: v.products!.name,
+          productSlug: v.products!.slug,
+          size: v.size,
+          stock: v.stock,
+        }))
+    );
+
+    setRecentOrders(
+      orders.slice(0, 6).map(o => ({
+        id: o.id,
+        customer_name: o.customer_name,
+        customer_email: o.customer_email,
+        total: o.total,
+        status: o.status,
+        created_at: o.created_at,
+        itemCount: o.order_items.length,
+      }))
+    );
+
+    setLoading(false);
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-gray-800" />
+      </div>
+    );
+  }
+
+  const statCards = [
+    {
+      label: 'Tržby (zaplaceno)',
+      value: stats ? `${(stats.totalRevenue / 100).toLocaleString('cs-CZ')} Kč` : '—',
+      icon: <TrendingUp size={18} className="text-gray-500" />,
+      sub: 'Paid + shipped',
+    },
+    {
+      label: 'Objednávky celkem',
+      value: stats?.totalOrders ?? '—',
+      icon: <ShoppingBag size={18} className="text-gray-500" />,
+      sub: 'Všechny statusy',
+    },
+    {
+      label: 'Čekají na zpracování',
+      value: stats?.pendingOrders ?? '—',
+      icon: <Clock size={18} className={stats && stats.pendingOrders > 0 ? 'text-amber-500' : 'text-gray-500'} />,
+      sub: stats && stats.pendingOrders > 0 ? 'Vyžadují pozornost' : 'Vše vyřešeno',
+      highlight: stats && stats.pendingOrders > 0,
+    },
+    {
+      label: 'Aktivní produkty',
+      value: stats?.productCount ?? '—',
+      icon: <Package size={18} className="text-gray-500" />,
+      sub: 'Viditelné v shopu',
+    },
+  ];
+
+  return (
+    <div className="p-5 md:p-8 max-w-5xl w-full">
+
+      <div className="mb-7">
+        <h1 className="text-xl font-semibold text-gray-900">Přehled</h1>
+        <p className="text-sm text-gray-400 mt-0.5">
+          {new Date().toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+        </p>
+      </div>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
+        {statCards.map(card => (
+          <div
+            key={card.label}
+            className={`bg-white border rounded-xl p-4 md:p-5 ${card.highlight ? 'border-amber-200' : 'border-gray-200'}`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider leading-snug">
+                {card.label}
+              </span>
+              {card.icon}
+            </div>
+            <p className={`text-2xl font-bold tabular-nums ${card.highlight ? 'text-amber-600' : 'text-gray-900'}`}>
+              {card.value}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">{card.sub}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+        {/* Recent orders */}
+        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <h2 className="text-sm font-semibold text-gray-900">Poslední objednávky</h2>
+            <Link
+              href="/admin/orders"
+              className="text-xs text-gray-400 hover:text-gray-900 transition-colors flex items-center gap-1"
+            >
+              Zobrazit vše <ArrowRight size={12} />
+            </Link>
+          </div>
+
+          {recentOrders.length === 0 ? (
+            <div className="px-5 py-10 text-center text-sm text-gray-400">
+              Žádné objednávky
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-50">
+              {recentOrders.map(order => (
+                <div key={order.id} className="px-5 py-3.5 flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs text-gray-400">{shortId(order.id)}</span>
+                      <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                        {STATUS_LABELS[order.status] ?? order.status}
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium text-gray-900 mt-0.5 truncate">
+                      {order.customer_name ?? order.customer_email ?? '—'}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {formatDate(order.created_at)} · {order.itemCount} {order.itemCount === 1 ? 'položka' : order.itemCount < 5 ? 'položky' : 'položek'}
+                    </p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-sm font-semibold text-gray-900">
+                      {(order.total / 100).toLocaleString('cs-CZ')} Kč
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Low stock */}
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <h2 className="text-sm font-semibold text-gray-900">Nízký sklad</h2>
+            {lowStock.length > 0 && (
+              <span className="flex items-center gap-1 text-xs text-amber-600">
+                <AlertTriangle size={12} />
+                {lowStock.length}
+              </span>
+            )}
+          </div>
+
+          {lowStock.length === 0 ? (
+            <div className="px-5 py-10 text-center">
+              <p className="text-sm text-gray-400">Vše na skladě</p>
+              <p className="text-xs text-gray-300 mt-1">Žádná velikost není pod 4 ks</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-50">
+              {lowStock.map((item, i) => (
+                <Link
+                  key={i}
+                  href={`/admin/products`}
+                  className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition-colors group"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate group-hover:text-gray-700">
+                      {item.productName}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-0.5">Velikost {item.size}</p>
+                  </div>
+                  <span className={`flex-shrink-0 ml-3 text-sm font-bold tabular-nums ${
+                    item.stock === 0 ? 'text-red-600' : 'text-amber-600'
+                  }`}>
+                    {item.stock === 0 ? 'Vyprodáno' : `${item.stock} ks`}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+      </div>
+    </div>
+  );
 }
