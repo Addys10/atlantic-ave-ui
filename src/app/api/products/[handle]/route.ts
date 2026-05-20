@@ -41,7 +41,9 @@ export async function GET(
         .map(v => ({ id: v.id, name: v.size, available: v.stock > 0, stock: v.stock })),
     };
 
-    return NextResponse.json(product);
+    return NextResponse.json(product, {
+      headers: { 'Cache-Control': 'no-store' },
+    });
   } catch (error) {
     console.error('Error fetching product:', error);
     return NextResponse.json(
