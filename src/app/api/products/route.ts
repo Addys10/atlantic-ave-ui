@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
+import { unstable_noStore as noStore } from 'next/cache';
 import { createServiceClient } from '@/lib/supabase';
 import { Product } from '@/types/product';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  noStore();
   const supabase = createServiceClient();
   try {
     const { data, error } = await supabase
