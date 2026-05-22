@@ -24,6 +24,7 @@ export async function POST(request: Request) {
       }))
     );
     if (variantError) {
+      await db.from('products').delete().eq('id', data.id);
       return NextResponse.json({ error: variantError.message }, { status: 500 });
     }
   }
