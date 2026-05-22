@@ -16,6 +16,7 @@ interface Product {
   id: string;
   name: string;
   price: number;
+  active: boolean;
   variants: Variant[];
 }
 
@@ -24,12 +25,11 @@ interface LineItem {
   variantId: string;
   size: string;
   quantity: number;
-  unitPrice: number; // haléře
+  unitPrice: number;
 }
 
 const inputCls = 'w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition placeholder:text-gray-400';
-
-const SHIPPING_DEFAULT = 129;
+const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
 export default function NewOrderPage() {
   const router = useRouter();
@@ -37,11 +37,20 @@ export default function NewOrderPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
 
+  // Customer
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [note, setNote] = useState('');
-  const [shippingKc, setShippingKc] = useState(String(SHIPPING_DEFAULT));
+
+  // Shipping address
+  const [addrLine1, setAddrLine1] = useState('');
+  const [addrLine2, setAddrLine2] = useState('');
+  const [addrCity, setAddrCity] = useState('');
+  const [addrPostal, setAddrPostal] = useState('');
+  const [addrCountry, setAddrCountry] = useState('CZ');
+
+  const [shippingKc, setShippingKc] = useState('129');
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
 
   const [saving, setSaving] = useState(false);
@@ -52,20 +61,20 @@ export default function NewOrderPage() {
   async function loadProducts() {
     const { data } = await supabase
       .from('products')
-      .select('id, name, price, product_variants(id, size, stock)')
-      .eq('active', true)
+      .select('id, name, price, active, product_variants(id, size, stock)')
       .order('name');
 
     const mapped: Product[] = (data ?? []).map((p: {
-      id: string; name: string; price: number;
+      id: string; name: string; price: number; active: boolean;
       product_variants: { id: string; size: string; stock: number }[];
     }) => ({
       id: p.id,
       name: p.name,
       price: Math.round(p.price * 100),
+      active: p.active,
       variants: p.product_variants
         .slice()
-        .sort((a, b) => ['XS', 'S', 'M', 'L', 'XL', 'XXL'].indexOf(a.size) - ['XS', 'S', 'M', 'L', 'XL', 'XXL'].indexOf(b.size)),
+        .sort((a, b) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)),
     }));
     setProducts(mapped);
     setLoadingProducts(false);
@@ -93,12 +102,7 @@ export default function NewOrderPage() {
     if (!product) return;
     const variant = product.variants[0];
     if (!variant) return;
-    updateLineItem(index, {
-      productId,
-      variantId: variant.id,
-      size: variant.size,
-      unitPrice: product.price,
-    });
+    updateLineItem(index, { productId, variantId: variant.id, size: variant.size, unitPrice: product.price });
   }
 
   function setLineVariant(index: number, variantId: string) {
@@ -107,10 +111,6 @@ export default function NewOrderPage() {
     const variant = product?.variants.find(v => v.id === variantId);
     if (!variant) return;
     updateLineItem(index, { variantId, size: variant.size });
-  }
-
-  function removeLineItem(index: number) {
-    setLineItems(prev => prev.filter((_, i) => i !== index));
   }
 
   const itemsTotal = lineItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
@@ -122,7 +122,6 @@ export default function NewOrderPage() {
     if (!customerName.trim()) { setError('Zadejte jméno zákazníka'); return; }
     if (lineItems.length === 0) { setError('Přidejte alespoň jednu položku'); return; }
 
-    // Validate quantities vs stock
     for (const item of lineItems) {
       const product = products.find(p => p.id === item.productId);
       const variant = product?.variants.find(v => v.id === item.variantId);
@@ -135,50 +134,38 @@ export default function NewOrderPage() {
 
     setSaving(true);
 
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .insert({
-        stripe_session_id: `manual_${Date.now()}`,
-        status: 'pending',
-        total: grandTotal,
-        shipping: shippingHalere,
-        customer_name: customerName.trim(),
-        customer_email: customerEmail.trim() || null,
-        shipping_address: customerPhone.trim() ? { phone: customerPhone.trim() } : null,
-        ...(note.trim() ? { note: note.trim() } : {}),
-      })
-      .select('id')
-      .single();
+    const hasAddress = addrLine1.trim() || addrCity.trim() || addrPostal.trim();
+    const shippingAddress = hasAddress ? {
+      line1: addrLine1.trim() || null,
+      line2: addrLine2.trim() || null,
+      city: addrCity.trim() || null,
+      postal_code: addrPostal.trim() || null,
+      country: addrCountry.trim() || 'CZ',
+      phone: customerPhone.trim() || null,
+    } : customerPhone.trim() ? { phone: customerPhone.trim() } : null;
 
-    if (orderError || !order) {
-      setError('Nepodařilo se vytvořit objednávku: ' + (orderError?.message ?? ''));
+    const orderData = {
+      stripe_session_id: `manual_${Date.now()}`,
+      status: 'pending',
+      total: grandTotal,
+      shipping: shippingHalere,
+      customer_name: customerName.trim(),
+      customer_email: customerEmail.trim() || null,
+      shipping_address: shippingAddress,
+      note: note.trim() || null,
+    };
+
+    const res = await fetch('/api/admin/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderData, lineItems }),
+    });
+
+    if (!res.ok) {
+      const j = await res.json();
+      setError('Nepodařilo se vytvořit objednávku: ' + (j.error ?? res.statusText));
       setSaving(false);
       return;
-    }
-
-    const { error: itemsError } = await supabase.from('order_items').insert(
-      lineItems.map(item => ({
-        order_id: order.id,
-        product_id: item.productId,
-        variant_id: item.variantId,
-        size: item.size,
-        quantity: item.quantity,
-        price: item.unitPrice,
-      }))
-    );
-
-    if (itemsError) {
-      setError('Chyba při ukládání položek: ' + itemsError.message);
-      setSaving(false);
-      return;
-    }
-
-    // Decrement stock for each item
-    for (const item of lineItems) {
-      await supabase.rpc('decrement_stock', {
-        p_variant_id: item.variantId,
-        p_qty: item.quantity,
-      });
     }
 
     router.push('/admin/orders');
@@ -187,7 +174,6 @@ export default function NewOrderPage() {
   return (
     <div className="p-5 md:p-8 max-w-3xl w-full">
 
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Link href="/admin/orders" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">← Zpět</Link>
@@ -241,6 +227,44 @@ export default function NewOrderPage() {
           </div>
         </section>
 
+        {/* Shipping address */}
+        <section className="bg-white border border-gray-200 rounded-xl p-5 md:p-6 space-y-4">
+          <h2 className="text-sm font-semibold text-gray-700">Doručovací adresa <span className="font-normal text-gray-400">(volitelné)</span></h2>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Ulice a číslo</label>
+            <input value={addrLine1} onChange={e => setAddrLine1(e.target.value)} className={inputCls} placeholder="Václavské náměstí 1" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Byt / doplněk</label>
+            <input value={addrLine2} onChange={e => setAddrLine2(e.target.value)} className={inputCls} placeholder="Byt 4B" />
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">PSČ</label>
+              <input value={addrPostal} onChange={e => setAddrPostal(e.target.value)} className={inputCls} placeholder="110 00" />
+            </div>
+            <div className="col-span-1 sm:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Město</label>
+              <input value={addrCity} onChange={e => setAddrCity(e.target.value)} className={inputCls} placeholder="Praha" />
+            </div>
+          </div>
+
+          <div className="max-w-[160px]">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Stát</label>
+            <select value={addrCountry} onChange={e => setAddrCountry(e.target.value)} className={inputCls}>
+              <option value="CZ">Česká republika</option>
+              <option value="SK">Slovensko</option>
+              <option value="DE">Německo</option>
+              <option value="AT">Rakousko</option>
+              <option value="PL">Polsko</option>
+              <option value="HU">Maďarsko</option>
+            </select>
+          </div>
+        </section>
+
         {/* Items */}
         <section className="bg-white border border-gray-200 rounded-xl p-5 md:p-6">
           <div className="flex items-center justify-between mb-4">
@@ -261,7 +285,7 @@ export default function NewOrderPage() {
             </div>
           ) : products.length === 0 ? (
             <p className="text-sm text-gray-400 py-4 text-center">
-              Žádné aktivní produkty. <Link href="/admin/products/new" className="underline hover:text-gray-700">Přidat produkt →</Link>
+              Žádné produkty. <Link href="/admin/products/new" className="underline hover:text-gray-700">Přidat produkt →</Link>
             </p>
           ) : lineItems.length === 0 ? (
             <button
@@ -280,19 +304,18 @@ export default function NewOrderPage() {
 
                 return (
                   <div key={i} className="flex items-center gap-2.5 p-3 bg-gray-50 rounded-lg">
-
-                    {/* Product */}
                     <select
                       value={item.productId}
                       onChange={e => setLineProduct(i, e.target.value)}
                       className="flex-1 min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white"
                     >
                       {products.map(p => (
-                        <option key={p.id} value={p.id}>{p.name}</option>
+                        <option key={p.id} value={p.id}>
+                          {p.name}{!p.active ? ' (neaktivní)' : ''}
+                        </option>
                       ))}
                     </select>
 
-                    {/* Size */}
                     <select
                       value={item.variantId}
                       onChange={e => setLineVariant(i, e.target.value)}
@@ -305,7 +328,6 @@ export default function NewOrderPage() {
                       ))}
                     </select>
 
-                    {/* Quantity */}
                     <input
                       type="number"
                       value={item.quantity}
@@ -315,15 +337,11 @@ export default function NewOrderPage() {
                       className="w-16 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 text-center focus:outline-none focus:ring-2 focus:ring-gray-900"
                     />
 
-                    {/* Line total */}
                     <span className="text-sm font-medium text-gray-700 w-24 text-right flex-shrink-0">
                       {(item.unitPrice * item.quantity / 100).toLocaleString('cs-CZ')} Kč
                     </span>
 
-                    <button
-                      onClick={() => removeLineItem(i)}
-                      className="text-gray-300 hover:text-red-500 transition-colors flex-shrink-0"
-                    >
+                    <button onClick={() => setLineItems(prev => prev.filter((_, j) => j !== i))} className="text-gray-300 hover:text-red-500 transition-colors flex-shrink-0">
                       <X size={16} />
                     </button>
                   </div>
@@ -337,7 +355,6 @@ export default function NewOrderPage() {
         {lineItems.length > 0 && (
           <section className="bg-white border border-gray-200 rounded-xl p-5 md:p-6">
             <h2 className="text-sm font-semibold text-gray-700 mb-4">Shrnutí</h2>
-
             <div className="space-y-2 max-w-xs ml-auto">
               <div className="flex justify-between text-sm text-gray-500">
                 <span>Zboží</span>
@@ -358,7 +375,6 @@ export default function NewOrderPage() {
                 <span>{(grandTotal / 100).toLocaleString('cs-CZ')} Kč</span>
               </div>
             </div>
-
             <p className="text-xs text-gray-400 mt-4">
               Objednávka se vytvoří se statusem <span className="font-medium text-amber-600">Čeká</span> — změň ho na Zaplaceno nebo Odesláno až to bude relevantní.
             </p>
