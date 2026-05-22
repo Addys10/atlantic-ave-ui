@@ -54,13 +54,25 @@ export async function POST(request: Request) {
   const shippingDetails = (session as unknown as { shipping_details?: { address?: unknown } }).shipping_details;
   const shippingAddress = shippingDetails?.address ?? session.customer_details?.address ?? null;
 
-  const items: {
+  let items: {
     productId: string;
     variantId: string;
     size: string;
     quantity: number;
     price: number;
-  }[] = JSON.parse(session.metadata?.items ?? '[]');
+  }[];
+
+  try {
+    items = JSON.parse(session.metadata?.items ?? '[]');
+  } catch {
+    console.error('[webhook] Failed to parse items metadata for session', session.id);
+    return NextResponse.json({ error: 'Invalid items metadata' }, { status: 500 });
+  }
+
+  if (items.length === 0) {
+    console.error('[webhook] Empty items for session', session.id);
+    return NextResponse.json({ error: 'No items in session' }, { status: 500 });
+  }
 
   // Create order
   const { data: order, error: orderError } = await db
@@ -82,34 +94,35 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
   }
 
-  // Create order items + decrement stock
-  if (items.length > 0) {
-    const { error: itemsError } = await db.from('order_items').insert(
-      items.map(item => ({
-        order_id: order.id,
-        product_id: item.productId,
-        variant_id: item.variantId,
-        size: item.size,
-        quantity: item.quantity,
-        price: item.price,
-      }))
-    );
+  // Create order items — if this fails, delete the order so Stripe retries cleanly
+  const { error: itemsError } = await db.from('order_items').insert(
+    items.map(item => ({
+      order_id: order.id,
+      product_id: item.productId,
+      variant_id: item.variantId,
+      size: item.size,
+      quantity: item.quantity,
+      price: item.price,
+    }))
+  );
 
-    if (itemsError) {
-      console.error('Webhook: failed to create order items:', itemsError);
-    }
+  if (itemsError) {
+    console.error('[webhook] Failed to create order items:', itemsError);
+    await db.from('orders').delete().eq('id', order.id);
+    return NextResponse.json({ error: 'Failed to create order items' }, { status: 500 });
+  }
 
-    for (const item of items) {
-      const { error: stockError } = await db.rpc('decrement_stock', {
-        p_variant_id: item.variantId,
-        p_qty: item.quantity,
-      });
-      if (stockError) {
-        console.error(`Webhook: failed to decrement stock for variant ${item.variantId}:`, stockError);
-      }
+  // Decrement stock
+  for (const item of items) {
+    const { error: stockError } = await db.rpc('decrement_stock', {
+      p_variant_id: item.variantId,
+      p_qty: item.quantity,
+    });
+    if (stockError) {
+      console.error(`[webhook] Failed to decrement stock for variant ${item.variantId}:`, stockError);
     }
   }
 
-  console.log(`Order ${order.id} created for session ${session.id}`);
+  console.log(`[webhook] Order ${order.id} created for session ${session.id}`);
   return NextResponse.json({ received: true });
 }

@@ -20,18 +20,18 @@ export async function GET() {
 
     if (error) throw error;
 
-    const products: Product[] = (data ?? []).map(p => ({
+    type Row = { id: string; slug: string; name: string; subtitle: string; description_html: string; price: number; images: string[]; category: string; product_variants: { id: string; size: string; stock: number }[] };
+    const products: Product[] = ((data ?? []) as unknown as Row[]).map(p => ({
       id: p.id,
       slug: p.slug,
       name: p.name,
-      subtitle: (p as any).subtitle ?? '',
+      subtitle: p.subtitle ?? '',
       description: p.description_html,
       price: Number(p.price),
       image: p.images[0] ?? '',
       images: p.images,
       category: p.category,
-      sizes: (p.product_variants as { id: string; size: string; stock: number }[])
-        .map(v => ({ id: v.id, name: v.size, available: v.stock > 0, stock: v.stock })),
+      sizes: p.product_variants.map(v => ({ id: v.id, name: v.size, available: v.stock > 0, stock: v.stock })),
     }));
 
     return NextResponse.json(products, {

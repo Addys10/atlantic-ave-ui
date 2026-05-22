@@ -6,11 +6,24 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   const db = createServiceClient();
-  const { productData, variants, origVariantIds } = await request.json();
+  const { productData, variants, origVariantIds } = await request.json() as {
+    productData: { name: string; subtitle: string; slug: string; price: number; category: string; description_html: string; active: boolean; images: string[] };
+    variants: { id?: string; size: string; stock: number }[];
+    origVariantIds: string[];
+  };
 
   const { error: updateError } = await db
     .from('products')
-    .update(productData)
+    .update({
+      name: productData.name,
+      subtitle: productData.subtitle,
+      slug: productData.slug,
+      price: productData.price,
+      category: productData.category,
+      description_html: productData.description_html,
+      active: productData.active,
+      images: productData.images,
+    })
     .eq('id', params.id);
 
   if (updateError) {
@@ -31,7 +44,7 @@ export async function PATCH(
     }
   }
 
-  const keepIds = new Set(variants.filter((v: { id?: string }) => v.id).map((v: { id: string }) => v.id));
+  const keepIds = new Set(variants.filter(v => v.id).map(v => v.id!));
   const toDelete = (origVariantIds as string[]).filter(id => !keepIds.has(id));
   for (const id of toDelete) {
     const { error } = await db.from('product_variants').delete().eq('id', id);

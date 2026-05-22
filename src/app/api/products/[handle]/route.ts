@@ -29,18 +29,19 @@ export async function GET(
       );
     }
 
+    type Row = { id: string; slug: string; name: string; subtitle: string; description_html: string; price: number; images: string[]; category: string; product_variants: { id: string; size: string; stock: number }[] };
+    const row = data as unknown as Row;
     const product: Product = {
-      id: data.id,
-      slug: data.slug,
-      name: data.name,
-      subtitle: (data as any).subtitle ?? '',
-      description: data.description_html,
-      price: Number(data.price),
-      image: data.images[0] ?? '',
-      images: data.images,
-      category: data.category,
-      sizes: (data.product_variants as { id: string; size: string; stock: number }[])
-        .map(v => ({ id: v.id, name: v.size, available: v.stock > 0, stock: v.stock })),
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      subtitle: row.subtitle ?? '',
+      description: row.description_html,
+      price: Number(row.price),
+      image: row.images[0] ?? '',
+      images: row.images,
+      category: row.category,
+      sizes: row.product_variants.map(v => ({ id: v.id, name: v.size, available: v.stock > 0, stock: v.stock })),
     };
 
     return NextResponse.json(product, {
