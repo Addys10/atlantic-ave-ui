@@ -229,7 +229,6 @@ export default function NewOrderPage() {
 
         {/* Shipping address */}
         <section className="bg-white border border-gray-200 rounded-xl p-5 md:p-6 space-y-4">
-          <h2 className="text-sm font-semibold text-gray-700">Doručovací adresa <span className="font-normal text-gray-400">(volitelné)</span></h2>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Ulice a číslo</label>

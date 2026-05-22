@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ChevronDown, ChevronUp, MapPin, Mail, Package, CreditCard } from 'lucide-react';
 
@@ -11,6 +11,7 @@ interface ShippingAddress {
   state: string | null;
   postal_code: string | null;
   country: string | null;
+  phone: string | null;
 }
 
 interface OrderItem {
@@ -30,6 +31,7 @@ interface Order {
   customer_email: string | null;
   customer_name: string | null;
   shipping_address: ShippingAddress | null;
+  note: string | null;
   created_at: string;
   order_items: OrderItem[];
 }
@@ -83,7 +85,7 @@ export default function AdminOrdersPage() {
       .from('orders')
       .select(`
         id, stripe_session_id, status, total, shipping,
-        customer_email, customer_name, shipping_address, created_at,
+        customer_email, customer_name, shipping_address, note, created_at,
         order_items ( id, size, quantity, price, products ( name, images, slug ) )
       `)
       .order('created_at', { ascending: false });
@@ -112,6 +114,15 @@ export default function AdminOrdersPage() {
             </div>
             <p className="text-sm font-medium text-gray-900">{order.customer_name ?? '—'}</p>
             <p className="text-sm text-gray-500">{order.customer_email ?? '—'}</p>
+            {order.shipping_address?.phone && (
+              <p className="text-sm text-gray-500">{order.shipping_address.phone}</p>
+            )}
+            {order.note && (
+              <div className="mt-2 pt-2 border-t border-gray-200">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Poznámka</p>
+                <p className="text-sm text-gray-700">{order.note}</p>
+              </div>
+            )}
           </div>
 
           {/* Shipping address */}
@@ -128,6 +139,9 @@ export default function AdminOrdersPage() {
               </div>
             ) : (
               <p className="text-sm text-gray-400">Adresa není k dispozici</p>
+            )}
+            {order.shipping_address?.phone && addressLines.length === 0 && (
+              <p className="text-sm text-gray-500 mt-1">{order.shipping_address.phone}</p>
             )}
           </div>
 
@@ -280,9 +294,8 @@ export default function AdminOrdersPage() {
                 {orders.map(order => {
                   const addrLines = formatAddress(order.shipping_address);
                   return (
-                    <>
+                    <Fragment key={order.id}>
                       <tr
-                        key={order.id}
                         className="hover:bg-gray-50 cursor-pointer transition-colors"
                         onClick={() => setExpanded(expanded === order.id ? null : order.id)}
                       >
@@ -329,13 +342,13 @@ export default function AdminOrdersPage() {
                         </td>
                       </tr>
                       {expanded === order.id && (
-                        <tr key={`${order.id}-detail`}>
+                        <tr>
                           <td colSpan={6} className="p-0">
                             <OrderDetail order={order} />
                           </td>
                         </tr>
                       )}
-                    </>
+                    </Fragment>
                   );
                 })}
               </tbody>
