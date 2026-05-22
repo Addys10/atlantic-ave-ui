@@ -111,21 +111,35 @@ export default function ProductDetail({ params }: { params: { handle: string } }
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
             transition={{ duration: 0.36, ease: [0.2, 0.7, 0.2, 1] }}
-            className="fixed bottom-7 left-1/2 -translate-x-1/2 z-50 bg-bone text-[#0a0a0a] px-5 py-3.5 font-mono text-[11px] tracking-[0.22em] uppercase flex items-center gap-5 whitespace-nowrap shadow-2xl"
+            className="fixed bottom-5 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-max z-50 bg-bone text-[#0a0a0a] shadow-2xl"
           >
-            <span>{product.name} — přidáno</span>
-            <Link href="/checkout" className="border-b border-[#0a0a0a]/40 hover:border-[#0a0a0a] transition-colors">
-              Košík →
-            </Link>
+            <div className="flex items-center justify-between gap-6 px-5 py-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
+                  <circle cx="7" cy="7" r="6.5" stroke="#0a0a0a" strokeOpacity="0.25"/>
+                  <path d="M4 7l2 2 4-4" stroke="#0a0a0a" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <div className="min-w-0">
+                  <p className="font-mono text-[9px] tracking-[0.22em] uppercase text-[#0a0a0a]/50 leading-none mb-1">Přidáno do košíku</p>
+                  <p className="font-mono text-[12px] tracking-[0.08em] uppercase truncate">{product.name}</p>
+                </div>
+              </div>
+              <Link
+                href="/checkout"
+                className="shrink-0 font-mono text-[10px] tracking-[0.22em] uppercase border-b border-[#0a0a0a]/30 hover:border-[#0a0a0a] transition-colors pb-px"
+              >
+                Košík →
+              </Link>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Layout: gallery | info */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] min-h-[calc(100vh-58px)]">
+      <div className="grid grid-cols-1 tb:grid-cols-[1.4fr_1fr] min-h-[calc(100vh-58px)]">
 
         {/* Gallery */}
-        <div className="flex flex-col lg:border-r border-line">
+        <div className="flex flex-col tb:border-r border-line">
           {/* Main image */}
           <div
             ref={imgContainerRef}
@@ -191,7 +205,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
         </div>
 
         {/* Sticky info panel */}
-        <aside className="lg:sticky lg:top-[68px] lg:h-[calc(100vh-68px)] lg:overflow-y-auto flex flex-col gap-8 p-8 md:p-12">
+        <aside className="tb:sticky tb:top-[68px] tb:h-[calc(100vh-68px)] tb:overflow-y-auto flex flex-col gap-8 p-8 md:p-12">
 
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase text-dim">

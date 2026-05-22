@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
 import { CartItem } from '@/types/cart';
 
 const SHIPPING = 129;
@@ -59,18 +59,20 @@ export default function Navbar() {
       <nav className="sticky top-0 z-50 border-b border-line"
            style={{ background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(14px)' }}>
         {/* Mobile layout */}
-        <div className="flex md:hidden items-center justify-between px-7 h-[68px]">
+        <div className="flex tb:hidden items-center justify-between px-7 h-[68px]">
           <Link href="/" aria-label="Atlantic Ave">
             <span className="font-cloister text-xl font-bold text-bone tracking-[0.22em] uppercase select-none whitespace-nowrap">
               Atlantic Ave
             </span>
           </Link>
           <div className="flex items-center gap-5">
-            <Link href="/checkout" className={`${linkCls} flex items-center gap-1.5`}>
-              Košík
-              <span className="inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[10px] font-bold rounded-full w-[18px] h-[18px] leading-none">
-                {cartCount}
-              </span>
+            <Link href="/checkout" className="relative text-dim hover:text-bone transition-colors duration-200 p-1">
+              <ShoppingCart size={20} strokeWidth={1.5} />
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[9px] font-bold rounded-full w-[15px] h-[15px] leading-none select-none">
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              )}
             </Link>
             <button onClick={() => setMobileOpen(true)} className="text-dim hover:text-bone transition-colors">
               <Menu size={18} />
@@ -79,7 +81,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop layout */}
-        <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center px-7 h-[68px]">
+        <div className="hidden tb:grid grid-cols-[1fr_auto_1fr] items-center px-7 h-[68px]">
 
           {/* Left */}
           <div className="flex items-center gap-7">
@@ -104,11 +106,13 @@ export default function Navbar() {
               onMouseEnter={onCartEnter}
               onMouseLeave={onCartLeave}
             >
-              <Link href="/checkout" className={`${linkCls} flex items-center gap-2`}>
-                Košík
-                <span className="inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[10px] font-bold rounded-full w-[18px] h-[18px] leading-none">
-                  {cartCount}
-                </span>
+              <Link href="/checkout" className="relative text-dim hover:text-bone transition-colors duration-200 p-1">
+                <ShoppingCart size={18} strokeWidth={1.5} />
+                {cartCount > 0 && (
+                  <span className="absolute left-3 inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[9px] font-bold rounded-full w-[15px] h-[15px] leading-none select-none">
+                    {cartCount > 9 ? '9+' : cartCount}
+                  </span>
+                )}
               </Link>
 
               <AnimatePresence>

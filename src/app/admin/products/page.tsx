@@ -79,7 +79,7 @@ export default function AdminProductsPage() {
                     </span>
                   </div>
                   <div className="mt-2">
-                    <Link href={`/admin/products/${product.id}`} className="text-sm text-blue-600 hover:underline">Upravit</Link>
+                    <Link href={`/admin/products/${product.id}`} className="inline-flex items-center gap-1.5 text-xs font-medium bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition-colors whitespace-nowrap">Upravit →</Link>
                   </div>
                 </div>
               </div>
@@ -129,7 +129,7 @@ export default function AdminProductsPage() {
                       </span>
                     </td>
                     <td className="px-5 py-3.5 text-right">
-                      <Link href={`/admin/products/${product.id}`} className="text-sm text-blue-600 hover:underline">Upravit</Link>
+                      <Link href={`/admin/products/${product.id}`} className="inline-flex items-center gap-1.5 text-xs font-medium bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition-colors whitespace-nowrap">Upravit →</Link>
                     </td>
                   </tr>
                 ))}

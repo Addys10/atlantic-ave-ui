@@ -278,8 +278,8 @@ export default function AdminOrdersPage() {
           </div>
 
           {/* Desktop table */}
-          <div className="hidden md:block bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <table className="w-full">
+          <div className="hidden md:block bg-white border border-gray-200 rounded-xl overflow-x-auto">
+            <table className="w-full min-w-[700px]">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
                   <th className="text-left px-5 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
@@ -299,7 +299,7 @@ export default function AdminOrdersPage() {
                         className="hover:bg-gray-50 cursor-pointer transition-colors"
                         onClick={() => setExpanded(expanded === order.id ? null : order.id)}
                       >
-                        <td className="px-5 py-3.5">
+                        <td className="px-5 py-3.5 whitespace-nowrap">
                           <p className="text-sm text-gray-700">
                             {new Date(order.created_at).toLocaleDateString('cs-CZ', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                           </p>
@@ -311,7 +311,7 @@ export default function AdminOrdersPage() {
                           <p className="text-sm font-medium text-gray-900">{order.customer_name ?? '—'}</p>
                           <p className="text-xs text-gray-400 mt-0.5">{order.customer_email ?? '—'}</p>
                         </td>
-                        <td className="px-5 py-3.5">
+                        <td className="px-5 py-3.5 whitespace-nowrap">
                           {addrLines.length > 0 ? (
                             <div>
                               <p className="text-sm text-gray-700">{addrLines[0]}</p>

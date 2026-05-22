@@ -145,8 +145,8 @@ export default function ShopPage() {
             </span>
           </motion.div>
 
-          {/* ── Mobile: 2-column card grid ── */}
-          <div className="md:hidden grid grid-cols-2 gap-[1px] bg-line border-t border-line">
+          {/* ── Mobile: 2-column card grid (1 product → full width) ── */}
+          <div className={`md:hidden grid gap-[1px] bg-line border-t border-line ${products.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
             {products.map((product, index) => {
               const soldOut = availableCount(product) === 0;
               return (

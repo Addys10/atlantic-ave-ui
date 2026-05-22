@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        tb: '896px',
+      },
       colors: {
         bone: "#f4f1ea",
         line: "#1f1f1f",

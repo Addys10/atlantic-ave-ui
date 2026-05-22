@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { TrendingUp, ShoppingBag, Clock, Package, AlertTriangle, ArrowRight } from 'lucide-react';
+import { TrendingUp, ShoppingBag, Clock, Package, ArrowRight } from 'lucide-react';
 
 interface StatsData {
   totalRevenue: number;
@@ -12,11 +12,12 @@ interface StatsData {
   productCount: number;
 }
 
-interface LowStockItem {
+interface StockProduct {
+  productId: string;
   productName: string;
   productSlug: string;
-  size: string;
-  stock: number;
+  totalStock: number;
+  variants: { size: string; stock: number }[];
 }
 
 interface RecentOrder {
@@ -53,7 +54,7 @@ function shortId(id: string) {
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<StatsData | null>(null);
-  const [lowStock, setLowStock] = useState<LowStockItem[]>([]);
+  const [stockProducts, setStockProducts] = useState<StockProduct[]>([]);
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -72,7 +73,6 @@ export default function AdminDashboard() {
       supabase
         .from('product_variants')
         .select('id, size, stock, product_id, products(name, slug)')
-        .lte('stock', 3)
         .order('stock', { ascending: true }),
     ]);
 
@@ -98,16 +98,18 @@ export default function AdminDashboard() {
       products: { name: string; slug: string } | null;
     }[];
 
-    setLowStock(
-      variants
-        .filter(v => v.products)
-        .map(v => ({
-          productName: v.products!.name,
-          productSlug: v.products!.slug,
-          size: v.size,
-          stock: v.stock,
-        }))
-    );
+    const byProduct = new Map<string, StockProduct>();
+    for (const v of variants) {
+      if (!v.products) continue;
+      const key = v.products.slug;
+      if (!byProduct.has(key)) {
+        byProduct.set(key, { productId: v.product_id, productName: v.products.name, productSlug: key, totalStock: 0, variants: [] });
+      }
+      const p = byProduct.get(key)!;
+      p.variants.push({ size: v.size, stock: v.stock });
+      p.totalStock += v.stock;
+    }
+    setStockProducts(Array.from(byProduct.values()));
 
     setRecentOrders(
       orders.slice(0, 6).map(o => ({
@@ -238,42 +240,51 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* Low stock */}
+        {/* Stock overview */}
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-gray-900">Nízký sklad</h2>
-            {lowStock.length > 0 && (
-              <span className="flex items-center gap-1 text-xs text-amber-600">
-                <AlertTriangle size={12} />
-                {lowStock.length}
-              </span>
-            )}
+            <h2 className="text-sm font-semibold text-gray-900">Sklad</h2>
+            <Link href="/admin/products" className="text-xs text-gray-400 hover:text-gray-900 transition-colors flex items-center gap-1">
+              Spravovat <ArrowRight size={12} />
+            </Link>
           </div>
 
-          {lowStock.length === 0 ? (
-            <div className="px-5 py-10 text-center">
-              <p className="text-sm text-gray-400">Vše na skladě</p>
-              <p className="text-xs text-gray-300 mt-1">Žádná velikost není pod 4 ks</p>
-            </div>
+          {stockProducts.length === 0 ? (
+            <div className="px-5 py-10 text-center text-sm text-gray-400">Žádné produkty</div>
           ) : (
             <div className="divide-y divide-gray-50">
-              {lowStock.map((item, i) => (
+              {stockProducts.map(product => (
                 <Link
-                  key={i}
-                  href={`/admin/products`}
-                  className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition-colors group"
+                  key={product.productSlug}
+                  href={`/admin/products/${product.productId}`}
+                  className="block px-5 py-3.5 hover:bg-gray-50 transition-colors group"
                 >
-                  <div className="min-w-0">
+                  <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-medium text-gray-900 truncate group-hover:text-gray-700">
-                      {item.productName}
+                      {product.productName}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5">Velikost {item.size}</p>
+                    <span className={`flex-shrink-0 ml-3 text-xs font-semibold tabular-nums ${
+                      product.totalStock === 0 ? 'text-red-500' : product.totalStock <= 5 ? 'text-amber-600' : 'text-gray-500'
+                    }`}>
+                      {product.totalStock} ks celkem
+                    </span>
                   </div>
-                  <span className={`flex-shrink-0 ml-3 text-sm font-bold tabular-nums ${
-                    item.stock === 0 ? 'text-red-600' : 'text-amber-600'
-                  }`}>
-                    {item.stock === 0 ? 'Vyprodáno' : `${item.stock} ks`}
-                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {product.variants.map(v => (
+                      <span
+                        key={v.size}
+                        className={`inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded ${
+                          v.stock === 0
+                            ? 'bg-red-50 text-red-400'
+                            : v.stock <= 3
+                            ? 'bg-amber-50 text-amber-600'
+                            : 'bg-gray-100 text-gray-500'
+                        }`}
+                      >
+                        {v.size} <span className="font-bold">{v.stock}</span>
+                      </span>
+                    ))}
+                  </div>
                 </Link>
               ))}
             </div>

@@ -80,18 +80,34 @@ export default function NewOrderPage() {
     setLoadingProducts(false);
   }
 
-  function addLineItem() {
-    const first = products[0];
-    const firstVariant = first?.variants[0];
-    if (!first || !firstVariant) return;
-    setLineItems(prev => [...prev, {
-      productId: first.id,
-      variantId: firstVariant.id,
-      size: firstVariant.size,
-      quantity: 1,
-      unitPrice: first.price,
-    }]);
+  function allocatedQty(variantId: string, excludeIndex?: number): number {
+    return lineItems.reduce((sum, item, i) =>
+      i !== excludeIndex && item.variantId === variantId ? sum + item.quantity : sum, 0);
   }
+
+  function availableStock(variantId: string, excludeIndex?: number): number {
+    const variant = products.flatMap(p => p.variants).find(v => v.id === variantId);
+    return Math.max(0, (variant?.stock ?? 0) - allocatedQty(variantId, excludeIndex));
+  }
+
+  function addLineItem() {
+    for (const product of products) {
+      for (const variant of product.variants) {
+        if (availableStock(variant.id) > 0) {
+          setLineItems(prev => [...prev, {
+            productId: product.id,
+            variantId: variant.id,
+            size: variant.size,
+            quantity: 1,
+            unitPrice: product.price,
+          }]);
+          return;
+        }
+      }
+    }
+  }
+
+  const canAddItem = products.some(p => p.variants.some(v => availableStock(v.id) > 0));
 
   function updateLineItem(index: number, field: Partial<LineItem>) {
     setLineItems(prev => prev.map((item, i) => i === index ? { ...item, ...field } : item));
@@ -251,7 +267,7 @@ export default function NewOrderPage() {
             </div>
           </div>
 
-          <div className="max-w-[160px]">
+          <div className="max-w-[220px]">
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Stát</label>
             <select value={addrCountry} onChange={e => setAddrCountry(e.target.value)} className={inputCls}>
               <option value="CZ">Česká republika</option>
@@ -270,7 +286,7 @@ export default function NewOrderPage() {
             <h2 className="text-sm font-semibold text-gray-700">Položky</h2>
             <button
               onClick={addLineItem}
-              disabled={loadingProducts || products.length === 0}
+              disabled={loadingProducts || !canAddItem}
               className="flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-gray-600 disabled:opacity-40 transition-colors"
             >
               <Plus size={15} />
@@ -298,8 +314,6 @@ export default function NewOrderPage() {
             <div className="space-y-3">
               {lineItems.map((item, i) => {
                 const product = products.find(p => p.id === item.productId);
-                const variant = product?.variants.find(v => v.id === item.variantId);
-                const maxQty = variant?.stock ?? 0;
 
                 return (
                   <div key={i} className="flex items-center gap-2.5 p-3 bg-gray-50 rounded-lg">
@@ -331,8 +345,8 @@ export default function NewOrderPage() {
                       type="number"
                       value={item.quantity}
                       min={1}
-                      max={maxQty}
-                      onChange={e => updateLineItem(i, { quantity: Math.max(1, parseInt(e.target.value) || 1) })}
+                      max={item.quantity + availableStock(item.variantId, i)}
+                      onChange={e => updateLineItem(i, { quantity: Math.min(item.quantity + availableStock(item.variantId, i), Math.max(1, parseInt(e.target.value) || 1)) })}
                       className="w-16 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 text-center focus:outline-none focus:ring-2 focus:ring-gray-900"
                     />
 

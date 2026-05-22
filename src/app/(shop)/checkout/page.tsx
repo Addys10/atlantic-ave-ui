@@ -127,10 +127,10 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px]">
+      <div className="grid grid-cols-1 tb:grid-cols-[1fr_400px]">
 
         {/* ── Items list ── */}
-        <div className="lg:border-r border-line">
+        <div className="tb:border-r border-line">
           <AnimatePresence initial={false}>
             {cart.map((item, index) => (
               <motion.div
@@ -234,7 +234,7 @@ export default function CheckoutPage() {
         </div>
 
         {/* ── Order summary ── */}
-        <div className="lg:sticky lg:top-[68px] lg:h-[calc(100vh-68px)] lg:overflow-y-auto">
+        <div className="tb:sticky tb:top-[68px] tb:h-[calc(100vh-68px)] tb:overflow-y-auto">
           <div className="p-7 md:p-10 flex flex-col gap-6 h-full">
 
             <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-dim font-normal border-b border-line pb-5">
