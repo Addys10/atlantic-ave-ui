@@ -124,5 +124,29 @@ export async function POST(request: Request) {
   }
 
   console.log(`[webhook] Order ${order.id} created for session ${session.id}`);
+
+  // Send invoice email — fetch full order with items for the PDF
+  if (session.customer_details?.email) {
+    try {
+      const { data: fullOrder } = await db
+        .from('orders')
+        .select(`
+          id, created_at, customer_name, customer_email, shipping_address, total, shipping,
+          order_items ( id, size, quantity, price, products ( name ) )
+        `)
+        .eq('id', order.id)
+        .single();
+
+      if (fullOrder) {
+        const { sendInvoiceEmail } = await import('@/lib/email');
+        await sendInvoiceEmail(fullOrder as unknown as Parameters<typeof sendInvoiceEmail>[0]);
+        console.log(`[webhook] Invoice email sent for order ${order.id}`);
+      }
+    } catch (emailErr) {
+      // Non-fatal — order is already created, email failure should not fail the webhook
+      console.error(`[webhook] Failed to send invoice email for order ${order.id}:`, emailErr);
+    }
+  }
+
   return NextResponse.json({ received: true });
 }

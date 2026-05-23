@@ -77,6 +77,7 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [sendingInvoice, setSendingInvoice] = useState<string | null>(null);
 
   useEffect(() => { loadOrders(); }, []);
 
@@ -98,7 +99,20 @@ export default function AdminOrdersPage() {
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
   }
 
-  function OrderDetail({ order }: { order: Order }) {
+  async function sendInvoice(id: string) {
+    setSendingInvoice(id);
+    try {
+      const res = await fetch(`/api/admin/orders/${id}/send-invoice`, { method: 'POST' });
+      if (!res.ok) {
+        const { error } = await res.json();
+        alert(`Chyba: ${error}`);
+      }
+    } finally {
+      setSendingInvoice(null);
+    }
+  }
+
+  function OrderDetail({ order }: { order: Order; }) {
     const addressLines = formatAddress(order.shipping_address);
     const itemsTotal = order.total - order.shipping;
 
@@ -206,19 +220,28 @@ export default function AdminOrdersPage() {
             ))}
           </div>
 
-          {/* Price breakdown */}
-          <div className="mt-4 pt-4 border-t border-gray-200 space-y-1.5 max-w-xs ml-auto">
-            <div className="flex justify-between text-sm text-gray-500">
-              <span>Mezisoučet</span>
-              <span>{(itemsTotal / 100).toLocaleString('cs-CZ')} Kč</span>
-            </div>
-            <div className="flex justify-between text-sm text-gray-500">
-              <span>Doprava</span>
-              <span>{(order.shipping / 100).toLocaleString('cs-CZ')} Kč</span>
-            </div>
-            <div className="flex justify-between text-sm font-semibold text-gray-900 pt-1.5 border-t border-gray-200">
-              <span>Celkem</span>
-              <span>{(order.total / 100).toLocaleString('cs-CZ')} Kč</span>
+          {/* Price breakdown + invoice button */}
+          <div className="mt-4 pt-4 border-t border-gray-200 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <button
+              onClick={() => sendInvoice(order.id)}
+              disabled={sendingInvoice === order.id || !order.customer_email}
+              className="self-start inline-flex items-center gap-1.5 text-xs font-medium bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+            >
+              {sendingInvoice === order.id ? 'Odesílám…' : 'Odeslat fakturu →'}
+            </button>
+            <div className="space-y-1.5 min-w-[200px]">
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>Mezisoučet</span>
+                <span>{(itemsTotal / 100).toLocaleString('cs-CZ')} Kč</span>
+              </div>
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>Doprava</span>
+                <span>{(order.shipping / 100).toLocaleString('cs-CZ')} Kč</span>
+              </div>
+              <div className="flex justify-between text-sm font-semibold text-gray-900 pt-1.5 border-t border-gray-200">
+                <span>Celkem</span>
+                <span>{(order.total / 100).toLocaleString('cs-CZ')} Kč</span>
+              </div>
             </div>
           </div>
         </div>

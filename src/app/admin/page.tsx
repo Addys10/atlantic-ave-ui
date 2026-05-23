@@ -94,7 +94,7 @@ export default function AdminDashboard() {
     });
 
     const variants = (variantsRes.data ?? []) as unknown as {
-      id: string; size: string; stock: number;
+      id: string; size: string; stock: number; product_id: string;
       products: { name: string; slug: string } | null;
     }[];
 
