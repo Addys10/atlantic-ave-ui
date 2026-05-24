@@ -15,7 +15,7 @@ export async function sendInvoiceEmail(order: InvoiceOrder): Promise<void> {
 
   const filename = `faktura-${order.id.slice(0, 8).toUpperCase()}.pdf`;
 
-  await resend.emails.send({
+  const result = await resend.emails.send({
     from: FROM_EMAIL,
     to: order.customer_email!,
     subject: `Faktura k objednávce #${order.id.slice(0, 8).toUpperCase()} – Atlantic Ave`,
@@ -27,6 +27,9 @@ export async function sendInvoiceEmail(order: InvoiceOrder): Promise<void> {
       },
     ],
   });
+  if (result.error) {
+    throw new Error(`Resend error: ${result.error.message}`);
+  }
 }
 
 function buildEmailHtml(order: InvoiceOrder): string {

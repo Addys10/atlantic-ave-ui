@@ -28,6 +28,6 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error('[send-invoice] Failed:', err);
-    return NextResponse.json({ error: 'Failed to send invoice' }, { status: 500 });
+    return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }

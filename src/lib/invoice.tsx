@@ -6,6 +6,15 @@ import {
   StyleSheet,
   Font,
 } from '@react-pdf/renderer';
+import path from 'path';
+
+Font.register({
+  family: 'Inter',
+  fonts: [
+    { src: path.join(process.cwd(), 'public/fonts/Inter-Regular.ttf'), fontWeight: 'normal' },
+    { src: path.join(process.cwd(), 'public/fonts/Inter-Regular.ttf'), fontWeight: 'bold' },
+  ],
+});
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -36,18 +45,18 @@ export interface InvoiceOrder {
 // ── Seller info (replace with real data when available) ────────────────────
 
 const SELLER = {
-  name: 'Atlantic Ave s.r.o.',
-  address: 'Ulice 123, 110 00 Praha 1',
+  name: 'Marek Mikulík',
+  address: 'Oty Synka 1876/8, 708 00 Ostrava-Poruba',
   ico: 'IČO: 12345678',
   dic: 'DIČ: CZ12345678',
-  email: 'info@atlanticave.cz',
+  email: 'marekmikulik@email.cz',
 };
 
 // ── Styles ─────────────────────────────────────────────────────────────────
 
 const s = StyleSheet.create({
   page: {
-    fontFamily: 'Helvetica',
+    fontFamily: 'Inter',
     fontSize: 9,
     color: '#1a1a1a',
     paddingTop: 48,
@@ -57,18 +66,18 @@ const s = StyleSheet.create({
   },
   // Header
   header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 36 },
-  brand: { fontSize: 18, fontFamily: 'Helvetica-Bold', letterSpacing: 3, color: '#0a0a0a' },
+  brand: { fontSize: 18, fontFamily: 'Inter', letterSpacing: 3, color: '#0a0a0a' },
   brandSub: { fontSize: 7.5, color: '#888', marginTop: 3, letterSpacing: 1 },
-  invoiceTitle: { fontSize: 22, fontFamily: 'Helvetica-Bold', color: '#0a0a0a', textAlign: 'right' },
+  invoiceTitle: { fontSize: 22, fontFamily: 'Inter', color: '#0a0a0a', textAlign: 'right' },
   invoiceMeta: { fontSize: 8, color: '#666', marginTop: 4, textAlign: 'right' },
   // Addresses
   addresses: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 32 },
   addressBlock: { width: '45%' },
-  addressLabel: { fontSize: 7, fontFamily: 'Helvetica-Bold', color: '#999', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 6 },
+  addressLabel: { fontSize: 7, fontFamily: 'Inter', color: '#999', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 6 },
   addressLine: { fontSize: 9, color: '#333', lineHeight: 1.55 },
   // Table
   tableHeader: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#e5e5e5', paddingBottom: 5, marginBottom: 4 },
-  tableHeaderText: { fontSize: 7.5, fontFamily: 'Helvetica-Bold', color: '#999', letterSpacing: 1, textTransform: 'uppercase' },
+  tableHeaderText: { fontSize: 7.5, fontFamily: 'Inter', color: '#999', letterSpacing: 1, textTransform: 'uppercase' },
   tableRow: { flexDirection: 'row', paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
   colProduct: { flex: 1 },
   colSize: { width: 52, textAlign: 'center' },
@@ -83,8 +92,8 @@ const s = StyleSheet.create({
   totalLabel: { fontSize: 9, color: '#666' },
   totalValue: { fontSize: 9, color: '#333' },
   totalDivider: { borderTopWidth: 1, borderTopColor: '#e5e5e5', marginVertical: 5 },
-  grandLabel: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#0a0a0a' },
-  grandValue: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#0a0a0a' },
+  grandLabel: { fontSize: 10, fontFamily: 'Inter', color: '#0a0a0a' },
+  grandValue: { fontSize: 10, fontFamily: 'Inter', color: '#0a0a0a' },
   // Footer
   footer: { position: 'absolute', bottom: 32, left: 52, right: 52, borderTopWidth: 1, borderTopColor: '#ebebeb', paddingTop: 10, flexDirection: 'row', justifyContent: 'space-between' },
   footerText: { fontSize: 7.5, color: '#aaa' },
