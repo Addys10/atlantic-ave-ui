@@ -25,7 +25,9 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
 
   try {
     await sendInvoiceEmail(order as unknown as InvoiceOrder);
-    return NextResponse.json({ ok: true });
+    const now = new Date().toISOString();
+    await db.from('orders').update({ invoice_sent_at: now }).eq('id', params.id);
+    return NextResponse.json({ ok: true, invoice_sent_at: now });
   } catch (err) {
     console.error('[send-invoice] Failed:', err);
     return NextResponse.json({ error: String(err) }, { status: 500 });

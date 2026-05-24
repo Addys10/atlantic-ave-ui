@@ -6,7 +6,7 @@ import { InvoiceDocument, InvoiceOrder } from './invoice';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? 'faktury@atlanticave.cz';
+const FROM_EMAIL = `Atlantic Ave <${process.env.RESEND_FROM_EMAIL ?? 'faktury@atlanticave.cz'}>`;
 
 export async function sendInvoiceEmail(order: InvoiceOrder): Promise<void> {
   const pdfBuffer = await renderToBuffer(
@@ -113,8 +113,7 @@ function buildEmailHtml(order: InvoiceOrder): string {
         <tr>
           <td style="padding:20px 40px;background:#f9f9f9;border-top:1px solid #ebebeb;">
             <p style="margin:0;font-size:12px;color:#aaa;line-height:1.6;">
-              Atlantic Ave · faktury@atlanticave.cz<br>
-              Tento email byl odeslán automaticky, prosím neodpovídejte na něj.
+              Atlantic Ave · Tento email byl odeslán automaticky, prosím neodpovídejte na něj.
             </p>
           </td>
         </tr>

@@ -33,6 +33,7 @@ interface Order {
   shipping_address: ShippingAddress | null;
   note: string | null;
   created_at: string;
+  invoice_sent_at: string | null;
   order_items: OrderItem[];
 }
 
@@ -78,6 +79,7 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [sendingInvoice, setSendingInvoice] = useState<string | null>(null);
+  const [invoiceResult, setInvoiceResult] = useState<Record<string, 'success' | 'error'>>({});
 
   useEffect(() => { loadOrders(); }, []);
 
@@ -86,7 +88,7 @@ export default function AdminOrdersPage() {
       .from('orders')
       .select(`
         id, stripe_session_id, status, total, shipping,
-        customer_email, customer_name, shipping_address, note, created_at,
+        customer_email, customer_name, shipping_address, note, created_at, invoice_sent_at,
         order_items ( id, size, quantity, price, products ( name, images, slug ) )
       `)
       .order('created_at', { ascending: false });
@@ -101,14 +103,21 @@ export default function AdminOrdersPage() {
 
   async function sendInvoice(id: string) {
     setSendingInvoice(id);
+    setInvoiceResult(prev => { const n = { ...prev }; delete n[id]; return n; });
     try {
       const res = await fetch(`/api/admin/orders/${id}/send-invoice`, { method: 'POST' });
-      if (!res.ok) {
-        const { error } = await res.json();
-        alert(`Chyba: ${error}`);
+      if (res.ok) {
+        const { invoice_sent_at } = await res.json();
+        setOrders(prev => prev.map(o => o.id === id ? { ...o, invoice_sent_at } : o));
+        setInvoiceResult(prev => ({ ...prev, [id]: 'success' }));
+      } else {
+        setInvoiceResult(prev => ({ ...prev, [id]: 'error' }));
       }
+    } catch {
+      setInvoiceResult(prev => ({ ...prev, [id]: 'error' }));
     } finally {
       setSendingInvoice(null);
+      setTimeout(() => setInvoiceResult(prev => { const n = { ...prev }; delete n[id]; return n; }), 4000);
     }
   }
 
@@ -222,13 +231,32 @@ export default function AdminOrdersPage() {
 
           {/* Price breakdown + invoice button */}
           <div className="mt-4 pt-4 border-t border-gray-200 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <button
-              onClick={() => sendInvoice(order.id)}
-              disabled={sendingInvoice === order.id || !order.customer_email}
-              className="self-start inline-flex items-center gap-1.5 text-xs font-medium bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
-            >
-              {sendingInvoice === order.id ? 'Odesílám…' : 'Odeslat fakturu →'}
-            </button>
+            <div className="self-start flex flex-col gap-1.5">
+              <button
+                onClick={() => sendInvoice(order.id)}
+                disabled={sendingInvoice === order.id || !order.customer_email}
+                className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap ${
+                  invoiceResult[order.id] === 'success'
+                    ? 'bg-green-600 text-white'
+                    : invoiceResult[order.id] === 'error'
+                    ? 'bg-red-600 text-white'
+                    : 'bg-gray-900 text-white hover:bg-gray-700'
+                }`}
+              >
+                {sendingInvoice === order.id
+                  ? 'Odesílám…'
+                  : invoiceResult[order.id] === 'success'
+                  ? 'Odesláno ✓'
+                  : invoiceResult[order.id] === 'error'
+                  ? 'Chyba ✗'
+                  : 'Odeslat fakturu →'}
+              </button>
+              {order.invoice_sent_at && (
+                <p className="text-[10px] text-gray-400">
+                  Naposledy: {formatDate(order.invoice_sent_at)}
+                </p>
+              )}
+            </div>
             <div className="space-y-1.5 min-w-[200px]">
               <div className="flex justify-between text-sm text-gray-500">
                 <span>Mezisoučet</span>
