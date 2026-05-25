@@ -46,10 +46,9 @@ export interface InvoiceOrder {
 
 const SELLER = {
   name: 'Marek Mikulík',
-  address: 'Oty Synka 1876/8, 708 00 Ostrava-Poruba',
-  ico: 'IČO: 12345678',
-  dic: 'DIČ: CZ12345678',
-  email: 'marekmikulik@email.cz',
+  street: 'Podroužkova 1688/21',
+  city: '708 00 Ostrava',
+  ico: 'IČO: 23714328',
 };
 
 // ── Styles ─────────────────────────────────────────────────────────────────
@@ -153,10 +152,9 @@ export function InvoiceDocument({ order }: { order: InvoiceOrder }) {
           <View style={s.addressBlock}>
             <Text style={s.addressLabel}>Dodavatel</Text>
             <Text style={s.addressLine}>{SELLER.name}</Text>
-            <Text style={s.addressLine}>{SELLER.address}</Text>
+            <Text style={s.addressLine}>{SELLER.street}</Text>
+            <Text style={s.addressLine}>{SELLER.city}</Text>
             <Text style={s.addressLine}>{SELLER.ico}</Text>
-            <Text style={s.addressLine}>{SELLER.dic}</Text>
-            <Text style={s.addressLine}>{SELLER.email}</Text>
           </View>
           <View style={s.addressBlock}>
             <Text style={s.addressLabel}>Odběratel</Text>
@@ -208,7 +206,7 @@ export function InvoiceDocument({ order }: { order: InvoiceOrder }) {
 
         {/* Footer */}
         <View style={s.footer} fixed>
-          <Text style={s.footerText}>Atlantic Ave · {SELLER.address}</Text>
+          <Text style={s.footerText}>Atlantic Ave · {SELLER.street}, {SELLER.city}</Text>
           <Text style={s.footerText}>Faktura č. {shortId(order.id)}</Text>
         </View>
 

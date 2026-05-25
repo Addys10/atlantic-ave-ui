@@ -23,7 +23,7 @@ const contacts = [
   {
     icon: MapPin,
     label: 'Adresa',
-    value: 'Oty Synka 1876/8, 708 00 Ostrava-Poruba',
+    value: 'Podroužkova 1688/21, 708 00 Ostrava',
     href: null,
     note: null,
   },
