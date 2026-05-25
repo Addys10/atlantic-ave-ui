@@ -94,7 +94,7 @@ function ThankYouContent() {
         <div className="font-mono text-[10px] tracking-[0.14em] uppercase text-mute text-center">
           Otázky? Napište nám na{' '}
           <a href="mailto:info@atlanticave.cz" className="text-dim hover:text-bone transition-colors">
-            info@atlanticave.cz
+            atlanticave-eshop@seznam.cz
           </a>
         </div>
       </div>
