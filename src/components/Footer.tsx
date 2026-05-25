@@ -11,7 +11,7 @@ export default function Footer() {
             Atlantic Ave
           </span>
           <p className="font-mono text-[11px] tracking-[0.12em] leading-relaxed text-mute max-w-[200px]">
-            Limitované edice.<br />Po vyprodání nebude restockováno.
+            Limitované edice.
           </p>
         </div>
 

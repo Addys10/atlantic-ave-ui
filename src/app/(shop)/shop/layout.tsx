@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Shop',
-  description: 'Limitovaný streetwear. Každý kus je edice — po vyprodání nebude restockováno.',
+  description: 'Limitovaný streetwear. Každý kus je edice.',
   openGraph: {
     title: 'Shop — Atlantic Ave',
-    description: 'Limitovaný streetwear. Každý kus je edice — po vyprodání nebude restockováno.',
+    description: 'Limitovaný streetwear. Každý kus je edice.',
   },
 };
 

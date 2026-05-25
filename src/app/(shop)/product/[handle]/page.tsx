@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Product } from '@/types/product';
 import { CartItem } from '@/types/cart';
+import { DEFAULT_SIZES } from '@/lib/constants';
 
 export default function ProductDetail({ params }: { params: { handle: string } }) {
   const [product, setProduct] = useState<Product | null>(null);
@@ -80,6 +81,10 @@ export default function ProductDetail({ params }: { params: { handle: string } }
   }
 
   const images = product?.images?.length ? product.images : product?.image ? [product.image] : [];
+  const allSoldOut = !product || product.sizes.length === 0 || product.sizes.every(s => !s.available);
+  const displaySizes = product && product.sizes.length > 0
+    ? product.sizes
+    : DEFAULT_SIZES.map(name => ({ id: '', name, available: false, stock: 0 }));
 
   if (loading) {
     return (
@@ -233,11 +238,11 @@ export default function ProductDetail({ params }: { params: { handle: string } }
 
           {/* Sizes */}
           <div className="flex flex-col gap-3">
-            <h5 className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim font-normal flex justify-between">
+            <h5 className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim font-normal">
               <span>Velikost{selectedSize ? ` — ${selectedSize}` : ''}</span>
             </h5>
             <div className="grid grid-cols-5 gap-[6px]">
-              {product.sizes.map(size => {
+              {displaySizes.map(size => {
                 const isOut = !size.available;
                 const isOn = selectedSize === size.name;
                 return (
@@ -264,13 +269,22 @@ export default function ProductDetail({ params }: { params: { handle: string } }
           </div>
 
           {/* CTA */}
-          <button
-            disabled={!selectedSize || adding}
-            onClick={handleAddToCart}
-            className="w-full py-[22px] bg-bone text-[#0a0a0a] font-mono text-[12px] tracking-[0.26em] uppercase border border-bone hover:bg-[#0a0a0a] hover:text-bone transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {adding ? 'Přidáno →' : selectedSize ? 'Přidat do košíku' : 'Vyberte velikost'}
-          </button>
+          {allSoldOut ? (
+            <Link
+              href={`/restock?product=${product.slug}`}
+              className="w-full py-[22px] font-mono text-[12px] tracking-[0.26em] uppercase border border-line text-dim hover:border-dim hover:text-bone transition-colors duration-200 text-center block"
+            >
+              Zájem o restock →
+            </Link>
+          ) : (
+            <button
+              disabled={!selectedSize || adding}
+              onClick={handleAddToCart}
+              className="w-full py-[22px] bg-bone text-[#0a0a0a] font-mono text-[12px] tracking-[0.26em] uppercase border border-bone hover:bg-[#0a0a0a] hover:text-bone transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {adding ? 'Přidáno →' : selectedSize ? 'Přidat do košíku' : 'Vyberte velikost'}
+            </button>
+          )}
 
           {/* Description */}
           {product.description && (
@@ -286,7 +300,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
               ⊕ Doprava 3–5 pracovních dní · 129 Kč
             </div>
             <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-mute">
-              ⊕ Limitovaná edice — po vyprodání nebude restockováno
+              ⊕ Limitovaná edice
             </div>
           </div>
 

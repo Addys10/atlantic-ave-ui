@@ -227,7 +227,7 @@ export default function BehindTheBrandPage() {
                 Kolekce
               </div>
               <p className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#7a7a74] max-w-[34ch] leading-relaxed">
-                Každý kus je výsledek tohoto procesu. Limitovaně. Bez restocku.
+                Každý kus je výsledek tohoto procesu. Limitovaně.
               </p>
             </div>
             <Link

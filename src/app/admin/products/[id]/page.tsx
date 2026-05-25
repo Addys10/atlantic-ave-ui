@@ -86,7 +86,7 @@ export default function ProductEditPage() {
   function addVariant() {
     const used = variants.map(v => v.size);
     const next = SIZES.find(s => !used.includes(s)) ?? '';
-    setVariants(prev => [...prev, { size: next, stock: 0 }]);
+    setVariants(prev => [...prev, { id: crypto.randomUUID(), size: next, stock: 0 }]);
   }
 
   async function handleSave() {

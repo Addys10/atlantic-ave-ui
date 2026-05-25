@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
-import { LayoutDashboard, Package, ShoppingBag, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Menu, X, RefreshCw, Settings } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -39,6 +39,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin', label: 'Přehled', icon: <LayoutDashboard size={17} />, exact: true },
     { href: '/admin/products', label: 'Produkty', icon: <Package size={17} /> },
     { href: '/admin/orders', label: 'Objednávky', icon: <ShoppingBag size={17} /> },
+    { href: '/admin/restock', label: 'Restock', icon: <RefreshCw size={17} /> },
+    { href: '/admin/settings', label: 'Nastavení', icon: <Settings size={17} /> },
   ];
 
   const SidebarContent = ({ onNavClick }: { onNavClick?: () => void }) => (

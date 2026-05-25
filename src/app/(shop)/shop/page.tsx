@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Product } from '@/types/product';
+import { DEFAULT_SIZES } from '@/lib/constants';
 
 function availableCount(product: Product) {
   return product.sizes.filter(s => s.available).length;
@@ -183,6 +184,28 @@ export default function ShopPage() {
                           {product.subtitle}
                         </p>
                       )}
+                      <div className="flex flex-wrap gap-[4px] mb-2.5">
+                        {(product.sizes.length > 0 ? product.sizes.map(s => ({ name: s.name, available: s.available })) : DEFAULT_SIZES.map(name => ({ name, available: false }))).map(size => size.available ? (
+                          <span
+                            key={size.name}
+                            className="font-mono text-[9px] tracking-[0.1em] uppercase px-1.5 py-1 border border-line text-dim"
+                          >
+                            {size.name}
+                          </span>
+                        ) : (
+                          <Link
+                            key={size.name}
+                            href={`/restock?product=${product.slug}&size=${size.name}`}
+                            className="font-mono text-[9px] tracking-[0.1em] uppercase px-1.5 py-1 text-mute hover:text-dim transition-colors"
+                            style={{
+                              border: '1px solid #1a1a1a',
+                              background: 'repeating-linear-gradient(135deg, transparent 0 3px, rgba(107,107,102,0.1) 3px 4px)',
+                            }}
+                          >
+                            {size.name}
+                          </Link>
+                        ))}
+                      </div>
                       <div className="flex items-center justify-between">
                         <span className="font-mono text-[11px] text-bone">
                           {product.price.toLocaleString('cs-CZ')} Kč
@@ -280,10 +303,11 @@ export default function ShopPage() {
                               <span className="text-[9px] text-mute">{size.stock}&thinsp;ks</span>
                             </div>
                           ))}
-                          {product.sizes.filter(s => !s.available).map(size => (
-                            <div
+                          {(product.sizes.length > 0 ? product.sizes.filter(s => !s.available) : DEFAULT_SIZES.map(name => ({ name, available: false }))).map(size => (
+                            <Link
                               key={size.name}
-                              className="font-mono tracking-[0.1em] uppercase text-mute w-14 py-2.5 text-center flex flex-col items-center gap-0.5"
+                              href={`/restock?product=${product.slug}&size=${size.name}`}
+                              className="font-mono tracking-[0.1em] uppercase text-mute w-14 py-2.5 text-center flex flex-col items-center gap-0.5 hover:text-dim transition-colors"
                               style={{
                                 border: '1px solid #1a1a1a',
                                 background: 'repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,107,102,0.09) 4px 5px)',
@@ -291,7 +315,7 @@ export default function ShopPage() {
                             >
                               <span className="text-[11px]">{size.name}</span>
                               <span className="text-[9px]">—</span>
-                            </div>
+                            </Link>
                           ))}
                         </div>
 

@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 const INSTAGRAM = 'https://www.instagram.com/atlantic_ave_100th_';
 
 const values = [
-  { num: '01', label: 'Limitované edice', sub: 'Každý drop jednou — bez restocku.' },
+  { num: '01', label: 'Limitované edice', sub: 'Každý drop jednou.' },
   { num: '02', label: 'Vyrobeno s péčí', sub: 'Každý detail promyšlený od začátku.' },
   { num: '03', label: 'Vlastní proces', sub: 'Od návrhu po balení — vše pod kontrolou.' },
 ];
