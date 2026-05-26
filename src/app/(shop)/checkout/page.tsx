@@ -234,7 +234,7 @@ export default function CheckoutPage() {
         </div>
 
         {/* ── Order summary ── */}
-        <div className="tb:sticky tb:top-[68px] tb:h-[calc(100vh-68px)] tb:overflow-y-auto">
+        <div className="tb:sticky tb:top-[68px] tb:self-start">
           <div className="p-7 md:p-10 flex flex-col gap-6 h-full">
 
             <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-dim font-normal border-b border-line pb-5">

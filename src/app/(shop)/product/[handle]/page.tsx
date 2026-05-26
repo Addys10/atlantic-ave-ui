@@ -210,7 +210,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
         </div>
 
         {/* Sticky info panel */}
-        <aside className="tb:sticky tb:top-[68px] tb:h-[calc(100vh-68px)] tb:overflow-y-auto flex flex-col gap-8 p-8 md:p-12">
+        <aside className="tb:sticky tb:top-[68px] tb:self-start flex flex-col gap-8 p-8 md:p-12">
 
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase text-dim">

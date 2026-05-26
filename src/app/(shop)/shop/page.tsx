@@ -243,7 +243,7 @@ export default function ShopPage() {
                       {/* Image */}
                       <div
                         style={flip ? { direction: 'ltr' } : undefined}
-                        className="relative overflow-hidden"
+                        className="relative overflow-hidden group/photo"
                       >
                         <motion.div
                           className="absolute inset-0"
@@ -257,6 +257,15 @@ export default function ShopPage() {
                             className="object-cover"
                             sizes="50vw"
                           />
+                          {product.images[1] && (
+                            <Image
+                              src={product.images[1]}
+                              alt={product.name}
+                              fill
+                              className="object-cover opacity-0 group-hover/photo:opacity-100 transition-opacity duration-500"
+                              sizes="50vw"
+                            />
+                          )}
                           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0a]/25 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                         </motion.div>
 
