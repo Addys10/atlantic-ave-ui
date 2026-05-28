@@ -20,6 +20,7 @@ export default function Footer() {
           <div className="font-mono text-[10px] tracking-[0.26em] uppercase text-mute mb-1">Navigace</div>
           {[
             { label: 'Shop', href: '/shop' },
+            { label: 'Size Guide', href: '/size-guide' },
             { label: 'Kontakt', href: '/kontakt' },
           ].map(({ label, href }) => (
             <Link key={href} href={href} className="font-mono text-[11px] tracking-[0.18em] uppercase text-dim hover:text-bone transition-colors">

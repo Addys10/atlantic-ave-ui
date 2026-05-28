@@ -268,6 +268,10 @@ export default function ProductDetail({ params }: { params: { handle: string } }
             </div>
           </div>
 
+          <Link href="/size-guide" className="font-mono text-[10px] tracking-[0.18em] uppercase text-mute hover:text-dim transition-colors self-start border-b border-mute/40 hover:border-dim/40 pb-px">
+            Tabulka velikostí →
+          </Link>
+
           {/* CTA */}
           {allSoldOut ? (
             <Link

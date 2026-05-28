@@ -86,6 +86,7 @@ export default function Navbar() {
           {/* Left */}
           <div className="flex items-center gap-7">
             <Link href="/shop" className={linkCls}>Shop</Link>
+            <Link href="/size-guide" className={linkCls}>Size Guide</Link>
           </div>
 
           {/* Center */}
@@ -97,6 +98,7 @@ export default function Navbar() {
 
           {/* Right — desktop with cart dropdown */}
           <div className="flex items-center justify-end gap-7">
+            <Link href="/archiv" className={linkCls}>Archiv</Link>
             <Link href="/behind-the-brand" className={linkCls}>Behind the brand</Link>
             <Link href="/kontakt" className={linkCls}>Kontakt</Link>
 
@@ -236,6 +238,8 @@ export default function Navbar() {
               <div className="flex flex-col gap-1 p-5 pt-6">
                 {[
                   { label: 'Shop', href: '/shop' },
+                  { label: 'Size Guide', href: '/size-guide' },
+                  { label: 'Archiv', href: '/archiv' },
                   { label: 'Behind the brand', href: '/behind-the-brand' },
                   { label: 'Kontakt', href: '/kontakt' },
                   { label: 'Košík', href: '/checkout' },
@@ -249,9 +253,6 @@ export default function Navbar() {
                     {item.label}
                   </Link>
                 ))}
-                <div className="px-3 py-3 font-mono text-[11px] tracking-[0.18em] uppercase text-mute">
-                  Drop 02
-                </div>
               </div>
             </motion.div>
           </>
