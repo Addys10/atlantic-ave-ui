@@ -9,8 +9,8 @@ const drops = [
     year: '2025',
     banner: '/images/formula.png',
     products: [
-      { name: 'Atlantic Tee — Black', image: '/images/drop1/Drop1Black.jpeg', text: '' },
-      { name: 'Atlantic Tee — White', image: '/images/drop1/Drop1White.jpeg', text: '' },
+      { name: 'Apex Tee', image: '/images/drop1/Drop1Black.jpeg', text: '' },
+      { name: 'Pitstop Stories Tee', image: '/images/drop1/Drop1White.jpeg', text: '' },
     ],
   },
 ] as const;
