@@ -100,7 +100,6 @@ export default function Navbar() {
           <div className="flex items-center justify-end gap-7">
             <Link href="/archiv" className={linkCls}>Archiv</Link>
             <Link href="/behind-the-brand" className={linkCls}>Behind the brand</Link>
-            <Link href="/kontakt" className={linkCls}>Kontakt</Link>
 
             {/* Cart trigger */}
             <div
