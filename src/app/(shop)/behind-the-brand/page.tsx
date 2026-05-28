@@ -8,36 +8,36 @@ const sections = [
     num: '01',
     heading: null,
     body: [
-      `Myšlenka na vlastní značku se mi poprvé objevila v hlavě ve chvíli, kdy jsem žil v Americe. Nebyl to plán ani konkrétní cíl. Spíš jen pocit, který se občas vrátil a zase zmizel.`,
-      `Když jsem se vrátil zpátky do Česka, ta myšlenka už nezmizela. Vracívala se každý den. Přemýšlel jsem nad ní pořád dokola, až jsem jednoho dne narazil na video, kde dva týpci sprejovali na trička. A řekl jsem si: proč to nezkusit?`,
-      `V tu chvíli jsem ale vůbec neměl v hlavě, že by se z toho někdy měla stát skutečná značka. Neřešil jsem výrobu, fabriky, tisk, balení nebo e-shop. Bylo to jen o tom začít a něco si vyzkoušet.`,
+      `Myšlenka na vlastní značku se zrodila, když jsem žil v Americe. Nebyl to žádný jasný plán ani konkrétní cíl. Spíš jen pocit, který se občas objevil a zase odezněl.`,
+      `Po návratu do Česka se mě ale tenhle nápad pustit nechtěl. Vracel se mi každý den. Přemýšlel jsem nad tím pořád dokola, až jsem jednoho dne narazil na video, kde dva týpci sprejovali na trička. A řekl jsem si: proč to nezkusit?`,
+      `V tu chvíli jsem vůbec neplánoval, že by se z toho někdy měla stát skutečná značka. Neřešil jsem výrobu, fabriky, tisk, balení nebo e-shop. Bylo to jen o tom udělat první krok a něco si vyzkoušet.`,
     ],
   },
   {
     num: '02',
     heading: 'Od zkoušení k něčemu reálnému',
     body: [
-      `Když jsem zjistil, že sprejování není ta správná cesta, začal jsem se víc zajímat o klasický tisk a reálnou výrobu oblečení. Objednal jsem první kusy. Zkusil jsem natisknout první návrhy. Testoval jsem. Učil se.`,
-      `A někde mezi tím jsem si uvědomil, že už vlastně netestuji. Že už pomalu vzniká něco, co má vlastní směr.`,
-      `Bez velkého rozpočtu. Bez prostoru pro zbytečné chyby. Každé rozhodnutí jsem musel promýšlet víc, než bych možná chtěl. A právě to mě naučilo přemýšlet nad každým detailem.`,
+      `Když jsem zjistil, že sprejování není ta správná cesta, začal jsem se víc zajímat o klasický tisk a reálnou výrobu oblečení. Objednal jsem první kusy. Zkusil natisknout první návrhy. Testoval jsem. Učil se.`,
+      `A někde mezi tím mi došlo, že už vlastně netestuji. Že už pomalu vzniká něco, co má svůj vlastní směr.`,
+      `Všechno to vznikalo bez velkého rozpočtu. Bez prostoru pro zbytečné chyby. Každé rozhodnutí jsem musel zvažovat mnohem víc, než bych možná chtěl. A právě to mě naučilo dát si záležet na každém detailu.`,
     ],
   },
   {
     num: '03',
     heading: 'Jak nad věcmi přemýšlím',
     body: [
-      `Do každého kusu se snažím dát maximum. Neznamená to, že je všechno dokonalé — ale znamená to, že nic nepouštím ven jen proto, že „už by to mohlo stačit".`,
-      `Často vznikne 50 návrhů a použijí se dva. Zbytek beru jako součást cesty, ne jako chybu. Bez nich by ty dva nikdy nevznikly.`,
-      `Tenhle přístup se promítá do každého kusu, který jde ven — ať už jde o střih, materiál, potisk nebo detaily.`,
+      `Do každého kousku se snažím dát maximum. Neznamená to, že je vždycky všechno dokonalé — ale znamená to, že nic nevypustím do světa jen proto, že „už by to mohlo stačit".`,
+      `Často vznikne padesát návrhů a použijí se z nich jen dva. Ten zbytek beru jako nezbytnou součást cesty, ne jako chybu. Bez nich by totiž ty dva finální nikdy nevznikly.`,
+      `Tenhle přístup se promítá do všeho, co tvořím — ať už jde o samotný střih, materiál, potisk nebo ty nejmenší detaily.`,
     ],
   },
   {
     num: '04',
     heading: 'Od návrhu po výrobu',
     body: [
-      `Byl jsem u všeho. Od hledání fabrik, přes tisk, střihy a materiály, až po štítky, balení, nálepky a e-shop.`,
-      `Ne proto, že bych nevěřil ostatním, ale proto, že jsem chtěl rozumět celému procesu. Jak věci vznikají. Co má vliv na kvalitu. Co dělá rozdíl mezi průměrným a dobrým kusem.`,
-      `Nešlo mi jen o to, aby to dobře vypadalo. Chtěl jsem, aby se to dobře nosilo. Aby to něco vydrželo. Aby to dávalo smysl i za rok, ne jen dnes.`,
+      `Byl jsem u všeho. Od hledání fabrik přes tisk, střihy a materiály až po štítky, balení, nálepky a samotný e-shop.`,
+      `Ne proto, že bych nevěřil ostatním, ale proto, že jsem chtěl rozumět celému procesu. Zjistit, jak věci vznikají. Co má reálný vliv na kvalitu. Co dělá ten rozdíl mezi průměrným a skvělým kouskem.`,
+      `Nešlo mi jen o to, aby to dobře vypadalo. Chtěl jsem, aby se to dobře nosilo. Aby to něco vydrželo. Aby to dávalo smysl i za rok, nejen dnes.`,
     ],
   },
   {
@@ -45,8 +45,8 @@ const sections = [
     heading: 'Limitované dropy',
     body: [
       `Atlantic Ave funguje na principu menších, limitovaných kolekcí.`,
-      `Nechci vydávat co nejvíc kusů. Chci vydávat věci, za kterými si můžu stát.`,
-      `První oficiální drop se vyprodal. Neberu to jako důkaz, že „to umím". Beru to spíš jako potvrzení, že tenhle přístup má smysl.`,
+      `Nejde mi o to chrlit co nejvíc kusů oblečení. Chci tvořit věci, za kterými si můžu stoprocentně stát.`,
+      `První oficiální drop se vyprodal. Neberu to jako důkaz, že už „všechno umím". Beru to spíš jako obrovské potvrzení toho, že tenhle přístup má smysl.`,
     ],
   },
   {
@@ -54,7 +54,7 @@ const sections = [
     heading: 'Tohle je teprve začátek',
     body: [
       `Atlantic Ave není hotová věc. Je to proces, který se vyvíjí s každým dalším krokem.`,
-      `Učím se. Zlepšuji se. A snažím se dělat věci o trochu lépe než minule.`,
+      `Učím se. Zlepšuji se. A snažím se dělat věci vždycky o trochu lépe než minule.`,
     ],
     closing: `Tohle je teprve začátek.`,
   },

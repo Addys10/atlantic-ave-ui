@@ -110,7 +110,7 @@ function RestockContent() {
   if (!open) {
     return (
       <div className="bg-[#0a0a0a] min-h-[calc(100vh-58px)] flex flex-col items-center justify-center gap-6 px-6 text-center">
-        <p className="font-mono text-[10px] tracking-[0.26em] uppercase text-dim">Restock · Drop 001</p>
+        <p className="font-mono text-[10px] tracking-[0.26em] uppercase text-dim">Restock · Drop 002</p>
         <h1 className="font-anton text-[clamp(72px,14vw,160px)] uppercase leading-none tracking-tight text-bone">
           BRZY.
         </h1>
@@ -127,7 +127,7 @@ function RestockContent() {
   if (submitted) {
     return (
       <div className="bg-[#0a0a0a] min-h-[calc(100vh-58px)] flex flex-col items-center justify-center gap-6 px-6 text-center">
-        <p className="font-mono text-[10px] tracking-[0.26em] uppercase text-dim">Restock · Drop 001</p>
+        <p className="font-mono text-[10px] tracking-[0.26em] uppercase text-dim">Restock · Drop 002</p>
         <h1 className="font-anton text-[clamp(52px,8vw,100px)] uppercase leading-none tracking-tight text-bone">
           ZAREGISTROVÁNO.
         </h1>
@@ -147,7 +147,7 @@ function RestockContent() {
 
         {/* Left — hero (sticky) */}
         <div className="flex flex-col justify-start px-8 md:px-12 py-16 border-b tb:border-b-0 tb:border-r border-line tb:sticky tb:top-[68px] tb:h-[calc(100vh-68px)]">
-          <p className="font-mono text-[10px] tracking-[0.26em] uppercase text-dim mb-6">Restock · Drop 001</p>
+          <p className="font-mono text-[10px] tracking-[0.26em] uppercase text-dim mb-6">Restock · Drop 002</p>
           <h1 className="font-anton text-[clamp(56px,7vw,110px)] uppercase leading-[0.88] tracking-tight text-bone mb-8">
             SOLD OUT.<br />COMING<br />BACK.
           </h1>
