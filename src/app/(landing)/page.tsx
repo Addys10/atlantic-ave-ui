@@ -3,9 +3,18 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect } from 'react';
 
 const INSTAGRAM = 'https://www.instagram.com/atlantic_ave_100th_';
+
+function InstagramIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
 
 const values = [
   { num: '01', label: 'Limitované edice', sub: 'Každý drop jednou.' },
@@ -14,20 +23,6 @@ const values = [
 ];
 
 export default function LandingPage() {
-  useEffect(() => {
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', '#000000');
-    else {
-      const m = document.createElement('meta');
-      m.name = 'theme-color';
-      m.content = '#000000';
-      document.head.appendChild(m);
-    }
-    return () => {
-      const m = document.querySelector('meta[name="theme-color"]');
-      if (m) m.setAttribute('content', '#0a0a0a');
-    };
-  }, []);
 
   return (
     <div className="bg-black">
@@ -44,7 +39,7 @@ export default function LandingPage() {
         >
           <Image
             src="/images/nfl-hero.jpg"
-            alt=""
+            alt="Hero Drop 2 Atlantic Ave"
             fill
             className="object-cover"
             style={{ opacity: 0.58 }}
@@ -83,11 +78,7 @@ export default function LandingPage() {
             className="text-white/30 hover:text-white/80 transition-colors duration-300"
             aria-label="Instagram"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-              <circle cx="12" cy="12" r="4" />
-              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
-            </svg>
+            <InstagramIcon size={18} />
           </a>
         </motion.div>
 
@@ -147,6 +138,7 @@ export default function LandingPage() {
 
         {/* Scroll indicator */}
         <motion.div
+          aria-hidden="true"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1.4 }}
@@ -223,11 +215,7 @@ export default function LandingPage() {
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-4 font-mono text-[11px] tracking-[0.28em] uppercase text-[#f4f1ea] border border-[#f4f1ea]/30 hover:border-[#f4f1ea] px-7 py-4 transition-colors duration-200"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <circle cx="12" cy="12" r="4" />
-                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
-              </svg>
+              <InstagramIcon size={14} />
               <span>Sledovat</span>
               <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
             </a>
@@ -250,11 +238,7 @@ export default function LandingPage() {
               className="text-[#555] hover:text-[#8a8a85] transition-colors"
               aria-label="Instagram"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <circle cx="12" cy="12" r="4" />
-                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
-              </svg>
+              <InstagramIcon size={16} />
             </a>
           </div>
         </div>

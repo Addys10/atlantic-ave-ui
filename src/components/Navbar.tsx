@@ -74,7 +74,7 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
-            <button onClick={() => setMobileOpen(true)} className="text-dim hover:text-bone transition-colors">
+            <button onClick={() => setMobileOpen(true)} aria-label="Otevřít menu" aria-expanded={mobileOpen} className="text-dim hover:text-bone transition-colors">
               <Menu size={18} />
             </button>
           </div>
@@ -230,7 +230,7 @@ export default function Navbar() {
             >
               <div className="flex items-center justify-between px-6 h-[68px] border-b border-line">
                 <span className="font-cloister text-sm text-bone tracking-widest uppercase">Menu</span>
-                <button onClick={() => setMobileOpen(false)} className="text-dim hover:text-bone transition-colors">
+                <button onClick={() => setMobileOpen(false)} aria-label="Zavřít menu" className="text-dim hover:text-bone transition-colors">
                   <X size={16} />
                 </button>
               </div>

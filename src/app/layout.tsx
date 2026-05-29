@@ -12,11 +12,13 @@ const anton = Anton({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-anton",
+  display: "swap",
 });
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
+  display: "swap",
 });
 
 const BASE_URL = 'https://atlanticave.cz';
