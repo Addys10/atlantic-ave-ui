@@ -98,6 +98,19 @@ export default function KontaktPage() {
           ))}
         </div>
 
+        {/* Provozovatel */}
+        <div className="flex flex-col gap-4">
+          <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-dim">
+            Provozovatel
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <span className="font-mono text-[13px] tracking-[0.06em] text-bone">Marek Mikulík</span>
+            <span className="font-mono text-[12px] tracking-[0.06em] text-dim">Podroužková 1688/21</span>
+            <span className="font-mono text-[12px] tracking-[0.06em] text-dim">708 00 Ostrava</span>
+            <span className="font-mono text-[12px] tracking-[0.06em] text-dim mt-1">IČO: 23714328</span>
+          </div>
+        </div>
+
       </div>
     </div>
   );

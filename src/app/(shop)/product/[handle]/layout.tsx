@@ -21,13 +21,13 @@ export async function generateMetadata(
     openGraph: {
       title: `${data.name} — Atlantic Ave`,
       description: data.subtitle || `${data.name} — Atlantic Ave`,
-      ...(image ? { images: [{ url: image }] } : {}),
+      ...(image ? { images: [{ url: image, width: 1200, height: 1500, alt: data.name }] } : {}),
     },
     twitter: {
       card: 'summary_large_image',
       title: `${data.name} — Atlantic Ave`,
       description: data.subtitle || `${data.name} — Atlantic Ave`,
-      ...(image ? { images: [image] } : {}),
+      ...(image ? { images: [{ url: image, alt: data.name }] } : {}),
     },
   };
 }

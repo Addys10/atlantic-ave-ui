@@ -6,20 +6,20 @@ export const metadata = {
 export default function PravniUpozorneniPage() {
   const sections = [
     {
-      title: 'Ilustrační fotografie',
-      body: 'Fotografie produktů jsou ilustrační. Odstíny a detaily se mohou mírně lišit v závislosti na nastavení displeje a světelných podmínkách při focení.',
+      title: 'Ilustrační fotografie a vzhled produktů',
+      body: 'Fotografie produktů jsou ilustrační. Skutečné odstíny barev a drobné detaily se mohou mírně lišit v závislosti na individuálním nastavení vašeho monitoru či displeje a na světelných podmínkách při focení.',
     },
     {
       title: 'Autorská práva',
-      body: 'Veškerý obsah e-shopu (fotografie, texty, grafika) je chráněn autorským právem. Kopírování, šíření nebo jakékoli jiné použití obsahu bez předchozího písemného souhlasu je zakázáno.',
+      body: 'Veškerý obsah tohoto internetového obchodu (zejména fotografie, texty, popisy produktů, grafika a logo) je chráněn autorským právem. Kopírování, šíření nebo jakékoli jiné komerční použití tohoto obsahu bez předchozího písemného souhlasu provozovatele je přísně zakázáno a může být právně vymáháno.',
     },
     {
-      title: 'Vyloučení odpovědnosti',
-      body: 'Obsah těchto stránek je poskytován pouze pro informační účely. Vynakládáme maximální úsilí, abychom zajistili přesnost a aktuálnost informací.',
+      title: 'Vyloučení odpovědnosti a zjevné chyby',
+      body: 'Obsah těchto stránek je poskytován pro informační účely. Vynakládáme maximální úsilí, abychom zajistili přesnost a aktuálnost všech informací. Vyhrazujeme si však právo na zrušení objednávky v případě, že u zboží byla vlivem technické chyby uvedena zjevně chybná cena (např. chybějící číslice), která zjevně neodpovídá obvyklé nákupní hodnotě daného zboží.',
     },
     {
       title: 'Odkazy na třetí strany',
-      body: 'Tyto webové stránky mohou obsahovat odkazy na webové stránky třetích stran. Tyto odkazy jsou poskytovány pouze pro vaše pohodlí a neneseme žádnou odpovědnost za obsah těchto externích stránek.',
+      body: 'Tyto webové stránky mohou obsahovat odkazy na webové stránky třetích stran. Tyto odkazy jsou poskytovány výhradně pro vaše pohodlí. Neneseme žádnou odpovědnost za obsah, zabezpečení nebo ochranu soukromí na těchto externích stránkách.',
     },
   ];
 

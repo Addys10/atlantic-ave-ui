@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: '/admin/',
+        disallow: ['/admin/', '/api/', '/thank-you', '/checkout'],
       },
     ],
     sitemap: 'https://atlanticave.cz/sitemap.xml',
