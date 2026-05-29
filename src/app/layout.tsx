@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     url: BASE_URL,
     images: [
       {
-        url: `${BASE_URL}/opengraph-image`,
+        url: `${BASE_URL}/opengraph-atlantic-ave.png`,
         width: 1200,
         height: 630,
         alt: 'Atlantic Ave — Limitovaný Streetwear',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Atlantic Ave — Limitovaný Streetwear, Každý Kus je Edice',
     description: 'Atlantic Ave — limitovaný streetwear z Ostravy. Každý drop je jedinečná edice v omezeném množství. Oblečení pro ty, kteří chtějí víc než jen oblečení.',
-    images: [`${BASE_URL}/opengraph-image`],
+    images: [`${BASE_URL}/opengraph-atlantic-ave.png`],
   },
   icons: {
     icon: [
