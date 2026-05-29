@@ -12,6 +12,7 @@ const config: Config = {
         tb: '896px',
       },
       colors: {
+        canvas: "#0a0a0a",
         bone: "#f4f1ea",
         line: "#1f1f1f",
         dim: "#8a8a85",

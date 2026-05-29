@@ -7,6 +7,75 @@ import { useState, useEffect } from 'react';
 import { Product } from '@/types/product';
 import { DEFAULT_SIZES } from '@/lib/constants';
 
+const BLUR_PLACEHOLDER = `data:image/svg+xml;base64,${btoa("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect fill='#1f1f1f' width='1' height='1'/></svg>")}`;
+
+function ShopSkeleton() {
+  return (
+    <div className="min-h-screen bg-canvas">
+
+      {/* Header strip */}
+      <div className="border-b border-line px-6 md:px-14 py-3.5 flex items-center justify-between">
+        <div className="skeleton h-2.5 w-16 rounded-sm" />
+        <div className="skeleton h-2.5 w-12 rounded-sm" />
+      </div>
+
+      {/* Mobile: 2-column card grid */}
+      <div className="md:hidden grid grid-cols-2 gap-[1px] bg-line border-t border-line">
+        {[0, 1, 2, 3].map(i => (
+          <div key={i} className="bg-canvas flex flex-col">
+            <div className="aspect-[3/4] skeleton" />
+            <div className="p-3 pb-4 border-t border-line flex flex-col gap-2">
+              <div className="skeleton h-5 w-3/4 rounded-sm" />
+              <div className="skeleton h-2 w-full rounded-sm" />
+              <div className="skeleton h-2 w-2/3 rounded-sm" />
+              <div className="flex gap-1 mt-1">
+                {[0, 1, 2].map(j => (
+                  <div key={j} className="skeleton h-5 w-7 rounded-sm" />
+                ))}
+              </div>
+              <div className="skeleton h-2.5 w-16 rounded-sm mt-1" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: editorial rows */}
+      <div className="hidden md:flex flex-col border-t border-line">
+        {[0, 1].map(i => (
+          <div key={i} className="border-b border-line last:border-b-0">
+            <div className="grid grid-cols-2 min-h-[72vh]">
+              {/* Image side */}
+              <div className="skeleton" />
+
+              {/* Info side */}
+              <div className="flex flex-col justify-center px-12 lg:px-16 py-12 gap-6 bg-canvas">
+                <div className="skeleton h-20 w-2/3 rounded-sm" />
+                <div className="skeleton h-20 w-2/5 rounded-sm" />
+                <div className="flex flex-col gap-2">
+                  <div className="skeleton h-2.5 w-full rounded-sm" />
+                  <div className="skeleton h-2.5 w-5/6 rounded-sm" />
+                </div>
+                <div className="h-px w-full bg-line" />
+                <div className="flex gap-[5px]">
+                  {[0, 1, 2, 3].map(j => (
+                    <div key={j} className="skeleton h-14 w-14 rounded-sm" />
+                  ))}
+                </div>
+                <div className="h-px w-full bg-line" />
+                <div className="flex items-center justify-between">
+                  <div className="skeleton h-4 w-24 rounded-sm" />
+                  <div className="skeleton h-3 w-28 rounded-sm" />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  );
+}
+
 function availableCount(product: Product) {
   return product.sizes.filter(s => s.available).length;
 }
@@ -42,11 +111,7 @@ export default function ShopPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
 
-      {loading && (
-        <div className="flex justify-center py-40">
-          <div className="animate-spin rounded-full h-7 w-7 border-b border-bone" />
-        </div>
-      )}
+      {loading && <ShopSkeleton />}
 
       {!loading && error && (
         <div className="text-center py-40">
@@ -166,6 +231,8 @@ export default function ShopPage() {
                         fill
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                         sizes="50vw"
+                        placeholder="blur"
+                        blurDataURL={BLUR_PLACEHOLDER}
                       />
                       {soldOut && (
                         <div className="absolute inset-0 bg-[#0a0a0a]/55 flex items-end p-3">
@@ -256,6 +323,8 @@ export default function ShopPage() {
                             fill
                             className="object-cover"
                             sizes="50vw"
+                            placeholder="blur"
+                            blurDataURL={BLUR_PLACEHOLDER}
                           />
                           {product.images[1] && (
                             <Image
@@ -264,6 +333,8 @@ export default function ShopPage() {
                               fill
                               className="object-cover opacity-0 group-hover/photo:opacity-100 transition-opacity duration-500"
                               sizes="50vw"
+                              placeholder="blur"
+                              blurDataURL={BLUR_PLACEHOLDER}
                             />
                           )}
                           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a0a]/25 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />

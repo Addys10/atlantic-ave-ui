@@ -7,6 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ShoppingCart } from 'lucide-react';
 import { CartItem } from '@/types/cart';
 
+const BLUR_PLACEHOLDER = `data:image/svg+xml;base64,${btoa("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect fill='#1f1f1f' width='1' height='1'/></svg>")}`;
+
+
 const SHIPPING = 129;
 
 export default function Navbar() {
@@ -156,7 +159,7 @@ export default function Navbar() {
                           {cartItems.slice(0, 4).map(item => (
                             <div key={item.variantId} className="flex items-center gap-3 px-4 py-3">
                               <div className="relative w-11 h-[58px] flex-shrink-0 overflow-hidden bg-line">
-                                <Image src={item.image} alt={item.name} fill className="object-cover" />
+                                <Image src={item.image} alt={item.name} fill className="object-cover" placeholder="blur" blurDataURL={BLUR_PLACEHOLDER} />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="font-anton text-[15px] uppercase leading-tight text-bone truncate">

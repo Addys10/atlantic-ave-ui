@@ -13,20 +13,31 @@
   }
 
   body {
-    @apply bg-[#0a0a0a] text-[#f4f1ea];
+    @apply bg-canvas text-bone;
     font-family: var(--font-mono, ui-sans-serif, system-ui, sans-serif);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 }
 
+@keyframes shimmer {
+  0% { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #1a1a1a 25%, #272727 50%, #1a1a1a 75%);
+  background-size: 1200px 100%;
+  animation: shimmer 1.6s infinite linear;
+}
+
 @layer components {
   .btn-primary {
-    @apply bg-bone text-[#0a0a0a] px-6 py-3 font-mono text-xs tracking-widest uppercase hover:bg-[#0a0a0a] hover:text-bone border border-bone transition-colors;
+    @apply bg-bone text-canvas px-6 py-3 font-mono text-xs tracking-widest uppercase hover:bg-canvas hover:text-bone border border-bone transition-colors;
   }
 
   .btn-secondary {
-    @apply border border-[#1f1f1f] text-[#f4f1ea] px-6 py-3 font-mono text-xs tracking-widest uppercase hover:border-bone transition-colors;
+    @apply border border-line text-bone px-6 py-3 font-mono text-xs tracking-widest uppercase hover:border-bone transition-colors;
   }
 
   .container-custom {

@@ -8,6 +8,80 @@ import { Product } from '@/types/product';
 import { CartItem } from '@/types/cart';
 import { DEFAULT_SIZES } from '@/lib/constants';
 
+const BLUR_PLACEHOLDER = `data:image/svg+xml;base64,${btoa("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect fill='#1f1f1f' width='1' height='1'/></svg>")}`;
+
+function ProductSkeleton() {
+  return (
+    <div className="bg-canvas min-h-screen grid grid-cols-1 tb:grid-cols-[1.4fr_1fr]">
+
+      {/* Left — gallery */}
+      <div className="flex flex-col tb:border-r border-line">
+        {/* Main image */}
+        <div className="relative aspect-[4/5] border-b border-line skeleton" />
+
+        {/* Thumbnails */}
+        <div className="grid grid-cols-4">
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className="aspect-square border-r border-line last:border-r-0 skeleton" />
+          ))}
+        </div>
+      </div>
+
+      {/* Right — info panel */}
+      <div className="flex flex-col gap-8 p-8 md:p-12">
+
+        {/* Breadcrumbs */}
+        <div className="flex items-center gap-2">
+          <div className="skeleton h-2.5 w-8 rounded-sm" />
+          <div className="skeleton h-2.5 w-2 rounded-sm" />
+          <div className="skeleton h-2.5 w-16 rounded-sm" />
+          <div className="skeleton h-2.5 w-2 rounded-sm" />
+          <div className="skeleton h-2.5 w-24 rounded-sm" />
+        </div>
+
+        {/* Title */}
+        <div className="flex flex-col gap-3">
+          <div className="skeleton h-16 w-3/4 rounded-sm" />
+          <div className="skeleton h-16 w-1/2 rounded-sm" />
+          <div className="skeleton h-3 w-20 rounded-sm mt-1" />
+        </div>
+
+        {/* Price */}
+        <div className="skeleton h-4 w-24 rounded-sm" />
+
+        {/* Divider */}
+        <div className="h-px w-full bg-line" />
+
+        {/* Size label */}
+        <div className="flex flex-col gap-3">
+          <div className="skeleton h-2.5 w-16 rounded-sm" />
+          {/* Size buttons */}
+          <div className="grid grid-cols-5 gap-[6px]">
+            {[0, 1, 2, 3, 4].map(i => (
+              <div key={i} className="skeleton h-14 rounded-sm" />
+            ))}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="h-px w-full bg-line" />
+
+        {/* CTA button */}
+        <div className="skeleton h-[62px] w-full rounded-sm" />
+
+        {/* Description lines */}
+        <div className="flex flex-col gap-2 border-t border-line pt-6">
+          <div className="skeleton h-2.5 w-full rounded-sm" />
+          <div className="skeleton h-2.5 w-5/6 rounded-sm" />
+          <div className="skeleton h-2.5 w-4/6 rounded-sm" />
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+
 export default function ProductDetail({ params }: { params: { handle: string } }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,11 +161,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
     : DEFAULT_SIZES.map(name => ({ id: '', name, available: false, stock: 0 }));
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-[#0a0a0a]">
-        <div className="animate-spin rounded-full h-7 w-7 border-b border-bone" />
-      </div>
-    );
+    return <ProductSkeleton />;
   }
 
   if (!product) {
@@ -168,6 +238,8 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                   fill
                   className="object-cover"
                   priority
+                  placeholder="blur"
+                  blurDataURL={BLUR_PLACEHOLDER}
                 />
               </motion.div>
             </AnimatePresence>
@@ -202,7 +274,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                     i === thumb ? 'opacity-100' : 'opacity-40 hover:opacity-80'
                   }`}
                 >
-                  <Image src={src} alt={`${product.name} ${i + 1}`} fill className="object-cover" />
+                  <Image src={src} alt={`${product.name} ${i + 1}`} fill className="object-cover" placeholder="blur" blurDataURL={BLUR_PLACEHOLDER} />
                 </button>
               ))}
             </div>
