@@ -29,18 +29,27 @@ export const metadata: Metadata = {
     default: 'Atlantic Ave',
     template: '%s — Atlantic Ave',
   },
-  description: 'Limitovaný streetwear. Každý kus je edice.',
+  description: 'Atlantic Ave — limitovaný streetwear z Ostravy. Každý drop je jedinečná edice v omezeném množství. Oblečení pro ty, kteří chtějí víc než jen oblečení.',
   openGraph: {
     type: 'website',
     siteName: 'Atlantic Ave',
-    title: 'Atlantic Ave',
-    description: 'Limitovaný streetwear. Každý kus je edice.',
+    title: 'Atlantic Ave — Limitovaný Streetwear, Každý Kus je Edice',
+    description: 'Atlantic Ave — limitovaný streetwear z Ostravy. Každý drop je jedinečná edice v omezeném množství. Oblečení pro ty, kteří chtějí víc než jen oblečení.',
     url: BASE_URL,
+    images: [
+      {
+        url: `${BASE_URL}/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: 'Atlantic Ave — Limitovaný Streetwear',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Atlantic Ave',
-    description: 'Limitovaný streetwear. Každý kus je edice.',
+    title: 'Atlantic Ave — Limitovaný Streetwear, Každý Kus je Edice',
+    description: 'Atlantic Ave — limitovaný streetwear z Ostravy. Každý drop je jedinečná edice v omezeném množství. Oblečení pro ty, kteří chtějí víc než jen oblečení.',
+    images: [`${BASE_URL}/opengraph-image`],
   },
   icons: {
     icon: [
