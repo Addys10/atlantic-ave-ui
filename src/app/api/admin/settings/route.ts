@@ -12,7 +12,7 @@ export async function GET() {
 export async function PATCH(req: Request) {
   const db = createServiceClient();
   const { key, value } = await req.json() as { key: string; value: string };
-  const { error } = await db.from('settings').update({ value }).eq('key', key);
+  const { error } = await db.from('settings').upsert({ key, value }, { onConflict: 'key' });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
