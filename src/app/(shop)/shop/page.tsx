@@ -19,8 +19,8 @@ function ShopSkeleton() {
         <div className="skeleton h-2.5 w-12 rounded-sm" />
       </div>
 
-      {/* Mobile: 2-column card grid */}
-      <div className="md:hidden grid grid-cols-2 gap-[1px] bg-line border-t border-line">
+      {/* Mobile: 1-column card grid */}
+      <div className="md:hidden grid grid-cols-1 gap-[1px] bg-line border-t border-line">
         {[0, 1, 2, 3].map(i => (
           <div key={i} className="bg-canvas flex flex-col">
             <div className="aspect-[3/4] skeleton" />
@@ -212,7 +212,7 @@ export default function ShopPage() {
           </motion.div>
 
           {/* ── Mobile: 2-column card grid (1 product → full width) ── */}
-          <div className={`md:hidden grid gap-[1px] bg-line border-t border-line ${products.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+          <div className="md:hidden grid grid-cols-1 gap-[1px] bg-line border-t border-line">
             {products.map((product, index) => {
               const soldOut = availableCount(product) === 0;
               return (
@@ -230,7 +230,7 @@ export default function ShopPage() {
                         alt={product.name}
                         fill
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                        sizes="50vw"
+                        sizes="100vw"
                         placeholder="blur"
                         blurDataURL={BLUR_PLACEHOLDER}
                       />

@@ -1,1 +1,1 @@
-export const DEFAULT_SIZES = ['S', 'M', 'L', 'XL'];
+export const DEFAULT_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];

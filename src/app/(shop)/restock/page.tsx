@@ -177,7 +177,7 @@ function RestockContent() {
                     <p className="font-mono text-[11px] tracking-[0.08em] uppercase text-bone">{product.name}</p>
                     <p className="font-mono text-[9px] tracking-[0.12em] text-dim mt-0.5">{product.category}</p>
                   </div>
-                  <div className="grid grid-cols-5 gap-[4px]">
+                  <div className="grid grid-cols-3 gap-[4px]">
                     {(product.sizes.length > 0 ? product.sizes.map(s => s.name) : DEFAULT_SIZES).map(sizeName => {
                       const isOn = (selectedSizes[product.slug] ?? []).includes(sizeName);
                       return (
