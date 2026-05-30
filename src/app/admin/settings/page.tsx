@@ -9,7 +9,7 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     fetch('/api/admin/settings')
       .then(r => r.json())
-      .then(data => setRestockOpen(data.restock_open === 'true'));
+      .then(data => setRestockOpen(data.restock_open === true || data.restock_open === 'true'));
   }, []);
 
   async function toggle() {
