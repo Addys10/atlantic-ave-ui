@@ -28,14 +28,10 @@ function RestockContent() {
 
   useEffect(() => {
     async function load() {
-      const [flagRes, productsRes] = await Promise.all([
-        fetch('/api/settings/restock', { cache: 'no-store' }),
-        fetch('/api/products'),
-      ]);
-      const { open: isOpen } = await flagRes.json();
+      const productsRes = await fetch('/api/products');
       const prods = await productsRes.json();
       const loadedProducts: Product[] = Array.isArray(prods) ? prods : [];
-      setOpen(isOpen);
+      setOpen(true);
       setProducts(loadedProducts);
 
       const preProduct = searchParams.get('product');
@@ -48,15 +44,7 @@ function RestockContent() {
     }
     load();
 
-    async function refreshFlag() {
-      if (document.visibilityState === 'visible') {
-        const res = await fetch('/api/settings/restock', { cache: 'no-store' });
-        const { open: isOpen } = await res.json();
-        setOpen(isOpen);
-      }
-    }
-    document.addEventListener('visibilitychange', refreshFlag);
-    return () => document.removeEventListener('visibilitychange', refreshFlag);
+    return () => {};
   }, []);
 
   function toggleSize(slug: string, size: string) {
@@ -152,7 +140,7 @@ function RestockContent() {
             SOLD OUT.<br />COMING<br />BACK.
           </h1>
           <p className="font-mono text-[12px] tracking-[0.06em] text-dim max-w-[44ch] leading-[1.8]">
-            Zájem nás překvapil — vše bylo prodáno ještě před spuštěním eshopu.
+            Zájem nás překvapil — vše bylo prodáno.
             Proto restockujeme. Zaregistruj zájem níže a my ti dáme vědět, až bude připraveno.
           </p>
         </div>
