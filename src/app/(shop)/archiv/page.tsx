@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { useState, useRef, useCallback } from 'react';
 
 const drops = [
   {
@@ -14,6 +15,119 @@ const drops = [
     ],
   },
 ] as const;
+
+type DropProduct = { name: string; image: string; text: string };
+
+function DropProducts({ products }: { products: readonly DropProduct[] }) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollLeft / el.clientWidth);
+    setActiveIdx(idx);
+  }, []);
+
+  return (
+    <div className="border-t border-[#1f1f1f]">
+      {/* Mobile: horizontal swipe carousel */}
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="md:hidden flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+        style={{ scrollbarWidth: 'none' }}
+      >
+        {products.map((product, i) => (
+          <div key={product.name} className="flex-none w-full snap-start grid grid-cols-2">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.7, delay: i * 0.12 }}
+              className="relative aspect-[4/5] overflow-hidden border-r border-[#1f1f1f]"
+            >
+              <Image src={product.image} alt={product.name} fill className="object-cover" />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.7, delay: i * 0.12 + 0.08, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col justify-start px-6 py-8"
+            >
+              <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#383832] mb-4">
+                Vyprodáno
+              </span>
+              <h3
+                className="font-anton uppercase leading-[0.9] tracking-tight text-[#f4f1ea] mb-4"
+                style={{ fontSize: 'clamp(22px, 2.8vw, 44px)' }}
+              >
+                {product.name}
+              </h3>
+              {product.text && (
+                <p className="font-mono text-[11px] tracking-[0.06em] leading-[1.8] text-[#7a7a74]">
+                  {product.text}
+                </p>
+              )}
+            </motion.div>
+          </div>
+        ))}
+      </div>
+
+      {/* Dot indicators (mobile only) */}
+      {products.length > 1 && (
+        <div className="md:hidden flex justify-center gap-2 py-3 border-b border-[#1f1f1f]">
+          {products.map((_, i) => (
+            <div
+              key={i}
+              className={`w-1 h-1 rounded-full transition-colors duration-300 ${i === activeIdx ? 'bg-[#f4f1ea]' : 'bg-[#1f1f1f]'}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Desktop: grid layout */}
+      <div className="hidden md:grid grid-cols-4">
+        {products.map((product, i) => (
+          <div key={product.name} className="contents">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.7, delay: i * 0.12 }}
+              className={`relative aspect-[4/5] overflow-hidden border-r border-[#1f1f1f] ${i % 2 !== 0 ? 'order-2' : ''}`}
+            >
+              <Image src={product.image} alt={product.name} fill className="object-cover" />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.7, delay: i * 0.12 + 0.08, ease: [0.22, 1, 0.36, 1] }}
+              className={`flex flex-col justify-start px-8 py-12 border-r border-[#1f1f1f] last:border-r-0 ${i % 2 !== 0 ? 'order-1' : ''}`}
+            >
+              <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#383832] mb-4">
+                Vyprodáno
+              </span>
+              <h3
+                className="font-anton uppercase leading-[0.9] tracking-tight text-[#f4f1ea] mb-4"
+                style={{ fontSize: 'clamp(22px, 2.8vw, 44px)' }}
+              >
+                {product.name}
+              </h3>
+              {product.text && (
+                <p className="font-mono text-[11px] tracking-[0.06em] leading-[1.8] text-[#7a7a74]">
+                  {product.text}
+                </p>
+              )}
+            </motion.div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function ArchivPage() {
   return (
@@ -103,52 +217,8 @@ export default function ArchivPage() {
               </div>
             </div>
 
-            {/* Products — foto | text | foto | text */}
-            <div className="grid grid-cols-2 md:grid-cols-4 border-t border-[#1f1f1f]">
-              {drop.products.map((product, i) => (
-                <div key={product.name} className="col-span-2 grid grid-cols-2 md:contents border-b md:border-b-0 border-[#1f1f1f] last:border-b-0">
-                  {/* Photo */}
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ duration: 0.7, delay: i * 0.12 }}
-                    className={`relative aspect-[4/5] overflow-hidden border-r border-[#1f1f1f] ${i % 2 !== 0 ? 'order-2 md:order-none' : ''}`}
-                  >
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </motion.div>
-
-                  {/* Text */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ duration: 0.7, delay: i * 0.12 + 0.08, ease: [0.22, 1, 0.36, 1] }}
-                    className={`flex flex-col justify-start px-6 md:px-8 py-8 md:py-12 md:border-r border-[#1f1f1f] last:border-r-0 ${i % 2 !== 0 ? 'order-1 md:order-none' : ''}`}
-                  >
-                    <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#383832] mb-4">
-                      Vyprodáno
-                    </span>
-                    <h3
-                      className="font-anton uppercase leading-[0.9] tracking-tight text-[#f4f1ea] mb-4"
-                      style={{ fontSize: 'clamp(22px, 2.8vw, 44px)' }}
-                    >
-                      {product.name}
-                    </h3>
-                    {product.text && (
-                      <p className="font-mono text-[11px] tracking-[0.06em] leading-[1.8] text-[#7a7a74]">
-                        {product.text}
-                      </p>
-                    )}
-                  </motion.div>
-                </div>
-              ))}
-            </div>
+            {/* Products — mobile: swipe carousel | desktop: foto | text | foto | text */}
+            <DropProducts products={drop.products} />
           </motion.div>
         ))}
 

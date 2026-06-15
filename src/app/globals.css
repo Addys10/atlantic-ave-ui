@@ -31,6 +31,16 @@
   animation: shimmer 1.6s infinite linear;
 }
 
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @layer components {
   .btn-primary {
     @apply bg-bone text-canvas px-6 py-3 font-mono text-xs tracking-widest uppercase hover:bg-canvas hover:text-bone border border-bone transition-colors;
