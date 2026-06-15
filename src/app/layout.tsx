@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Anton, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const cloister = localFont({
@@ -76,6 +77,7 @@ export default function RootLayout({
     <html lang="cs">
       <body className={`${cloister.variable} ${anton.variable} ${mono.variable} flex flex-col min-h-screen`}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
