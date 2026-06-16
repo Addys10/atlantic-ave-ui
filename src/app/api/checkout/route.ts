@@ -3,24 +3,38 @@ import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase';
 import { CartItem } from '@/types/cart';
 
+type IncomingItem = Pick<CartItem, 'variantId' | 'quantity'>;
+
+function validateIncomingItems(raw: unknown): IncomingItem[] | null {
+  if (!Array.isArray(raw) || raw.length === 0 || raw.length > 50) return null;
+  const out: IncomingItem[] = [];
+  for (const it of raw) {
+    if (!it || typeof it !== 'object') return null;
+    const { variantId, quantity } = it as Record<string, unknown>;
+    if (typeof variantId !== 'string' || variantId.length < 10) return null;
+    if (typeof quantity !== 'number' || !Number.isInteger(quantity) || quantity < 1 || quantity > 20) return null;
+    out.push({ variantId, quantity });
+  }
+  return out;
+}
+
 export async function POST(request: Request) {
   try {
-    const { items }: { items: CartItem[] } = await request.json();
+    const body = await request.json().catch(() => null);
+    const items = validateIncomingItems((body as { items?: unknown })?.items);
 
-    if (!items?.length) {
-      return NextResponse.json(
-        { error: 'Košík je prázdný' },
-        { status: 400 }
-      );
+    if (!items) {
+      return NextResponse.json({ error: 'Neplatný košík' }, { status: 400 });
     }
 
-    // Validate stock before creating Stripe session
     const db = createServiceClient();
     const variantIds = items.map(i => i.variantId);
 
+    // Fetch authoritative product + variant data from DB —
+    // NEVER trust price, name, or image from the client.
     const { data: variants, error: stockError } = await db
       .from('product_variants')
-      .select('id, stock')
+      .select('id, stock, size, products ( id, name, price, active )')
       .in('id', variantIds);
 
     if (stockError || !variants) {
@@ -30,10 +44,30 @@ export async function POST(request: Request) {
       );
     }
 
-    const stockMap = new Map(variants.map(v => [v.id, v.stock]));
+    type VariantRow = {
+      id: string;
+      stock: number;
+      size: string;
+      products: { id: string; name: string; price: number; active: boolean } | null;
+    };
+    const variantMap = new Map(
+      (variants as unknown as VariantRow[]).map(v => [v.id, v])
+    );
+
+    // Every requested variant must exist and belong to an active product.
+    for (const item of items) {
+      const v = variantMap.get(item.variantId);
+      if (!v || !v.products?.active) {
+        return NextResponse.json({ error: 'Produkt není dostupný' }, { status: 400 });
+      }
+    }
+
     const unavailable = items
-      .filter(item => (stockMap.get(item.variantId) ?? 0) < item.quantity)
-      .map(item => `${item.name} / ${item.selectedSize}`);
+      .filter(item => (variantMap.get(item.variantId)?.stock ?? 0) < item.quantity)
+      .map(item => {
+        const v = variantMap.get(item.variantId)!;
+        return `${v.products!.name} / ${v.size}`;
+      });
 
     if (unavailable.length > 0) {
       return NextResponse.json(
@@ -44,17 +78,20 @@ export async function POST(request: Request) {
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      line_items: items.map(item => ({
-        price_data: {
-          currency: 'czk',
-          product_data: {
-            name: item.name,
-            description: `Velikost: ${item.selectedSize}`,
+      line_items: items.map(item => {
+        const v = variantMap.get(item.variantId)!;
+        return {
+          price_data: {
+            currency: 'czk',
+            product_data: {
+              name: v.products!.name,
+              description: `Velikost: ${v.size}`,
+            },
+            unit_amount: Math.round(v.products!.price * 100),
           },
-          unit_amount: Math.round(item.price * 100),
-        },
-        quantity: item.quantity,
-      })),
+          quantity: item.quantity,
+        };
+      }),
       shipping_address_collection: {
         allowed_countries: ['CZ', 'SK'],
       },
@@ -73,16 +110,18 @@ export async function POST(request: Request) {
       ],
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout`,
-      // Store cart metadata for the webhook to use when writing the order
       metadata: {
         items: JSON.stringify(
-          items.map(i => ({
-            productId: i.productId,
-            variantId: i.variantId,
-            size: i.selectedSize,
-            quantity: i.quantity,
-            price: Math.round(i.price * 100),
-          }))
+          items.map(item => {
+            const v = variantMap.get(item.variantId)!;
+            return {
+              productId: v.products!.id,
+              variantId: item.variantId,
+              size: v.size,
+              quantity: item.quantity,
+              price: Math.round(v.products!.price * 100),
+            };
+          })
         ),
       },
     });
