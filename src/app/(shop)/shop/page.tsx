@@ -156,17 +156,16 @@ function MobileProductCard({ product, index }: { product: Product; index: number
                 {size.name}
               </span>
             ) : (
-              <Link
+              <span
                 key={size.name}
-                href={`/restock?product=${product.slug}&size=${size.name}`}
-                className="font-mono text-[9px] tracking-[0.1em] uppercase px-1.5 py-1 text-mute hover:text-dim transition-colors"
+                className="font-mono text-[9px] tracking-[0.1em] uppercase px-1.5 py-1 text-mute"
                 style={{
                   border: '1px solid #1a1a1a',
                   background: 'repeating-linear-gradient(135deg, transparent 0 3px, rgba(107,107,102,0.1) 3px 4px)',
                 }}
               >
                 {size.name}
-              </Link>
+              </span>
             ))}
           </div>
           <div className="flex items-center justify-between">
@@ -303,10 +302,9 @@ function DesktopProductRow({ product, index }: { product: Product; index: number
                 </div>
               ))}
               {(product.sizes.length > 0 ? product.sizes.filter(s => !s.available) : DEFAULT_SIZES.map(name => ({ name, available: false }))).map(size => (
-                <Link
+                <div
                   key={size.name}
-                  href={`/restock?product=${product.slug}&size=${size.name}`}
-                  className="font-mono tracking-[0.1em] uppercase text-mute w-14 py-2.5 text-center flex flex-col items-center gap-0.5 hover:text-dim transition-colors"
+                  className="font-mono tracking-[0.1em] uppercase text-mute w-14 py-2.5 text-center flex flex-col items-center gap-0.5"
                   style={{
                     border: '1px solid #1a1a1a',
                     background: 'repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,107,102,0.09) 4px 5px)',
@@ -314,7 +312,7 @@ function DesktopProductRow({ product, index }: { product: Product; index: number
                 >
                   <span className="text-[11px]">{size.name}</span>
                   <span className="text-[9px]">—</span>
-                </Link>
+                </div>
               ))}
             </div>
 

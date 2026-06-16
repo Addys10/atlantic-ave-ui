@@ -41,6 +41,7 @@ export default function LandingPage() {
             src="/images/nfl-hero.jpg"
             alt="Hero Drop 2 Atlantic Ave"
             fill
+            sizes="100vw"
             className="object-cover"
             style={{ opacity: 0.58 }}
             priority

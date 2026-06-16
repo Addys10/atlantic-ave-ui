@@ -159,7 +159,7 @@ export default function Navbar() {
                           {cartItems.slice(0, 4).map(item => (
                             <div key={item.variantId} className="flex items-center gap-3 px-4 py-3">
                               <div className="relative w-11 h-[58px] flex-shrink-0 overflow-hidden bg-line">
-                                <Image src={item.image} alt={item.name} fill className="object-cover" placeholder="blur" blurDataURL={BLUR_PLACEHOLDER} />
+                                <Image src={item.image} alt={item.name} fill sizes="44px" className="object-cover" placeholder="blur" blurDataURL={BLUR_PLACEHOLDER} />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="font-anton text-[15px] uppercase leading-tight text-bone truncate">

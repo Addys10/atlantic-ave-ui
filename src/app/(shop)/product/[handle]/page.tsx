@@ -236,6 +236,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                   src={images[thumb] ?? product.image}
                   alt={product.name}
                   fill
+                  sizes="(min-width: 896px) 58vw, 100vw"
                   className="object-cover"
                   priority
                   placeholder="blur"
@@ -274,7 +275,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                     i === thumb ? 'opacity-100' : 'opacity-40 hover:opacity-80'
                   }`}
                 >
-                  <Image src={src} alt={`${product.name} ${i + 1}`} fill className="object-cover" placeholder="blur" blurDataURL={BLUR_PLACEHOLDER} />
+                  <Image src={src} alt={`${product.name} ${i + 1}`} fill sizes="(min-width: 896px) 14vw, 25vw" className="object-cover" placeholder="blur" blurDataURL={BLUR_PLACEHOLDER} />
                 </button>
               ))}
             </div>
@@ -308,58 +309,61 @@ export default function ProductDetail({ params }: { params: { handle: string } }
             {product.price.toLocaleString('cs-CZ')} Kč
           </div>
 
-          {/* Sizes */}
-          <div className="flex flex-col gap-3">
-            <h5 className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim font-normal">
-              <span>Velikost{selectedSize ? ` — ${selectedSize}` : ''}</span>
-            </h5>
-            <div className="grid grid-cols-5 gap-[6px]">
-              {displaySizes.map(size => {
-                const isOut = !size.available;
-                const isOn = selectedSize === size.name;
-                return (
-                  <button
-                    key={size.name}
-                    disabled={isOut}
-                    onClick={() => setSelectedSize(size.name)}
-                    className={`py-4 font-mono text-[12px] tracking-[0.16em] uppercase text-center border transition-all duration-200
-                      ${isOut
-                        ? 'border-line text-mute cursor-not-allowed'
-                        : isOn
-                        ? 'border-bone bg-bone text-[#0a0a0a]'
-                        : 'border-line text-dim hover:text-bone hover:border-dim'
-                      }`}
-                    style={isOut ? {
-                      background: 'repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,107,102,0.12) 4px 5px)',
-                    } : undefined}
-                  >
-                    {size.name}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <Link href="/size-guide" className="font-mono text-[10px] tracking-[0.18em] uppercase text-mute hover:text-dim transition-colors self-start border-b border-mute/40 hover:border-dim/40 pb-px">
-            Tabulka velikostí →
-          </Link>
-
-          {/* CTA */}
+          {/* Sizes / Sold out */}
           {allSoldOut ? (
-            <Link
-              href={`/restock?product=${product.slug}`}
-              className="w-full py-[22px] font-mono text-[12px] tracking-[0.26em] uppercase border border-line text-dim hover:border-dim hover:text-bone transition-colors duration-200 text-center block"
+            <div
+              className="w-full py-[22px] font-mono text-[12px] tracking-[0.26em] uppercase border border-line text-dim text-center"
+              style={{
+                background: 'repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,107,102,0.12) 4px 5px)',
+              }}
             >
-              Zájem o restock →
-            </Link>
+              Vyprodáno
+            </div>
           ) : (
-            <button
-              disabled={!selectedSize || adding}
-              onClick={handleAddToCart}
-              className="w-full py-[22px] bg-bone text-[#0a0a0a] font-mono text-[12px] tracking-[0.26em] uppercase border border-bone hover:bg-[#0a0a0a] hover:text-bone transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {adding ? 'Přidáno →' : selectedSize ? 'Přidat do košíku' : 'Vyberte velikost'}
-            </button>
+            <>
+              <div className="flex flex-col gap-3">
+                <h5 className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim font-normal">
+                  <span>Velikost{selectedSize ? ` — ${selectedSize}` : ''}</span>
+                </h5>
+                <div className="grid grid-cols-5 gap-[6px]">
+                  {displaySizes.map(size => {
+                    const isOut = !size.available;
+                    const isOn = selectedSize === size.name;
+                    return (
+                      <button
+                        key={size.name}
+                        disabled={isOut}
+                        onClick={() => setSelectedSize(size.name)}
+                        className={`py-4 font-mono text-[12px] tracking-[0.16em] uppercase text-center border transition-all duration-200
+                          ${isOut
+                            ? 'border-line text-mute cursor-not-allowed'
+                            : isOn
+                            ? 'border-bone bg-bone text-[#0a0a0a]'
+                            : 'border-line text-dim hover:text-bone hover:border-dim'
+                          }`}
+                        style={isOut ? {
+                          background: 'repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,107,102,0.12) 4px 5px)',
+                        } : undefined}
+                      >
+                        {size.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <Link href="/size-guide" className="font-mono text-[10px] tracking-[0.18em] uppercase text-mute hover:text-dim transition-colors self-start border-b border-mute/40 hover:border-dim/40 pb-px">
+                Tabulka velikostí →
+              </Link>
+
+              <button
+                disabled={!selectedSize || adding}
+                onClick={handleAddToCart}
+                className="w-full py-[22px] bg-bone text-[#0a0a0a] font-mono text-[12px] tracking-[0.26em] uppercase border border-bone hover:bg-[#0a0a0a] hover:text-bone transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {adding ? 'Přidáno →' : selectedSize ? 'Přidat do košíku' : 'Vyberte velikost'}
+              </button>
+            </>
           )}
 
           {/* Description */}

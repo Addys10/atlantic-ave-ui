@@ -161,6 +161,7 @@ export default function CheckoutPage() {
                           src={item.image}
                           alt={item.name}
                           fill
+                          sizes="(min-width: 768px) 112px, 80px"
                           className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                         />
                       </div>
@@ -260,7 +261,7 @@ export default function CheckoutPage() {
               {cart.map(item => (
                 <div key={item.variantId} className="flex items-center gap-3">
                   <div className="relative w-10 h-[52px] flex-shrink-0 overflow-hidden bg-line">
-                    <Image src={item.image} alt={item.name} fill className="object-cover" />
+                    <Image src={item.image} alt={item.name} fill sizes="40px" className="object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-anton text-[14px] uppercase leading-tight text-bone truncate">{item.name}</p>
