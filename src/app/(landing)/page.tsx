@@ -176,7 +176,7 @@ export default function LandingPage() {
           ))}
         </div>
 
-        {/* CTA band — Drop 02 teaser */}
+        {/* CTA band — Drop 02 close-out + Drop 03 teaser */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -200,16 +200,21 @@ export default function LandingPage() {
                   color: 'transparent',
                 }}
               >
-                02
+                03
               </span>
             </h2>
           </div>
 
           <div className="flex flex-col gap-5 items-start md:items-end">
-            <p className="font-mono text-[12px] tracking-[0.1em] leading-relaxed text-[#7a7a74] max-w-[36ch] md:text-right">
-              Nový drop se připravuje.<br />
-              Sleduj nás na Instagramu pro první info.
-            </p>
+            <div className="flex flex-col gap-3 md:items-end">
+              <span className="font-mono text-[9px] tracking-[0.32em] uppercase text-[#f4f1ea]/55 border border-[#f4f1ea]/15 px-2.5 py-1">
+                Drop 02 — Sold out
+              </span>
+              <p className="font-mono text-[12px] tracking-[0.1em] leading-relaxed text-[#7a7a74] max-w-[38ch] md:text-right">
+                Drop 02 i restock jsou rozebrané — díky každému, kdo s námi prošel touhle vlnou.<br />
+                Drop 03 už chystáme. Sleduj Instagram pro první info.
+              </p>
+            </div>
             <a
               href={INSTAGRAM}
               target="_blank"
