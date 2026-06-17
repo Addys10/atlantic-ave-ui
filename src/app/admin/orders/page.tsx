@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ChevronDown, ChevronUp, MapPin, Mail, Package, CreditCard } from 'lucide-react';
+import { OrderStatus, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from '@/types/order';
 
 interface ShippingAddress {
   line1: string | null;
@@ -25,7 +26,7 @@ interface OrderItem {
 interface Order {
   id: string;
   stripe_session_id: string;
-  status: string;
+  status: OrderStatus;
   total: number;
   shipping: number;
   customer_email: string | null;
@@ -36,20 +37,6 @@ interface Order {
   invoice_sent_at: string | null;
   order_items: OrderItem[];
 }
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'Čeká',
-  paid: 'Zaplaceno',
-  shipped: 'Odesláno',
-  cancelled: 'Zrušeno',
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  paid: 'bg-green-100 text-green-700',
-  shipped: 'bg-blue-100 text-blue-700',
-  cancelled: 'bg-red-100 text-red-600',
-};
 
 function formatAddress(addr: ShippingAddress | null): string[] {
   if (!addr) return [];
@@ -96,7 +83,7 @@ export default function AdminOrdersPage() {
     setLoading(false);
   }
 
-  async function updateStatus(id: string, status: string) {
+  async function updateStatus(id: string, status: OrderStatus) {
     await supabase.from('orders').update({ status }).eq('id', id);
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
   }
@@ -309,11 +296,11 @@ export default function AdminOrdersPage() {
                       </span>
                       <select
                         value={order.status}
-                        onChange={e => { e.stopPropagation(); updateStatus(order.id, e.target.value); }}
+                        onChange={e => { e.stopPropagation(); updateStatus(order.id, e.target.value as OrderStatus); }}
                         onClick={e => e.stopPropagation()}
-                        className={`text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer focus:ring-2 focus:ring-gray-400 ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}
+                        className={`appearance-none text-xs font-medium px-2.5 py-1 rounded-full border-0 cursor-pointer focus:ring-2 focus:ring-gray-400 ${ORDER_STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}
                       >
-                        {Object.entries(STATUS_LABELS).map(([val, label]) => (
+                        {Object.entries(ORDER_STATUS_LABELS).map(([val, label]) => (
                           <option key={val} value={val}>{label}</option>
                         ))}
                       </select>
@@ -380,10 +367,10 @@ export default function AdminOrdersPage() {
                         <td className="px-5 py-3.5 text-center" onClick={e => e.stopPropagation()}>
                           <select
                             value={order.status}
-                            onChange={e => updateStatus(order.id, e.target.value)}
-                            className={`text-xs font-medium px-2.5 py-1 rounded-full border-0 cursor-pointer focus:ring-2 focus:ring-gray-400 ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}
+                            onChange={e => updateStatus(order.id, e.target.value as OrderStatus)}
+                            className={`appearance-none text-xs font-medium px-2.5 py-1 rounded-full border-0 cursor-pointer focus:ring-2 focus:ring-gray-400 ${ORDER_STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}
                           >
-                            {Object.entries(STATUS_LABELS).map(([val, label]) => (
+                            {Object.entries(ORDER_STATUS_LABELS).map(([val, label]) => (
                               <option key={val} value={val}>{label}</option>
                             ))}
                           </select>

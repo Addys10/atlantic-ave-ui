@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { TrendingUp, ShoppingBag, Clock, Package, ArrowRight } from 'lucide-react';
+import { OrderStatus, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from '@/types/order';
 
 interface StatsData {
   totalRevenue: number;
@@ -25,24 +26,10 @@ interface RecentOrder {
   customer_name: string | null;
   customer_email: string | null;
   total: number;
-  status: string;
+  status: OrderStatus;
   created_at: string;
   itemCount: number;
 }
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'Čeká',
-  paid: 'Zaplaceno',
-  shipped: 'Odesláno',
-  cancelled: 'Zrušeno',
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  paid: 'bg-green-100 text-green-700',
-  shipped: 'bg-blue-100 text-blue-700',
-  cancelled: 'bg-red-100 text-red-600',
-};
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('cs-CZ', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -77,7 +64,7 @@ export default function AdminDashboard() {
     ]);
 
     const orders = (ordersRes.data ?? []) as {
-      id: string; total: number; status: string;
+      id: string; total: number; status: OrderStatus;
       customer_name: string | null; customer_email: string | null;
       created_at: string; order_items: { id: string }[];
     }[];
@@ -218,8 +205,8 @@ export default function AdminDashboard() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-xs text-gray-400">{shortId(order.id)}</span>
-                      <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}>
-                        {STATUS_LABELS[order.status] ?? order.status}
+                      <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${ORDER_STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                        {ORDER_STATUS_LABELS[order.status] ?? order.status}
                       </span>
                     </div>
                     <p className="text-sm font-medium text-gray-900 mt-0.5 truncate">

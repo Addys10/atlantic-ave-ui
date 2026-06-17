@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase';
+import { OrderStatus } from '@/types/order';
 
 export async function POST(request: Request) {
   const db = createServiceClient();
   const { orderData, lineItems } = await request.json() as {
-    orderData: { stripe_session_id: string; status: string; total: number; shipping: number; customer_name: string; customer_email: string | null; shipping_address: Record<string, string | null> | null; note: string | null };
+    orderData: { stripe_session_id: string; status: OrderStatus; total: number; shipping: number; customer_name: string; customer_email: string | null; shipping_address: Record<string, string | null> | null; note: string | null };
     lineItems: { productId: string; variantId: string; size: string; quantity: number; unitPrice: number }[];
   };
 
