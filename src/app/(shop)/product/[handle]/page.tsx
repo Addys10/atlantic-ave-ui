@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Product } from '@/types/product';
 import { CartItem } from '@/types/cart';
-import { DEFAULT_SIZES } from '@/lib/constants';
+import { DEFAULT_SIZES, SHIPPING_KC } from '@/lib/constants';
 
 const BLUR_PLACEHOLDER = `data:image/svg+xml;base64,${btoa("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect fill='#1f1f1f' width='1' height='1'/></svg>")}`;
 
@@ -377,7 +377,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
           {/* Footer notes */}
           <div className="border-t border-line pt-6 flex flex-col gap-3 mt-auto">
             <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-mute">
-              ⊕ Doprava 3–5 pracovních dní · 129 Kč
+              ⊕ Doprava 3–5 pracovních dní · {SHIPPING_KC} Kč
             </div>
             <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-mute">
               ⊕ Limitovaná edice

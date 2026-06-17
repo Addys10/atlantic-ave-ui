@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase';
+import { SHIPPING_HALERE } from '@/lib/constants';
 
 export async function POST(request: Request) {
   const body = await request.text();
@@ -81,7 +82,7 @@ export async function POST(request: Request) {
       stripe_session_id: session.id,
       status: 'paid',
       total: session.amount_total ?? 0,
-      shipping: session.shipping_cost?.amount_total ?? 12900,
+      shipping: session.shipping_cost?.amount_total ?? SHIPPING_HALERE,
       customer_email: session.customer_details?.email ?? null,
       customer_name: session.customer_details?.name ?? null,
       shipping_address: shippingAddress,

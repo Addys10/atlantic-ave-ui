@@ -5,8 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CartItem } from '@/types/cart';
-
-const SHIPPING = 129;
+import { SHIPPING_KC } from '@/lib/constants';
 
 export default function CheckoutPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -38,7 +37,7 @@ export default function CheckoutPage() {
   }
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-  const total = subtotal + SHIPPING;
+  const total = subtotal + SHIPPING_KC;
   const totalQty = cart.reduce((s, i) => s + i.quantity, 0);
 
   async function handleCheckout() {
@@ -284,7 +283,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between font-mono text-[11px] tracking-[0.16em] uppercase text-dim">
                 <span>Doprava</span>
-                <span>{SHIPPING} Kč</span>
+                <span>{SHIPPING_KC} Kč</span>
               </div>
             </div>
 

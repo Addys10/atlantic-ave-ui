@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase';
 import { CartItem } from '@/types/cart';
+import { SHIPPING_HALERE } from '@/lib/constants';
 
 type IncomingItem = Pick<CartItem, 'variantId' | 'quantity'>;
 
@@ -99,7 +100,7 @@ export async function POST(request: Request) {
         {
           shipping_rate_data: {
             type: 'fixed_amount',
-            fixed_amount: { amount: 12900, currency: 'czk' },
+            fixed_amount: { amount: SHIPPING_HALERE, currency: 'czk' },
             display_name: 'Standardní doručení',
             delivery_estimate: {
               minimum: { unit: 'business_day', value: 2 },
