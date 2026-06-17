@@ -45,9 +45,46 @@ export default function AdminProductsPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-gray-800" />
-        </div>
+        <>
+          {/* Mobile skeleton */}
+          <div className="md:hidden bg-white border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
+            {[0, 1, 2, 3].map(i => (
+              <div key={i} className="p-4 flex gap-3 items-start">
+                <div className="w-14 h-14 bg-gray-100 rounded-lg flex-shrink-0 animate-pulse" />
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="h-3.5 w-40 bg-gray-200 rounded animate-pulse" />
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-3 w-10 bg-gray-100 rounded animate-pulse" />
+                    <div className="h-4 w-14 bg-gray-100 rounded-full animate-pulse" />
+                  </div>
+                  <div className="h-6 w-20 bg-gray-200 rounded-lg animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop skeleton */}
+          <div className="hidden md:block bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="border-b border-gray-200 bg-gray-50 px-5 py-3">
+              <div className="h-3 w-24 bg-gray-200 rounded animate-pulse" />
+            </div>
+            <div className="divide-y divide-gray-100">
+              {[0, 1, 2, 3, 4].map(i => (
+                <div key={i} className="grid grid-cols-[2fr_1fr_1fr_1fr_96px] gap-4 px-5 py-3.5 items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-gray-100 rounded-md animate-pulse" />
+                    <div className="h-3.5 w-40 bg-gray-200 rounded animate-pulse" />
+                  </div>
+                  <div className="h-3.5 w-16 bg-gray-200 rounded animate-pulse justify-self-end" />
+                  <div className="h-3.5 w-12 bg-gray-200 rounded animate-pulse justify-self-end" />
+                  <div className="h-5 w-16 bg-gray-100 rounded-full animate-pulse justify-self-center" />
+                  <div className="h-7 w-20 bg-gray-200 rounded-lg animate-pulse justify-self-center" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
       ) : products.length === 0 ? (
         <div className="text-center py-20">
           <p className="text-gray-500 mb-3">Žádné produkty</p>

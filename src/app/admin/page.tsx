@@ -115,8 +115,44 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-gray-800" />
+      <div className="p-5 md:p-8 space-y-6">
+        <div className="h-7 w-32 bg-gray-200 rounded animate-pulse" />
+
+        {/* Stat cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="h-3 w-20 bg-gray-200 rounded animate-pulse" />
+                <div className="h-5 w-5 bg-gray-100 rounded animate-pulse" />
+              </div>
+              <div className="h-6 w-24 bg-gray-200 rounded animate-pulse" />
+              <div className="h-2.5 w-16 bg-gray-100 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+
+        {/* Two-column section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {[0, 1].map(col => (
+            <div key={col} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+              <div className="border-b border-gray-200 bg-gray-50 px-5 py-3">
+                <div className="h-3.5 w-32 bg-gray-200 rounded animate-pulse" />
+              </div>
+              <div className="divide-y divide-gray-100">
+                {[0, 1, 2, 3].map(i => (
+                  <div key={i} className="px-5 py-3 flex items-center justify-between gap-3">
+                    <div className="flex-1 space-y-1.5">
+                      <div className="h-3 w-32 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-2.5 w-44 bg-gray-100 rounded animate-pulse" />
+                    </div>
+                    <div className="h-3.5 w-16 bg-gray-200 rounded animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
