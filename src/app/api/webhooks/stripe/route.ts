@@ -114,7 +114,6 @@ export async function POST(request: Request) {
   }
 
   const restockToken = session.metadata?.restock_token ?? null;
-  console.log('[webhook] metadata keys:', Object.keys(session.metadata ?? {}), 'restockToken:', restockToken);
 
   // Restock orders bypass stock tracking entirely — inventory for these is
   // handled manually by the admin outside the shop's public stock.
@@ -129,15 +128,12 @@ export async function POST(request: Request) {
       }
     }
   } else {
-    const { data: updated, error: tokenError } = await db
+    const { error: tokenError } = await db
       .from('restock_payment_tokens')
       .update({ used_at: new Date().toISOString(), order_id: order.id })
-      .eq('token', restockToken)
-      .select('token');
+      .eq('token', restockToken);
     if (tokenError) {
       console.error(`[webhook] Failed to mark restock token used:`, tokenError);
-    } else {
-      console.log(`[webhook] restock token update matched rows:`, updated?.length ?? 0);
     }
   }
 
