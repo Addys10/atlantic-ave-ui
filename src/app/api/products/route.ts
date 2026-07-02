@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { unstable_noStore as noStore } from 'next/cache';
 import { createServiceClient } from '@/lib/supabase';
+import { getReservedByVariant } from '@/lib/stock';
 import { Product } from '@/types/product';
 
 export const dynamic = 'force-dynamic';
@@ -21,7 +22,12 @@ export async function GET() {
     if (error) throw error;
 
     type Row = { id: string; slug: string; name: string; subtitle: string; description_html: string; price: number; images: string[]; category: string; product_variants: { id: string; size: string; stock: number }[] };
-    const products: Product[] = ((data ?? []) as unknown as Row[]).map(p => ({
+    const rows = (data ?? []) as unknown as Row[];
+
+    const variantIds = rows.flatMap(p => p.product_variants.map(v => v.id));
+    const reserved = await getReservedByVariant(supabase, variantIds);
+
+    const products: Product[] = rows.map(p => ({
       id: p.id,
       slug: p.slug,
       name: p.name,
@@ -31,7 +37,10 @@ export async function GET() {
       image: p.images[0] ?? '',
       images: p.images,
       category: p.category,
-      sizes: p.product_variants.map(v => ({ id: v.id, name: v.size, available: v.stock > 0, stock: v.stock })),
+      sizes: p.product_variants.map(v => {
+        const available = Math.max(0, v.stock - (reserved.get(v.id) ?? 0));
+        return { id: v.id, name: v.size, available: available > 0, stock: available };
+      }),
     }));
 
     return NextResponse.json(products, {
