@@ -113,18 +113,35 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to create order items' }, { status: 500 });
   }
 
-  // Decrement stock
-  for (const item of items) {
-    const { error: stockError } = await db.rpc('decrement_stock', {
-      p_variant_id: item.variantId,
-      p_qty: item.quantity,
-    });
-    if (stockError) {
-      console.error(`[webhook] Failed to decrement stock for variant ${item.variantId}:`, stockError);
+  const restockToken = session.metadata?.restock_token ?? null;
+  console.log('[webhook] metadata keys:', Object.keys(session.metadata ?? {}), 'restockToken:', restockToken);
+
+  // Restock orders bypass stock tracking entirely — inventory for these is
+  // handled manually by the admin outside the shop's public stock.
+  if (!restockToken) {
+    for (const item of items) {
+      const { error: stockError } = await db.rpc('decrement_stock', {
+        p_variant_id: item.variantId,
+        p_qty: item.quantity,
+      });
+      if (stockError) {
+        console.error(`[webhook] Failed to decrement stock for variant ${item.variantId}:`, stockError);
+      }
+    }
+  } else {
+    const { data: updated, error: tokenError } = await db
+      .from('restock_payment_tokens')
+      .update({ used_at: new Date().toISOString(), order_id: order.id })
+      .eq('token', restockToken)
+      .select('token');
+    if (tokenError) {
+      console.error(`[webhook] Failed to mark restock token used:`, tokenError);
+    } else {
+      console.log(`[webhook] restock token update matched rows:`, updated?.length ?? 0);
     }
   }
 
-  console.log(`[webhook] Order ${order.id} created for session ${session.id}`);
+  console.log(`[webhook] Order ${order.id} created for session ${session.id}${restockToken ? ' (restock)' : ''}`);
 
   // Send invoice email — fetch full order with items for the PDF
   if (session.customer_details?.email) {

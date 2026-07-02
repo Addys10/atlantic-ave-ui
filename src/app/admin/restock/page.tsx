@@ -8,6 +8,12 @@ interface RestockItem {
   size: string;
 }
 
+interface ActiveToken {
+  expires_at: string;
+  used_at: string | null;
+  order_id: string | null;
+}
+
 interface RestockInterest {
   id: string;
   first_name: string;
@@ -15,6 +21,7 @@ interface RestockInterest {
   email: string;
   items: RestockItem[];
   created_at: string;
+  active_token: ActiveToken | null;
 }
 
 function formatDate(iso: string) {
@@ -24,10 +31,13 @@ function formatDate(iso: string) {
   });
 }
 
+type SendState = 'sending' | 'sent' | 'error';
+
 export default function AdminRestockPage() {
   const [interests, setInterests] = useState<RestockInterest[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [sendState, setSendState] = useState<Record<string, SendState>>({});
 
   useEffect(() => {
     fetch('/api/admin/restock')
@@ -37,6 +47,26 @@ export default function AdminRestockPage() {
         setLoading(false);
       });
   }, []);
+
+  async function sendInvite(interestId: string) {
+    if (sendState[interestId] === 'sending' || sendState[interestId] === 'sent') return;
+
+    setSendState(prev => ({ ...prev, [interestId]: 'sending' }));
+    try {
+      const res = await fetch('/api/admin/restock/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ interestId }),
+      });
+      setSendState(prev => ({ ...prev, [interestId]: res.ok ? 'sent' : 'error' }));
+      if (!res.ok) {
+        setTimeout(() => setSendState(prev => { const n = { ...prev }; delete n[interestId]; return n; }), 4000);
+      }
+    } catch {
+      setSendState(prev => ({ ...prev, [interestId]: 'error' }));
+      setTimeout(() => setSendState(prev => { const n = { ...prev }; delete n[interestId]; return n; }), 4000);
+    }
+  }
 
   async function deleteInterest(id: string) {
     if (!confirm('Smazat tuto registraci?')) return;
@@ -147,14 +177,72 @@ export default function AdminRestockPage() {
                     {formatDate(r.created_at)}
                   </td>
                   <td className="px-4 py-3">
-                    <button
-                      onClick={() => deleteInterest(r.id)}
-                      disabled={deleting === r.id}
-                      className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-40"
-                      title="Smazat"
-                    >
-                      ✕
-                    </button>
+                    <div className="flex items-center gap-2 justify-end">
+                      {(() => {
+                        const state = sendState[r.id];
+                        const token = r.active_token;
+
+                        if (token?.order_id) {
+                          return (
+                            <span className="inline-flex items-center bg-emerald-100 text-emerald-800 text-[11px] font-medium px-2.5 py-1 rounded whitespace-nowrap">
+                              Zaplaceno ✓
+                            </span>
+                          );
+                        }
+
+                        const tokenActive = token && new Date(token.expires_at).getTime() > Date.now();
+
+                        if (tokenActive && state !== 'sent' && state !== 'sending' && state !== 'error') {
+                          const daysLeft = Math.max(1, Math.ceil((new Date(token!.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+                          return (
+                            <div className="flex items-center gap-1.5">
+                              <span className="inline-flex items-center bg-blue-100 text-blue-800 text-[11px] font-medium px-2.5 py-1 rounded whitespace-nowrap">
+                                Odesláno · zbývá {daysLeft}&nbsp;d
+                              </span>
+                              <button
+                                onClick={() => sendInvite(r.id)}
+                                className="text-[11px] font-medium text-gray-500 hover:text-gray-900 underline underline-offset-2 whitespace-nowrap"
+                                title="Poslat znovu"
+                              >
+                                Znovu
+                              </button>
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <button
+                            onClick={() => sendInvite(r.id)}
+                            disabled={state === 'sending' || state === 'sent'}
+                            className={`text-[11px] font-medium px-2.5 py-1 rounded transition-colors whitespace-nowrap ${
+                              state === 'sent'
+                                ? 'bg-emerald-100 text-emerald-800 cursor-default'
+                                : state === 'error'
+                                ? 'bg-red-100 text-red-700'
+                                : state === 'sending'
+                                ? 'bg-gray-200 text-gray-500 cursor-wait'
+                                : 'bg-gray-900 text-white hover:bg-gray-700'
+                            }`}
+                          >
+                            {state === 'sent'
+                              ? 'Odesláno ✓'
+                              : state === 'error'
+                              ? 'Chyba ✗'
+                              : state === 'sending'
+                              ? 'Odesílám…'
+                              : `Poslat výzvu (${r.items.length}) →`}
+                          </button>
+                        );
+                      })()}
+                      <button
+                        onClick={() => deleteInterest(r.id)}
+                        disabled={deleting === r.id}
+                        className="text-gray-300 hover:text-red-500 transition-colors disabled:opacity-40"
+                        title="Smazat"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
