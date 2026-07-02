@@ -3,6 +3,7 @@ import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase';
 import { CartItem } from '@/types/cart';
 import { SHIPPING_HALERE } from '@/lib/constants';
+import { env } from '@/lib/env';
 
 type IncomingItem = Pick<CartItem, 'variantId' | 'quantity'>;
 
@@ -109,8 +110,8 @@ export async function POST(request: Request) {
           },
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout`,
+      success_url: `${env.baseUrl()}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${env.baseUrl()}/checkout`,
       metadata: {
         items: JSON.stringify(
           items.map(item => {
