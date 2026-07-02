@@ -1,12 +1,16 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import DOMPurify from 'isomorphic-dompurify';
 import { Product } from '@/types/product';
 import { CartItem } from '@/types/cart';
 import { DEFAULT_SIZES, SHIPPING_KC } from '@/lib/constants';
+
+const DESCRIPTION_ALLOWED_TAGS = ['p', 'br', 'strong', 'em', 'b', 'i', 'u', 'h1', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'span', 'div'];
+const DESCRIPTION_ALLOWED_ATTR = ['href', 'target', 'rel'];
 
 const BLUR_PLACEHOLDER = `data:image/svg+xml;base64,${btoa("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect fill='#1f1f1f' width='1' height='1'/></svg>")}`;
 
@@ -155,6 +159,16 @@ export default function ProductDetail({ params }: { params: { handle: string } }
   }
 
   const images = product?.images?.length ? product.images : product?.image ? [product.image] : [];
+  const safeDescription = useMemo(
+    () =>
+      product?.description
+        ? DOMPurify.sanitize(product.description, {
+            ALLOWED_TAGS: DESCRIPTION_ALLOWED_TAGS,
+            ALLOWED_ATTR: DESCRIPTION_ALLOWED_ATTR,
+          })
+        : '',
+    [product?.description]
+  );
   const allSoldOut = !product || product.sizes.length === 0 || product.sizes.every(s => !s.available);
   const displaySizes = product && product.sizes.length > 0
     ? product.sizes
@@ -367,10 +381,10 @@ export default function ProductDetail({ params }: { params: { handle: string } }
           )}
 
           {/* Description */}
-          {product.description && (
+          {safeDescription && (
             <div
               className="font-sans text-[13px] leading-[1.7] text-dim border-t border-line pt-6 [&_h2]:font-mono [&_h2]:text-[10px] [&_h2]:tracking-[0.22em] [&_h2]:uppercase [&_h2]:text-dim [&_h2]:mb-3 [&_p]:mb-3"
-              dangerouslySetInnerHTML={{ __html: product.description }}
+              dangerouslySetInnerHTML={{ __html: safeDescription }}
             />
           )}
 
