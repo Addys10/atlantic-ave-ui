@@ -7,11 +7,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CartItem } from '@/types/cart';
 import { SHIPPING_KC } from '@/lib/constants';
 
+interface CheckoutError {
+  title: string;
+  detail?: string;
+  action?: 'refresh' | 'retry';
+}
+
 export default function CheckoutPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<CheckoutError | null>(null);
 
   useEffect(() => {
     const raw = localStorage.getItem('cart');
@@ -42,24 +48,63 @@ export default function CheckoutPage() {
 
   async function handleCheckout() {
     setLoading(true);
-    setError('');
+    setError(null);
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items: cart }),
       });
-      const data = await res.json();
-      if (res.status === 409) {
-        const list = (data.items as string[])?.join(', ') ?? '';
-        setError(`Tyto položky nejsou skladem: ${list}.`);
-        setLoading(false);
+
+      // Some errors return non-JSON — guard the parse.
+      const data = await res.json().catch(() => ({} as { error?: string; items?: string[]; url?: string }));
+
+      if (res.ok && data.url) {
+        window.location.href = data.url;
         return;
       }
-      if (!res.ok) throw new Error(data.error || 'Chyba');
-      window.location.href = data.url;
+
+      if (res.status === 409) {
+        const list = (data.items as string[])?.join(', ') ?? '';
+        setError({
+          title: 'Některé položky mezitím někdo koupil',
+          detail: list
+            ? `Vyprodáno: ${list}. Odeber je z košíku, nebo obnov stránku pro aktuální dostupnost.`
+            : 'Obnov stránku a zkus to znovu.',
+          action: 'refresh',
+        });
+      } else if (res.status === 400 && data.error === 'Produkt není dostupný') {
+        setError({
+          title: 'Produkt není dostupný',
+          detail: 'Některý z produktů v košíku byl mezitím stažen z prodeje. Odeber ho a pokračuj.',
+          action: 'refresh',
+        });
+      } else if (res.status === 400) {
+        setError({
+          title: 'Košík je neplatný',
+          detail: 'Data v košíku jsou poškozená. Obnov stránku a přidej produkty znovu.',
+          action: 'refresh',
+        });
+      } else if (res.status >= 500) {
+        setError({
+          title: 'Něco se pokazilo na naší straně',
+          detail: 'Zkus to prosím za chvíli znovu. Pokud problém trvá, napiš nám na support@atlanticave.cz.',
+          action: 'retry',
+        });
+      } else {
+        setError({
+          title: 'Nepodařilo se vytvořit objednávku',
+          detail: data.error ?? 'Zkus to prosím znovu.',
+          action: 'retry',
+        });
+      }
+      setLoading(false);
     } catch {
-      setError('Nepodařilo se vytvořit objednávku. Zkuste to znovu.');
+      setError({
+        title: 'Nepodařilo se spojit se serverem',
+        detail: 'Zkontroluj internetové připojení a zkus to znovu.',
+        action: 'retry',
+      });
       setLoading(false);
     }
   }
@@ -248,9 +293,33 @@ export default function CheckoutPage() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="border border-[#c0392b]/40 bg-[#c0392b]/5 px-4 py-3 font-mono text-[11px] tracking-[0.12em] text-[#c0392b]"
+                  className="border border-[#c0392b]/40 bg-[#c0392b]/5 px-4 py-3 flex flex-col gap-2"
                 >
-                  {error}
+                  <p className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#c0392b]">
+                    {error.title}
+                  </p>
+                  {error.detail && (
+                    <p className="font-mono text-[11px] tracking-[0.08em] leading-relaxed text-[#c0392b]/80">
+                      {error.detail}
+                    </p>
+                  )}
+                  {error.action === 'refresh' && (
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="self-start font-mono text-[10px] tracking-[0.22em] uppercase text-[#c0392b] hover:text-[#c0392b]/70 transition-colors pb-px border-b border-[#c0392b]/40 hover:border-[#c0392b]/20 mt-1"
+                    >
+                      Obnovit stránku →
+                    </button>
+                  )}
+                  {error.action === 'retry' && (
+                    <button
+                      onClick={handleCheckout}
+                      disabled={loading}
+                      className="self-start font-mono text-[10px] tracking-[0.22em] uppercase text-[#c0392b] hover:text-[#c0392b]/70 transition-colors pb-px border-b border-[#c0392b]/40 hover:border-[#c0392b]/20 mt-1 disabled:opacity-40"
+                    >
+                      Zkusit znovu →
+                    </button>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
