@@ -25,12 +25,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
+  const db = createServiceClient();
+
+  // Abandoned / expired sessions: release the held stock.
+  if (event.type === 'checkout.session.expired') {
+    const expiredSession = event.data.object as Stripe.Checkout.Session;
+    const { error } = await db.rpc('release_reservation', {
+      p_session_id: expiredSession.id,
+    });
+    if (error) {
+      console.error('[webhook] Failed to release reservation:', error);
+    }
+    return NextResponse.json({ received: true });
+  }
+
   if (event.type !== 'checkout.session.completed') {
     return NextResponse.json({ received: true });
   }
 
   const rawSession = event.data.object as Stripe.Checkout.Session;
-  const db = createServiceClient();
 
   // Idempotency — skip duplicate events
   const { data: existing } = await db
@@ -118,14 +131,11 @@ export async function POST(request: Request) {
   // Restock orders bypass stock tracking entirely — inventory for these is
   // handled manually by the admin outside the shop's public stock.
   if (!restockToken) {
-    for (const item of items) {
-      const { error: stockError } = await db.rpc('decrement_stock', {
-        p_variant_id: item.variantId,
-        p_qty: item.quantity,
-      });
-      if (stockError) {
-        console.error(`[webhook] Failed to decrement stock for variant ${item.variantId}:`, stockError);
-      }
+    const { error: consumeError } = await db.rpc('consume_reservation', {
+      p_session_id: session.id,
+    });
+    if (consumeError) {
+      console.error('[webhook] Failed to consume reservation:', consumeError);
     }
   } else {
     const { error: tokenError } = await db

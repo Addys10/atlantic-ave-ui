@@ -77,8 +77,15 @@ export async function POST(request: Request) {
       );
     }
 
+    // Stripe requires expires_at at least 30 minutes in the future.
+    // Match reservation TTL so the release_reservation webhook fires within
+    // the same window.
+    const RESERVATION_TTL_MINUTES = 30;
+    const expiresAt = Math.floor(Date.now() / 1000) + RESERVATION_TTL_MINUTES * 60;
+
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      expires_at: expiresAt,
       line_items: items.map(item => {
         const v = variantMap.get(item.variantId)!;
         return {
@@ -126,6 +133,39 @@ export async function POST(request: Request) {
         ),
       },
     });
+
+    // Atomic reserve: all-or-nothing. If any variant lost its stock in the
+    // few ms between our stock check above and now, expire the Stripe
+    // session so the user doesn't accidentally pay for something they
+    // can't get.
+    const { data: failed, error: reserveErr } = await db.rpc('reserve_stock', {
+      p_session_id: session.id,
+      p_items: items.map(item => ({
+        variantId: item.variantId,
+        quantity: item.quantity,
+      })),
+      p_ttl_minutes: RESERVATION_TTL_MINUTES,
+    });
+
+    if (reserveErr) {
+      try { await stripe.checkout.sessions.expire(session.id); } catch { /* best effort */ }
+      return NextResponse.json(
+        { error: 'Nepodařilo se rezervovat zboží' },
+        { status: 500 }
+      );
+    }
+
+    if (Array.isArray(failed) && failed.length > 0) {
+      try { await stripe.checkout.sessions.expire(session.id); } catch { /* best effort */ }
+      const names = (failed as string[]).map(vid => {
+        const v = variantMap.get(vid);
+        return v?.products ? `${v.products.name} / ${v.size}` : 'položka';
+      });
+      return NextResponse.json(
+        { error: 'Některé položky nejsou skladem', items: names },
+        { status: 409 }
+      );
+    }
 
     return NextResponse.json({ url: session.url });
   } catch (error) {

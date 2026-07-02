@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { unstable_noStore as noStore } from 'next/cache';
 import { createServiceClient } from '@/lib/supabase';
+import { getReservedByVariant } from '@/lib/stock';
 import { Product } from '@/types/product';
 
 export const dynamic = 'force-dynamic';
@@ -31,6 +32,9 @@ export async function GET(
 
     type Row = { id: string; slug: string; name: string; subtitle: string; description_html: string; price: number; images: string[]; category: string; product_variants: { id: string; size: string; stock: number }[] };
     const row = data as unknown as Row;
+
+    const reserved = await getReservedByVariant(supabase, row.product_variants.map(v => v.id));
+
     const product: Product = {
       id: row.id,
       slug: row.slug,
@@ -41,7 +45,10 @@ export async function GET(
       image: row.images[0] ?? '',
       images: row.images,
       category: row.category,
-      sizes: row.product_variants.map(v => ({ id: v.id, name: v.size, available: v.stock > 0, stock: v.stock })),
+      sizes: row.product_variants.map(v => {
+        const available = Math.max(0, v.stock - (reserved.get(v.id) ?? 0));
+        return { id: v.id, name: v.size, available: available > 0, stock: available };
+      }),
     };
 
     return NextResponse.json(product, {
