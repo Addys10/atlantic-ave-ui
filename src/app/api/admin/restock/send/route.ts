@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { createServiceClient } from '@/lib/supabase';
 import { sendRestockPayEmail, type RestockPayEmailItem } from '@/lib/email';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('restock/send');
 
 const TOKEN_TTL_DAYS = 3;
 
@@ -102,7 +105,7 @@ export async function POST(request: Request) {
   } catch (err) {
     // Roll back the token so a failed send doesn't leave a dangling record
     await db.from('restock_payment_tokens').delete().eq('token', token);
-    console.error('[restock/send] email failed:', err);
+    log.error('email failed', err);
     return NextResponse.json({ error: 'Nepodařilo se odeslat email' }, { status: 500 });
   }
 

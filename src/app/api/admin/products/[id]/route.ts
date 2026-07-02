@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('admin/products');
 
 export async function PATCH(
   request: Request,
@@ -48,7 +51,7 @@ export async function PATCH(
   const toDelete = (origVariantIds as string[]).filter(id => !keepIds.has(id));
   for (const id of toDelete) {
     const { error } = await db.from('product_variants').delete().eq('id', id);
-    if (error && error.code !== '23503') console.error(`Failed to delete variant ${id}:`, error);
+    if (error && error.code !== '23503') log.error(`failed to delete variant ${id}`, error);
   }
 
   return NextResponse.json({ ok: true });

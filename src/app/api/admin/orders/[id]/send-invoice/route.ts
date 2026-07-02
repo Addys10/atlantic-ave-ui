@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase';
 import { sendInvoiceEmail } from '@/lib/email';
 import { InvoiceOrder } from '@/lib/invoice';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('send-invoice');
 
 export async function POST(_req: Request, { params }: { params: { id: string } }) {
   const db = createServiceClient();
@@ -29,7 +32,7 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
     await db.from('orders').update({ invoice_sent_at: now }).eq('id', params.id);
     return NextResponse.json({ ok: true, invoice_sent_at: now });
   } catch (err) {
-    console.error('[send-invoice] Failed:', err);
+    log.error('failed', err);
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }
