@@ -3,6 +3,9 @@ import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase';
 import { CartItem } from '@/types/cart';
 import { SHIPPING_HALERE } from '@/lib/constants';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('checkout');
 
 type IncomingItem = Pick<CartItem, 'variantId' | 'quantity'>;
 
@@ -129,7 +132,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error('Stripe checkout error:', error);
+    log.error('Stripe checkout error', error);
     return NextResponse.json(
       { error: 'Nepodařilo se vytvořit platební relaci' },
       { status: 500 }

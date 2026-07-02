@@ -3,6 +3,9 @@ import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase';
 import { SHIPPING_HALERE } from '@/lib/constants';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('webhook');
 
 export async function POST(request: Request) {
   const body = await request.text();
@@ -13,7 +16,7 @@ export async function POST(request: Request) {
   }
 
   if (!process.env.STRIPE_WEBHOOK_SECRET) {
-    console.error('STRIPE_WEBHOOK_SECRET is not set');
+    log.error('STRIPE_WEBHOOK_SECRET is not set');
     return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
   }
 
@@ -21,7 +24,7 @@ export async function POST(request: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    console.error('Webhook signature verification failed:', err);
+    log.error('signature verification failed', err);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
@@ -48,7 +51,7 @@ export async function POST(request: Request) {
   try {
     session = await stripe.checkout.sessions.retrieve(rawSession.id);
   } catch (err) {
-    console.error('Webhook: failed to retrieve session from Stripe:', err);
+    log.error('failed to retrieve session from Stripe', err);
     return NextResponse.json({ error: 'Failed to retrieve session' }, { status: 500 });
   }
 
@@ -66,12 +69,12 @@ export async function POST(request: Request) {
   try {
     items = JSON.parse(session.metadata?.items ?? '[]');
   } catch {
-    console.error('[webhook] Failed to parse items metadata for session', session.id);
+    log.error(`failed to parse items metadata for session ${session.id}`);
     return NextResponse.json({ error: 'Invalid items metadata' }, { status: 500 });
   }
 
   if (items.length === 0) {
-    console.error('[webhook] Empty items for session', session.id);
+    log.error(`empty items for session ${session.id}`);
     return NextResponse.json({ error: 'No items in session' }, { status: 500 });
   }
 
@@ -91,7 +94,7 @@ export async function POST(request: Request) {
     .single();
 
   if (orderError || !order) {
-    console.error('[webhook] Failed to create order:', orderError);
+    log.error('failed to create order', orderError);
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
   }
 
@@ -108,7 +111,7 @@ export async function POST(request: Request) {
   );
 
   if (itemsError) {
-    console.error('[webhook] Failed to create order items:', itemsError);
+    log.error('failed to create order items', itemsError);
     await db.from('orders').delete().eq('id', order.id);
     return NextResponse.json({ error: 'Failed to create order items' }, { status: 500 });
   }
@@ -124,7 +127,7 @@ export async function POST(request: Request) {
         p_qty: item.quantity,
       });
       if (stockError) {
-        console.error(`[webhook] Failed to decrement stock for variant ${item.variantId}:`, stockError);
+        log.error(`failed to decrement stock for variant ${item.variantId}`, stockError);
       }
     }
   } else {
@@ -133,11 +136,11 @@ export async function POST(request: Request) {
       .update({ used_at: new Date().toISOString(), order_id: order.id })
       .eq('token', restockToken);
     if (tokenError) {
-      console.error(`[webhook] Failed to mark restock token used:`, tokenError);
+      log.error('failed to mark restock token used', tokenError);
     }
   }
 
-  console.log(`[webhook] Order ${order.id} created for session ${session.id}${restockToken ? ' (restock)' : ''}`);
+  log.info(`order ${order.id} created for session ${session.id}${restockToken ? ' (restock)' : ''}`);
 
   // Send invoice email — fetch full order with items for the PDF
   if (session.customer_details?.email) {
@@ -154,11 +157,11 @@ export async function POST(request: Request) {
       if (fullOrder) {
         const { sendInvoiceEmail } = await import('@/lib/email');
         await sendInvoiceEmail(fullOrder as unknown as Parameters<typeof sendInvoiceEmail>[0]);
-        console.log(`[webhook] Invoice email sent for order ${order.id}`);
+        log.info(`invoice email sent for order ${order.id}`);
       }
     } catch (emailErr) {
       // Non-fatal — order is already created, email failure should not fail the webhook
-      console.error(`[webhook] Failed to send invoice email for order ${order.id}:`, emailErr);
+      log.error(`failed to send invoice email for order ${order.id}`, emailErr);
     }
   }
 
