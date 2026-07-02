@@ -47,7 +47,7 @@ function DropProducts({ products }: { products: readonly DropProduct[] }) {
               transition={{ duration: 0.7, delay: i * 0.12 }}
               className="relative aspect-[4/5] overflow-hidden border-r border-[#1f1f1f]"
             >
-              <Image src={product.image} alt={product.name} fill sizes="100vw" className="object-cover" />
+              <Image src={product.image} alt={`Atlantic Ave — ${product.name}`} fill sizes="100vw" className="object-cover" />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -98,7 +98,7 @@ function DropProducts({ products }: { products: readonly DropProduct[] }) {
               transition={{ duration: 0.7, delay: i * 0.12 }}
               className={`relative aspect-[4/5] overflow-hidden border-r border-[#1f1f1f] ${i % 2 !== 0 ? 'order-2' : ''}`}
             >
-              <Image src={product.image} alt={product.name} fill sizes="50vw" className="object-cover" />
+              <Image src={product.image} alt={`Atlantic Ave — ${product.name}`} fill sizes="50vw" className="object-cover" />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 16 }}

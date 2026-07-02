@@ -117,7 +117,7 @@ function MobileProductCard({ product, index }: { product: Product; index: number
             <Image
               key={i}
               src={src}
-              alt={product.name}
+              alt={`Atlantic Ave — ${product.name}`}
               fill
               className={`object-cover transition-opacity duration-300 ${i === imgIdx ? 'opacity-100' : 'opacity-0'}`}
               sizes="100vw"
@@ -226,7 +226,7 @@ function DesktopProductRow({ product, index }: { product: Product; index: number
                 <Image
                   key={i}
                   src={src}
-                  alt={product.name}
+                  alt={`Atlantic Ave — ${product.name}`}
                   fill
                   className={`object-cover transition-opacity duration-500 ${i === imgIdx ? 'opacity-100' : 'opacity-0'}`}
                   sizes="50vw"

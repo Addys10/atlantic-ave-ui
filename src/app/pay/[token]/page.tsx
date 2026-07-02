@@ -131,7 +131,7 @@ export default async function PayPage({ params }: Props) {
                   {image && (
                     <Image
                       src={image}
-                      alt={product.name}
+                      alt={`Atlantic Ave — ${product.name}`}
                       fill
                       sizes="(min-width: 768px) 130px, 90px"
                       className="object-cover"

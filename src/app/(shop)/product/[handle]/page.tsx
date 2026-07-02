@@ -234,7 +234,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
               >
                 <Image
                   src={images[thumb] ?? product.image}
-                  alt={product.name}
+                  alt={`Atlantic Ave — ${product.name}`}
                   fill
                   sizes="(min-width: 896px) 58vw, 100vw"
                   className="object-cover"
@@ -275,7 +275,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                     i === thumb ? 'opacity-100' : 'opacity-40 hover:opacity-80'
                   }`}
                 >
-                  <Image src={src} alt={`${product.name} ${i + 1}`} fill sizes="(min-width: 896px) 14vw, 25vw" className="object-cover" placeholder="blur" blurDataURL={BLUR_PLACEHOLDER} />
+                  <Image src={src} alt={`Atlantic Ave — ${product.name} — foto ${i + 1}`} fill sizes="(min-width: 896px) 14vw, 25vw" className="object-cover" placeholder="blur" blurDataURL={BLUR_PLACEHOLDER} />
                 </button>
               ))}
             </div>
