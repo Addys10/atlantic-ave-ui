@@ -89,6 +89,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
   const [thumb, setThumb] = useState(0);
   const [adding, setAdding] = useState(false);
   const [toast, setToast] = useState(false);
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>();
   const [lens, setLens] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const imgContainerRef = useRef<HTMLDivElement>(null);
 
@@ -151,7 +152,13 @@ export default function ProductDetail({ params }: { params: { handle: string } }
 
     setToast(true);
     setTimeout(() => { setSelectedSize(''); setAdding(false); }, 300);
-    setTimeout(() => setToast(false), 3000);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(false), 3000);
+  }
+
+  function dismissToast() {
+    clearTimeout(toastTimer.current);
+    setToast(false);
   }
 
   const images = product?.images?.length ? product.images : product?.image ? [product.image] : [];
@@ -188,9 +195,9 @@ export default function ProductDetail({ params }: { params: { handle: string } }
             transition={{ duration: 0.36, ease: [0.2, 0.7, 0.2, 1] }}
             className="fixed bottom-5 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-max z-50 bg-bone text-[#0a0a0a] shadow-2xl"
           >
-            <div className="flex items-center justify-between gap-6 px-5 py-4">
+            <div className="flex items-center justify-between gap-4 md:gap-6 px-5 py-4">
               <div className="flex items-center gap-3 min-w-0">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0" aria-hidden="true">
                   <circle cx="7" cy="7" r="6.5" stroke="#0a0a0a" strokeOpacity="0.25"/>
                   <path d="M4 7l2 2 4-4" stroke="#0a0a0a" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
@@ -199,12 +206,23 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                   <p className="font-mono text-[12px] tracking-[0.08em] uppercase truncate">{product.name}</p>
                 </div>
               </div>
-              <Link
-                href="/checkout"
-                className="shrink-0 font-mono text-[10px] tracking-[0.22em] uppercase border-b border-[#0a0a0a]/30 hover:border-[#0a0a0a] transition-colors pb-px"
-              >
-                Košík →
-              </Link>
+              <div className="flex items-center gap-3 md:gap-4 shrink-0">
+                <Link
+                  href="/checkout"
+                  className="font-mono text-[10px] tracking-[0.22em] uppercase border-b border-[#0a0a0a]/30 hover:border-[#0a0a0a] transition-colors pb-px"
+                >
+                  Košík →
+                </Link>
+                <button
+                  onClick={dismissToast}
+                  aria-label="Zavřít"
+                  className="text-[#0a0a0a]/40 hover:text-[#0a0a0a] transition-colors -mr-1 p-1"
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                    <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                  </svg>
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
