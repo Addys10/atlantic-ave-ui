@@ -242,17 +242,19 @@ function DesktopProductRow({ product, index }: { product: Product; index: number
                 {imgIdx > 0 && (
                   <button
                     onClick={prevImage}
+                    aria-label="Předchozí fotka"
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center border border-bone/20 bg-[#0a0a0a]/60 backdrop-blur-sm text-bone/60 hover:text-bone hover:border-bone/50 transition-all duration-200 opacity-0 group-hover/photo:opacity-100"
                   >
-                    <ChevronLeft size={14} />
+                    <ChevronLeft size={14} aria-hidden="true" />
                   </button>
                 )}
                 {imgIdx < images.length - 1 && (
                   <button
                     onClick={nextImage}
+                    aria-label="Další fotka"
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center border border-bone/20 bg-[#0a0a0a]/60 backdrop-blur-sm text-bone/60 hover:text-bone hover:border-bone/50 transition-all duration-200 opacity-0 group-hover/photo:opacity-100"
                   >
-                    <ChevronRight size={14} />
+                    <ChevronRight size={14} aria-hidden="true" />
                   </button>
                 )}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200">

@@ -69,10 +69,14 @@ export default function Navbar() {
             </span>
           </Link>
           <div className="flex items-center gap-5">
-            <Link href="/checkout" className="relative text-dim hover:text-bone transition-colors duration-200 p-1">
-              <ShoppingCart size={20} strokeWidth={1.5} />
+            <Link
+              href="/checkout"
+              aria-label={cartCount > 0 ? `Košík — ${cartCount} položek` : 'Košík'}
+              className="relative text-dim hover:text-bone transition-colors duration-200 p-1"
+            >
+              <ShoppingCart size={20} strokeWidth={1.5} aria-hidden="true" />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[9px] font-bold rounded-full w-[15px] h-[15px] leading-none select-none">
+                <span aria-hidden="true" className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[9px] font-bold rounded-full w-[15px] h-[15px] leading-none select-none">
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
               )}
@@ -110,10 +114,14 @@ export default function Navbar() {
               onMouseEnter={onCartEnter}
               onMouseLeave={onCartLeave}
             >
-              <Link href="/checkout" className="relative text-dim hover:text-bone transition-colors duration-200 p-1">
-                <ShoppingCart size={18} strokeWidth={1.5} />
+              <Link
+                href="/checkout"
+                aria-label={cartCount > 0 ? `Košík — ${cartCount} položek` : 'Košík'}
+                className="relative text-dim hover:text-bone transition-colors duration-200 p-1"
+              >
+                <ShoppingCart size={18} strokeWidth={1.5} aria-hidden="true" />
                 {cartCount > 0 && (
-                  <span className="absolute left-3 inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[9px] font-bold rounded-full w-[15px] h-[15px] leading-none select-none">
+                  <span aria-hidden="true" className="absolute left-3 inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[9px] font-bold rounded-full w-[15px] h-[15px] leading-none select-none">
                     {cartCount > 9 ? '9+' : cartCount}
                   </span>
                 )}
