@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { createServiceClient } from '@/lib/supabase';
 import { sendRestockPayEmail, type RestockPayEmailItem } from '@/lib/email';
+import { env } from '@/lib/env';
 
 const TOKEN_TTL_DAYS = 3;
 
@@ -82,8 +83,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: tokenError.message }, { status: 500 });
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? '';
-  const payUrl = `${baseUrl}/pay/${token}`;
+  const payUrl = `${env.baseUrl()}/pay/${token}`;
 
   const emailItems: RestockPayEmailItem[] = resolved.map(r => ({
     productName: r.product.name,

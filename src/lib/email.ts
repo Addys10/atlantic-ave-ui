@@ -4,9 +4,11 @@ import { createElement, type ReactElement } from 'react';
 import type { DocumentProps } from '@react-pdf/renderer';
 import { InvoiceDocument, InvoiceOrder } from './invoice';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { env } from './env';
 
-const FROM_EMAIL = `Atlantic Ave <${process.env.RESEND_FROM_EMAIL ?? 'faktury@atlanticave.cz'}>`;
+const resend = new Resend(env.resendApiKey());
+
+const FROM_EMAIL = `Atlantic Ave <${env.resendFromEmail()}>`;
 
 export async function sendInvoiceEmail(order: InvoiceOrder): Promise<void> {
   const pdfBuffer = await renderToBuffer(

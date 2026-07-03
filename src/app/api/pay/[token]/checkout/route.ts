@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase';
 import { SHIPPING_HALERE } from '@/lib/constants';
+import { env } from '@/lib/env';
 
 interface TokenItem {
   product_id: string;
@@ -106,8 +107,8 @@ export async function POST(_request: Request, { params }: { params: { token: str
           },
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/pay/${row.token}`,
+      success_url: `${env.baseUrl()}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${env.baseUrl()}/pay/${row.token}`,
       metadata: {
         restock_token: row.token,
         items: JSON.stringify(
