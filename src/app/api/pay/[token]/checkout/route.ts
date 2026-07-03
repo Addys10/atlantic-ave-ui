@@ -3,6 +3,9 @@ import { stripe } from '@/lib/stripe';
 import { createServiceClient } from '@/lib/supabase';
 import { SHIPPING_HALERE } from '@/lib/constants';
 import { env } from '@/lib/env';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('pay/checkout');
 
 interface TokenItem {
   product_id: string;
@@ -125,7 +128,7 @@ export async function POST(_request: Request, { params }: { params: { token: str
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
-    console.error('[pay/checkout] Stripe error:', err);
+    log.error('Stripe error', err);
     return NextResponse.json({ error: 'Nepodařilo se zahájit platbu' }, { status: 500 });
   }
 }

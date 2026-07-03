@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { unstable_noStore as noStore } from 'next/cache';
 import { createServiceClient } from '@/lib/supabase';
 import { Product } from '@/types/product';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('products/[handle]');
 
 export const dynamic = 'force-dynamic';
 
@@ -48,7 +51,7 @@ export async function GET(
       headers: { 'Cache-Control': 'no-store' },
     });
   } catch (error) {
-    console.error('Error fetching product:', error);
+    log.error('error fetching product', error);
     return NextResponse.json(
       { error: 'Nepodařilo se načíst produkt' },
       { status: 500 }
