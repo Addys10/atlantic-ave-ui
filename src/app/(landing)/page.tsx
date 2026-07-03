@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { GraffitiAccent } from '@/components/GraffitiAccent';
 
 const INSTAGRAM = 'https://www.instagram.com/atlantic_ave_100th_';
 
@@ -61,6 +62,12 @@ export default function LandingPage() {
             backgroundSize: '256px 256px',
           }}
         />
+
+        {/* Graffiti accents — subtle street texture */}
+        <GraffitiAccent variant="spray" className="pointer-events-none absolute top-[9%] right-[6%] z-[3] w-[260px] text-white/[0.07]" />
+        <GraffitiAccent variant="tag-star" className="pointer-events-none absolute top-[16%] left-[7%] z-[3] w-[72px] rotate-[-14deg] text-white/[0.09]" />
+        <GraffitiAccent variant="scribble" className="pointer-events-none absolute bottom-[38%] right-[8%] z-[3] w-[280px] rotate-[-6deg] text-white/[0.08]" />
+        <GraffitiAccent variant="squiggle" className="pointer-events-none absolute top-[55%] left-[10%] z-[3] w-[180px] text-white/[0.07]" />
 
         {/* Top bar */}
         <motion.div
@@ -154,10 +161,15 @@ export default function LandingPage() {
       </section>
 
       {/* ── SECOND SECTION ── */}
-      <section className="bg-[#0a0a0a]">
+      <section className="bg-[#0a0a0a] relative overflow-hidden">
+
+        {/* Graffiti accents on the second section */}
+        <GraffitiAccent variant="drip" className="pointer-events-none absolute top-0 right-[8%] z-[1] w-[70px] text-white/[0.05]" />
+        <GraffitiAccent variant="cross-out" className="pointer-events-none absolute bottom-[18%] left-[6%] z-[1] w-[110px] rotate-[8deg] text-white/[0.07]" />
+        <GraffitiAccent variant="spray" className="pointer-events-none absolute bottom-[4%] right-[4%] z-[1] w-[220px] text-white/[0.05]" />
 
         {/* Value strip */}
-        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-[#1f1f1f]">
+        <div className="relative z-[2] grid grid-cols-1 md:grid-cols-3 border-b border-[#1f1f1f]">
           {values.map((v, i) => (
             <motion.div
               key={v.num}
@@ -182,9 +194,11 @@ export default function LandingPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="px-8 md:px-12 py-16 md:py-24 flex flex-col md:flex-row items-start md:items-end justify-between gap-10"
+          className="relative z-[2] px-8 md:px-12 py-16 md:py-24 flex flex-col md:flex-row items-start md:items-end justify-between gap-10"
         >
-          <div>
+          <div className="relative">
+            {/* Tiny tag next to the outlined 03 */}
+            <GraffitiAccent variant="tag-star" className="pointer-events-none absolute -top-4 -right-10 md:-right-14 w-[54px] rotate-[16deg] text-[#f4f1ea]/[0.14]" />
             <div className="flex items-center gap-3 mb-5">
               <span className="font-mono text-[10px] tracking-[0.36em] uppercase text-[#555]">Připravujeme</span>
               <div className="h-px flex-1 max-w-[32px] bg-[#1f1f1f]" />

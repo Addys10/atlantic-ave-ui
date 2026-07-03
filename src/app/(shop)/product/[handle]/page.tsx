@@ -8,6 +8,7 @@ import DOMPurify from 'isomorphic-dompurify';
 import { Product } from '@/types/product';
 import { CartItem } from '@/types/cart';
 import { DEFAULT_SIZES, SHIPPING_KC } from '@/lib/constants';
+import { GraffitiAccent } from '@/components/GraffitiAccent';
 
 const DESCRIPTION_ALLOWED_TAGS = ['p', 'br', 'strong', 'em', 'b', 'i', 'u', 'h1', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'span', 'div'];
 const DESCRIPTION_ALLOWED_ATTR = ['href', 'target', 'rel'];
@@ -297,10 +298,13 @@ export default function ProductDetail({ params }: { params: { handle: string } }
         </div>
 
         {/* Sticky info panel */}
-        <aside className="tb:sticky tb:top-[68px] tb:self-start flex flex-col gap-8 p-8 md:p-12">
+        <aside className="tb:sticky tb:top-[68px] tb:self-start flex flex-col gap-8 p-8 md:p-12 relative overflow-hidden">
+
+          {/* Ambient tag behind the info panel */}
+          <GraffitiAccent variant="tag-star" className="pointer-events-none absolute top-6 right-6 w-[60px] rotate-[12deg] text-bone/[0.06] z-0" />
 
           {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase text-dim">
+          <div className="relative z-[1] flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase text-dim">
             <Link href="/shop" className="hover:text-bone transition-colors">Shop</Link>
             <span className="text-mute">/</span>
             <span className="text-mute">{product.category}</span>
@@ -309,7 +313,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
           </div>
 
           {/* Name + category */}
-          <div>
+          <div className="relative z-[1]">
             <h1 className="font-anton text-[clamp(52px,5.5vw,88px)] uppercase leading-[0.88] tracking-tight text-bone">
               {product.name}
             </h1>

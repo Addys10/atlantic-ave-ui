@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '@/types/product';
 import { DEFAULT_SIZES } from '@/lib/constants';
+import { GraffitiAccent } from '@/components/GraffitiAccent';
 
 const BLUR_PLACEHOLDER = `data:image/svg+xml;base64,${btoa("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect fill='#1f1f1f' width='1' height='1'/></svg>")}`;
 
@@ -365,7 +366,12 @@ export default function ShopPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="relative min-h-screen bg-[#0a0a0a] overflow-hidden">
+
+      {/* Ambient street accents */}
+      <GraffitiAccent variant="spray" className="pointer-events-none absolute top-[8%] left-[4%] z-[1] w-[200px] text-bone/[0.05]" />
+      <GraffitiAccent variant="squiggle" className="pointer-events-none absolute top-[45%] right-[3%] z-[1] w-[140px] rotate-[-8deg] text-bone/[0.06]" />
+      <GraffitiAccent variant="scribble" className="pointer-events-none absolute bottom-[6%] left-[8%] z-[1] w-[260px] rotate-[4deg] text-bone/[0.05]" />
 
       {loading && <ShopSkeleton />}
 
