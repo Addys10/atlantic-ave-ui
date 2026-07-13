@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { ChevronDown, ChevronUp, MapPin, Mail, Package, CreditCard } from 'lucide-react';
+import { ChevronDown, ChevronUp, MapPin, Mail, Package, CreditCard, Trash2 } from 'lucide-react';
 import { OrderStatus, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from '@/types/order';
 
 interface ShippingAddress {
@@ -67,6 +67,7 @@ export default function AdminOrdersPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [sendingInvoice, setSendingInvoice] = useState<string | null>(null);
   const [invoiceResult, setInvoiceResult] = useState<Record<string, 'success' | 'error'>>({});
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => { loadOrders(); }, []);
 
@@ -105,6 +106,25 @@ export default function AdminOrdersPage() {
     } finally {
       setSendingInvoice(null);
       setTimeout(() => setInvoiceResult(prev => { const n = { ...prev }; delete n[id]; return n; }), 4000);
+    }
+  }
+
+  async function deleteOrder(id: string) {
+    if (!window.confirm('Opravdu chcete smazat objednávku? Tuto akci nelze vrátit zpět.')) return;
+    setDeleting(id);
+    try {
+      const res = await fetch(`/api/admin/orders/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setOrders(prev => prev.filter(o => o.id !== id));
+        setExpanded(prev => (prev === id ? null : prev));
+      } else {
+        const { error } = await res.json().catch(() => ({ error: '' }));
+        window.alert(`Objednávku se nepodařilo smazat.${error ? `\n\n${error}` : ''}`);
+      }
+    } catch {
+      window.alert('Objednávku se nepodařilo smazat.');
+    } finally {
+      setDeleting(null);
     }
   }
 
@@ -243,6 +263,14 @@ export default function AdminOrdersPage() {
                   Naposledy: {formatDate(order.invoice_sent_at)}
                 </p>
               )}
+              <button
+                onClick={() => deleteOrder(order.id)}
+                disabled={deleting === order.id}
+                className="mt-1 inline-flex items-center gap-1.5 self-start text-xs font-medium text-red-600 hover:text-red-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+              >
+                <Trash2 size={13} />
+                {deleting === order.id ? 'Mažu…' : 'Smazat objednávku'}
+              </button>
             </div>
             <div className="space-y-1.5 min-w-[200px]">
               <div className="flex justify-between text-sm text-gray-500">
