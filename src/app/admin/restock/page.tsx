@@ -33,6 +33,10 @@ function formatDate(iso: string) {
 
 type SendState = 'sending' | 'sent' | 'error';
 
+// Dočasně vypnuto, ať kolega neklikne omylem na odeslání výzvy.
+// Až bude čas znovu rozesílat, nastav na false.
+const SENDING_DISABLED = true;
+
 export default function AdminRestockPage() {
   const [interests, setInterests] = useState<RestockInterest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,6 +53,7 @@ export default function AdminRestockPage() {
   }, []);
 
   async function sendInvite(interestId: string) {
+    if (SENDING_DISABLED) return;
     if (sendState[interestId] === 'sending' || sendState[interestId] === 'sent') return;
 
     setSendState(prev => ({ ...prev, [interestId]: 'sending' }));
@@ -201,8 +206,9 @@ export default function AdminRestockPage() {
                               </span>
                               <button
                                 onClick={() => sendInvite(r.id)}
-                                className="text-[11px] font-medium text-gray-500 hover:text-gray-900 underline underline-offset-2 whitespace-nowrap"
-                                title="Poslat znovu"
+                                disabled={SENDING_DISABLED}
+                                className="text-[11px] font-medium text-gray-500 hover:text-gray-900 underline underline-offset-2 whitespace-nowrap disabled:opacity-40 disabled:no-underline disabled:hover:text-gray-500 disabled:cursor-not-allowed"
+                                title={SENDING_DISABLED ? 'Odesílání je dočasně vypnuté' : 'Poslat znovu'}
                               >
                                 Znovu
                               </button>
@@ -213,9 +219,12 @@ export default function AdminRestockPage() {
                         return (
                           <button
                             onClick={() => sendInvite(r.id)}
-                            disabled={state === 'sending' || state === 'sent'}
+                            disabled={SENDING_DISABLED || state === 'sending' || state === 'sent'}
+                            title={SENDING_DISABLED ? 'Odesílání je dočasně vypnuté' : undefined}
                             className={`text-[11px] font-medium px-2.5 py-1 rounded transition-colors whitespace-nowrap ${
-                              state === 'sent'
+                              SENDING_DISABLED
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                : state === 'sent'
                                 ? 'bg-emerald-100 text-emerald-800 cursor-default'
                                 : state === 'error'
                                 ? 'bg-red-100 text-red-700'
@@ -224,7 +233,9 @@ export default function AdminRestockPage() {
                                 : 'bg-gray-900 text-white hover:bg-gray-700'
                             }`}
                           >
-                            {state === 'sent'
+                            {SENDING_DISABLED
+                              ? `Odesílání vypnuto (${r.items.length})`
+                              : state === 'sent'
                               ? 'Odesláno ✓'
                               : state === 'error'
                               ? 'Chyba ✗'
