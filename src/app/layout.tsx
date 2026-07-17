@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Anton, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import "./globals.css";
 
 const cloister = localFont({
@@ -68,15 +70,21 @@ export const viewport: Viewport = {
   themeColor: '#0a0a0a',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Resolved from the i18n middleware; falls back to the default locale (cs)
+  // for non-localized branches such as /admin and /pay.
+  const locale = await getLocale();
+
   return (
-    <html lang="cs">
+    <html lang={locale}>
       <body className={`${cloister.variable} ${anton.variable} ${mono.variable} flex flex-col min-h-screen`}>
-        {children}
+        <NextIntlClientProvider>
+          {children}
+        </NextIntlClientProvider>
         <Analytics />
       </body>
     </html>
