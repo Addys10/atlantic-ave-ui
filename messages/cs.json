@@ -1,5 +1,44 @@
 {
   "common": {
     "currencySuffix": "Kč"
+  },
+  "language": {
+    "label": "Jazyk",
+    "switchTo": "Přepnout do češtiny"
+  },
+  "nav": {
+    "shop": "Shop",
+    "sizeGuide": "Size Guide",
+    "archiv": "Archiv",
+    "behindBrand": "Behind the brand",
+    "contact": "Kontakt",
+    "cart": "Košík",
+    "cartAria": "Košík",
+    "cartAriaCount": "Košík — {count} položek",
+    "openMenu": "Otevřít menu",
+    "closeMenu": "Zavřít menu",
+    "menu": "Menu",
+    "cartEmpty": "Košík je prázdný",
+    "goToShop": "Přejít do shopu →",
+    "pieces": "{count, plural, one {# kus} few {# kusy} other {# kusů}}",
+    "unitShort": "ks",
+    "moreItems": "+ {count} {count, plural, one {další položka} few {další položky} other {dalších položek}}",
+    "subtotal": "Mezisoučet",
+    "shipping": "Doprava",
+    "toCheckout": "Do košíku →"
+  },
+  "footer": {
+    "tagline": "Limitované edice.",
+    "navigation": "Navigace",
+    "shop": "Shop",
+    "sizeGuide": "Size Guide",
+    "contact": "Kontakt",
+    "terms": "Podmínky",
+    "returns": "Vrácení zboží",
+    "shipping": "Doprava",
+    "termsConditions": "Obchodní podmínky",
+    "privacy": "Ochrana osobních údajů",
+    "legalNotice": "Právní upozornění",
+    "copyright": "© {year} Atlantic Ave — Všechna práva vyhrazena"
   }
 }

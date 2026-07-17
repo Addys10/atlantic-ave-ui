@@ -1,5 +1,44 @@
 {
   "common": {
     "currencySuffix": "Kč"
+  },
+  "language": {
+    "label": "Language",
+    "switchTo": "Switch to English"
+  },
+  "nav": {
+    "shop": "Shop",
+    "sizeGuide": "Size Guide",
+    "archiv": "Archive",
+    "behindBrand": "Behind the brand",
+    "contact": "Contact",
+    "cart": "Cart",
+    "cartAria": "Cart",
+    "cartAriaCount": "Cart — {count} items",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menu": "Menu",
+    "cartEmpty": "Your cart is empty",
+    "goToShop": "Go to shop →",
+    "pieces": "{count, plural, one {# item} other {# items}}",
+    "unitShort": "pcs",
+    "moreItems": "+ {count} more {count, plural, one {item} other {items}}",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "toCheckout": "To checkout →"
+  },
+  "footer": {
+    "tagline": "Limited editions.",
+    "navigation": "Navigation",
+    "shop": "Shop",
+    "sizeGuide": "Size Guide",
+    "contact": "Contact",
+    "terms": "Terms",
+    "returns": "Returns",
+    "shipping": "Shipping",
+    "termsConditions": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "legalNotice": "Legal Notice",
+    "copyright": "© {year} Atlantic Ave — All rights reserved"
   }
 }
