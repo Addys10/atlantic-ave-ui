@@ -1,9 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 export default function RestockPage() {
+  const t = useTranslations('restock');
   return (
     <div className="bg-[#0a0a0a] min-h-[calc(100vh-58px)] relative flex flex-col">
 
@@ -27,7 +29,7 @@ export default function RestockPage() {
         >
           <div className="h-px w-8 bg-[#1f1f1f]" />
           <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#555]">
-            Restock · Drop 02
+            {t('label')}
           </span>
         </motion.div>
 
@@ -40,7 +42,7 @@ export default function RestockPage() {
             className="font-anton uppercase leading-[0.85] tracking-tight text-[#f4f1ea]"
             style={{ fontSize: 'clamp(72px, 16vw, 220px)' }}
           >
-            Registrace
+            {t('headline1')}
           </motion.h1>
         </div>
         <div className="overflow-hidden pt-8 mb-12">
@@ -55,7 +57,7 @@ export default function RestockPage() {
               color: 'transparent',
             }}
           >
-            uzavřeny.
+            {t('headline2')}
           </motion.h1>
         </div>
 
@@ -67,9 +69,9 @@ export default function RestockPage() {
           className="flex flex-col md:flex-row md:items-end justify-between w-full gap-8 border-t border-[#1f1f1f] pt-8"
         >
           <p className="font-mono text-[11px] tracking-[0.1em] leading-[1.9] text-[#555] max-w-[46ch]">
-            Okno pro registraci zájmu o restock Drop 02 je uzavřeno.
+            {t('body1')}
             <br />
-            Informace o dalším dropu oznámíme na Instagramu.
+            {t('body2')}
           </p>
 
           <div className="flex items-center gap-8">
@@ -90,7 +92,7 @@ export default function RestockPage() {
               href="/shop"
               className="font-mono text-[10px] tracking-[0.26em] uppercase text-[#f4f1ea] border border-[#f4f1ea]/20 hover:border-[#f4f1ea]/60 px-5 py-3 transition-colors duration-200"
             >
-              ← Shop
+              {t('shop')}
             </Link>
           </div>
         </motion.div>

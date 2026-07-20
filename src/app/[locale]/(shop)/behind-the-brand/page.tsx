@@ -1,66 +1,17 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
-const sections = [
-  {
-    num: '01',
-    heading: null,
-    body: [
-      `Myšlenka na vlastní značku se zrodila, když jsem žil v Americe. Nebyl to žádný jasný plán ani konkrétní cíl. Spíš jen pocit, který se občas objevil a zase odezněl.`,
-      `Po návratu do Česka se mě ale tenhle nápad pustit nechtěl. Vracel se mi každý den. Přemýšlel jsem nad tím pořád dokola, až jsem jednoho dne narazil na video, kde dva týpci sprejovali na trička. A řekl jsem si: proč to nezkusit?`,
-      `V tu chvíli jsem vůbec neplánoval, že by se z toho někdy měla stát skutečná značka. Neřešil jsem výrobu, fabriky, tisk, balení nebo e-shop. Bylo to jen o tom udělat první krok a něco si vyzkoušet.`,
-    ],
-  },
-  {
-    num: '02',
-    heading: 'Od zkoušení k něčemu reálnému',
-    body: [
-      `Když jsem zjistil, že sprejování není ta správná cesta, začal jsem se víc zajímat o klasický tisk a reálnou výrobu oblečení. Objednal jsem první kusy. Zkusil natisknout první návrhy. Testoval jsem. Učil se.`,
-      `A někde mezi tím mi došlo, že už vlastně netestuji. Že už pomalu vzniká něco, co má svůj vlastní směr.`,
-      `Všechno to vznikalo bez velkého rozpočtu. Bez prostoru pro zbytečné chyby. Každé rozhodnutí jsem musel zvažovat mnohem víc, než bych možná chtěl. A právě to mě naučilo dát si záležet na každém detailu.`,
-    ],
-  },
-  {
-    num: '03',
-    heading: 'Jak nad věcmi přemýšlím',
-    body: [
-      `Do každého kousku se snažím dát maximum. Neznamená to, že je vždycky všechno dokonalé — ale znamená to, že nic nevypustím do světa jen proto, že „už by to mohlo stačit".`,
-      `Často vznikne padesát návrhů a použijí se z nich jen dva. Ten zbytek beru jako nezbytnou součást cesty, ne jako chybu. Bez nich by totiž ty dva finální nikdy nevznikly.`,
-      `Tenhle přístup se promítá do všeho, co tvořím — ať už jde o samotný střih, materiál, potisk nebo ty nejmenší detaily.`,
-    ],
-  },
-  {
-    num: '04',
-    heading: 'Od návrhu po výrobu',
-    body: [
-      `Byl jsem u všeho. Od hledání fabrik přes tisk, střihy a materiály až po štítky, balení, nálepky a samotný e-shop.`,
-      `Ne proto, že bych nevěřil ostatním, ale proto, že jsem chtěl rozumět celému procesu. Zjistit, jak věci vznikají. Co má reálný vliv na kvalitu. Co dělá ten rozdíl mezi průměrným a skvělým kouskem.`,
-      `Nešlo mi jen o to, aby to dobře vypadalo. Chtěl jsem, aby se to dobře nosilo. Aby to něco vydrželo. Aby to dávalo smysl i za rok, nejen dnes.`,
-    ],
-  },
-  {
-    num: '05',
-    heading: 'Limitované dropy',
-    body: [
-      `Atlantic Ave funguje na principu menších, limitovaných kolekcí.`,
-      `Nejde mi o to chrlit co nejvíc kusů oblečení. Chci tvořit věci, za kterými si můžu stoprocentně stát.`,
-      `První oficiální drop se vyprodal. Neberu to jako důkaz, že už „všechno umím". Beru to spíš jako obrovské potvrzení toho, že tenhle přístup má smysl.`,
-    ],
-  },
-  {
-    num: '06',
-    heading: 'Tohle je teprve začátek',
-    body: [
-      `Atlantic Ave není hotová věc. Je to proces, který se vyvíjí s každým dalším krokem.`,
-      `Učím se. Zlepšuji se. A snažím se dělat věci vždycky o trochu lépe než minule.`,
-    ],
-    closing: `Tohle je teprve začátek.`,
-  },
-] as const;
+type BrandSection = {
+  num: string;
+  heading: string | null;
+  body: string[];
+  closing?: string;
+};
 
-function Section({ section, index }: { section: typeof sections[number]; index: number }) {
+function Section({ section, index }: { section: BrandSection; index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
@@ -119,6 +70,17 @@ function Section({ section, index }: { section: typeof sections[number]; index: 
 }
 
 export default function BehindTheBrandPage() {
+  const t = useTranslations('behindBrand');
+
+  const sections: BrandSection[] = [
+    { num: '01', heading: null, body: t.raw('s1Body') },
+    { num: '02', heading: t('s2Heading'), body: t.raw('s2Body') },
+    { num: '03', heading: t('s3Heading'), body: t.raw('s3Body') },
+    { num: '04', heading: t('s4Heading'), body: t.raw('s4Body') },
+    { num: '05', heading: t('s5Heading'), body: t.raw('s5Body') },
+    { num: '06', heading: t('s6Heading'), body: t.raw('s6Body'), closing: t('s6Closing') },
+  ];
+
   return (
     <div className="bg-[#0a0a0a] min-h-screen relative">
 
@@ -145,7 +107,7 @@ export default function BehindTheBrandPage() {
           >
             <div className="h-px flex-1 max-w-[40px] bg-[#1f1f1f]" />
             <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#555]">
-              Atlantic Ave — O nás
+              {t('tag')}
             </span>
           </motion.div>
 
@@ -196,10 +158,10 @@ export default function BehindTheBrandPage() {
           >
             <div className="flex items-end justify-between pb-5 gap-6">
               <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#555] max-w-[40ch] leading-relaxed">
-                Jak Atlantic Ave vzniklo a co za ním stojí
+                {t('subtitle')}
               </p>
               <span className="font-mono text-[10px] tracking-[0.2em] text-[#383832] flex-shrink-0">
-                {sections.length} kapitol
+                {t('chapters', { count: sections.length })}
               </span>
             </div>
           </motion.div>
@@ -224,17 +186,17 @@ export default function BehindTheBrandPage() {
           <div className="px-6 md:px-12 py-14 md:py-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
             <div>
               <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#555] mb-3">
-                Kolekce
+                {t('closingLabel')}
               </div>
               <p className="font-mono text-[11px] tracking-[0.16em] uppercase text-[#7a7a74] max-w-[34ch] leading-relaxed">
-                Každý kus je výsledek tohoto procesu. Limitovaně.
+                {t('closingText')}
               </p>
             </div>
             <Link
               href="/shop"
               className="flex-shrink-0 inline-flex items-center gap-4 py-4 px-7 border border-[#f4f1ea] font-mono text-[11px] tracking-[0.28em] uppercase text-[#f4f1ea] hover:bg-[#f4f1ea] hover:text-[#0a0a0a] transition-colors duration-200 group"
             >
-              <span>Zobrazit kolekci</span>
+              <span>{t('viewCollection')}</span>
               <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
             </Link>
           </div>

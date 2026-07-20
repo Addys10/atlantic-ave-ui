@@ -2,9 +2,10 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 import { Product } from '@/types/product';
 import { DEFAULT_SIZES } from '@/lib/constants';
 
@@ -82,6 +83,7 @@ function availableCount(product: Product) {
 }
 
 function MobileProductCard({ product, index }: { product: Product; index: number }) {
+  const t = useTranslations('shop');
   const soldOut = availableCount(product) === 0;
   const images = product.images.length > 0 ? product.images : [product.image];
   const [imgIdx, setImgIdx] = useState(0);
@@ -127,7 +129,7 @@ function MobileProductCard({ product, index }: { product: Product; index: number
           ))}
           {soldOut && (
             <div className="absolute top-3 left-3 font-mono text-[9px] tracking-[0.2em] uppercase text-bone border border-bone/40 px-2 py-1 bg-[#0a0a0a]/80 backdrop-blur-sm">
-              Vyprodáno
+              {t('soldOut')}
             </div>
           )}
           {images.length > 1 && (
@@ -183,6 +185,7 @@ function MobileProductCard({ product, index }: { product: Product; index: number
 }
 
 function DesktopProductRow({ product, index }: { product: Product; index: number }) {
+  const t = useTranslations('shop');
   const flip = index % 2 !== 0;
   const soldOut = availableCount(product) === 0;
   const images = product.images.length > 0 ? product.images : [product.image];
@@ -242,7 +245,7 @@ function DesktopProductRow({ product, index }: { product: Product; index: number
                 {imgIdx > 0 && (
                   <button
                     onClick={prevImage}
-                    aria-label="Předchozí fotka"
+                    aria-label={t('prevPhoto')}
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center border border-bone/20 bg-[#0a0a0a]/60 backdrop-blur-sm text-bone/60 hover:text-bone hover:border-bone/50 transition-all duration-200 opacity-0 group-hover/photo:opacity-100"
                   >
                     <ChevronLeft size={14} aria-hidden="true" />
@@ -251,7 +254,7 @@ function DesktopProductRow({ product, index }: { product: Product; index: number
                 {imgIdx < images.length - 1 && (
                   <button
                     onClick={nextImage}
-                    aria-label="Další fotka"
+                    aria-label={t('nextPhoto')}
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center border border-bone/20 bg-[#0a0a0a]/60 backdrop-blur-sm text-bone/60 hover:text-bone hover:border-bone/50 transition-all duration-200 opacity-0 group-hover/photo:opacity-100"
                   >
                     <ChevronRight size={14} aria-hidden="true" />
@@ -267,7 +270,7 @@ function DesktopProductRow({ product, index }: { product: Product; index: number
 
             {soldOut && (
               <div className="absolute bottom-7 left-7 font-mono text-[10px] tracking-[0.24em] uppercase text-bone border border-bone/30 px-3 py-1.5">
-                Vyprodáno
+                {t('soldOut')}
               </div>
             )}
           </div>
@@ -300,7 +303,7 @@ function DesktopProductRow({ product, index }: { product: Product; index: number
                   className="border border-line font-mono tracking-[0.1em] uppercase text-dim w-14 py-2.5 text-center group-hover:border-[#2e2e2e] transition-colors flex flex-col items-center gap-0.5"
                 >
                   <span className="text-[11px] text-bone">{size.name}</span>
-                  <span className="text-[9px] text-mute">{size.stock}&thinsp;ks</span>
+                  <span className="text-[9px] text-mute">{size.stock}&thinsp;{t('unitShort')}</span>
                 </div>
               ))}
               {(product.sizes.length > 0 ? product.sizes.filter(s => !s.available) : DEFAULT_SIZES.map(name => ({ name, available: false }))).map(size => (
@@ -325,7 +328,7 @@ function DesktopProductRow({ product, index }: { product: Product; index: number
                 {product.price.toLocaleString('cs-CZ')} Kč
               </span>
               <div className="inline-flex items-center gap-3 pb-[5px] border-b border-bone font-mono text-[10px] tracking-[0.24em] uppercase text-bone group-hover:gap-[20px] transition-all duration-300">
-                <span>Zobrazit kus</span>
+                <span>{t('viewPiece')}</span>
                 <span>→</span>
               </div>
             </div>
@@ -337,6 +340,7 @@ function DesktopProductRow({ product, index }: { product: Product; index: number
 }
 
 export default function ShopPage() {
+  const t = useTranslations('shop');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -372,13 +376,13 @@ export default function ShopPage() {
       {!loading && error && (
         <div className="text-center py-40">
           <p className="font-mono text-[11px] tracking-[0.22em] uppercase text-dim mb-6">
-            Nepodařilo se načíst produkty
+            {t('loadError')}
           </p>
           <button
             onClick={() => window.location.reload()}
             className="font-mono text-[11px] tracking-[0.22em] uppercase text-bone underline underline-offset-4"
           >
-            Zkusit znovu
+            {t('retry')}
           </button>
         </div>
       )}
@@ -392,7 +396,7 @@ export default function ShopPage() {
             className="flex items-center gap-3 mb-10"
           >
             <div className="h-px w-8 bg-line" />
-            <span className="font-mono text-[10px] tracking-[0.38em] uppercase text-mute">Připravujeme</span>
+            <span className="font-mono text-[10px] tracking-[0.38em] uppercase text-mute">{t('coming')}</span>
             <div className="h-px w-8 bg-line" />
           </motion.div>
 
@@ -429,7 +433,7 @@ export default function ShopPage() {
             transition={{ duration: 0.5, delay: 0.35 }}
             className="font-mono text-[11px] tracking-[0.2em] leading-relaxed uppercase text-dim mb-8 max-w-[32ch]"
           >
-            Nový drop se připravuje.<br />Sleduj nás na Instagramu pro první info.
+            {t('emptyText1')}<br />{t('emptyText2')}
           </motion.p>
 
           <motion.a
@@ -446,7 +450,7 @@ export default function ShopPage() {
               <circle cx="12" cy="12" r="4" />
               <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
             </svg>
-            Sledovat →
+            {t('follow')} →
           </motion.a>
         </div>
       )}
@@ -460,10 +464,10 @@ export default function ShopPage() {
             transition={{ duration: 0.5 }}
             className="border-b border-line px-6 md:px-14 py-3.5 flex items-center justify-between"
           >
-            <span className="font-mono text-[10px] tracking-[0.28em] uppercase text-dim">Kolekce</span>
+            <span className="font-mono text-[10px] tracking-[0.28em] uppercase text-dim">{t('collection')}</span>
             <span className="font-mono text-[10px] tracking-[0.28em] uppercase text-dim">
               {products.length}&nbsp;
-              {products.length === 1 ? 'produkt' : products.length < 5 ? 'produkty' : 'produktů'}
+              {t('productUnit', { count: products.length })}
             </span>
           </motion.div>
 

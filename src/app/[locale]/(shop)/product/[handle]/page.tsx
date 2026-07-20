@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import DOMPurify from 'isomorphic-dompurify';
+import { Link } from '@/i18n/navigation';
 import { Product } from '@/types/product';
 import { CartItem } from '@/types/cart';
 import { DEFAULT_SIZES, SHIPPING_KC } from '@/lib/constants';
@@ -87,6 +88,7 @@ function ProductSkeleton() {
 
 
 export default function ProductDetail({ params }: { params: { handle: string } }) {
+  const t = useTranslations('product');
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('');
@@ -188,9 +190,9 @@ export default function ProductDetail({ params }: { params: { handle: string } }
   if (!product) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-[#0a0a0a] gap-6">
-        <p className="font-mono text-[11px] tracking-[0.22em] uppercase text-dim">Produkt nenalezen</p>
+        <p className="font-mono text-[11px] tracking-[0.22em] uppercase text-dim">{t('notFound')}</p>
         <Link href="/shop" className="font-mono text-[11px] tracking-[0.22em] uppercase text-bone underline underline-offset-4">
-          ← Zpět na shop
+          {t('backToShop')}
         </Link>
       </div>
     );
@@ -216,7 +218,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                   <path d="M4 7l2 2 4-4" stroke="#0a0a0a" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
                 <div className="min-w-0">
-                  <p className="font-mono text-[9px] tracking-[0.22em] uppercase text-[#0a0a0a]/50 leading-none mb-1">Přidáno do košíku</p>
+                  <p className="font-mono text-[9px] tracking-[0.22em] uppercase text-[#0a0a0a]/50 leading-none mb-1">{t('addedToCart')}</p>
                   <p className="font-mono text-[12px] tracking-[0.08em] uppercase truncate">{product.name}</p>
                 </div>
               </div>
@@ -225,11 +227,11 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                   href="/checkout"
                   className="font-mono text-[10px] tracking-[0.22em] uppercase border-b border-[#0a0a0a]/30 hover:border-[#0a0a0a] transition-colors pb-px"
                 >
-                  Košík →
+                  {t('cart')}
                 </Link>
                 <button
                   onClick={dismissToast}
-                  aria-label="Zavřít"
+                  aria-label={t('close')}
                   className="text-[#0a0a0a]/40 hover:text-[#0a0a0a] transition-colors -mr-1 p-1"
                 >
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -349,13 +351,13 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                 background: 'repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,107,102,0.12) 4px 5px)',
               }}
             >
-              Vyprodáno
+              {t('soldOut')}
             </div>
           ) : (
             <>
               <div className="flex flex-col gap-3">
                 <h5 className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim font-normal">
-                  <span>Velikost{selectedSize ? ` — ${selectedSize}` : ''}</span>
+                  <span>{selectedSize ? t('sizeWithValue', { size: selectedSize }) : t('size')}</span>
                 </h5>
                 <div className="grid grid-cols-5 gap-[6px]">
                   {displaySizes.map(size => {
@@ -385,7 +387,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
               </div>
 
               <Link href="/size-guide" className="font-mono text-[10px] tracking-[0.18em] uppercase text-mute hover:text-dim transition-colors self-start border-b border-mute/40 hover:border-dim/40 pb-px">
-                Tabulka velikostí →
+                {t('sizeGuide')}
               </Link>
 
               <button
@@ -393,7 +395,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                 onClick={handleAddToCart}
                 className="w-full py-[22px] bg-bone text-[#0a0a0a] font-mono text-[12px] tracking-[0.26em] uppercase border border-bone hover:bg-[#0a0a0a] hover:text-bone transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {adding ? 'Přidáno →' : selectedSize ? 'Přidat do košíku' : 'Vyberte velikost'}
+                {adding ? t('added') : selectedSize ? t('addToCart') : t('selectSize')}
               </button>
             </>
           )}
@@ -409,10 +411,10 @@ export default function ProductDetail({ params }: { params: { handle: string } }
           {/* Footer notes */}
           <div className="border-t border-line pt-6 flex flex-col gap-3 mt-auto">
             <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-mute">
-              ⊕ Doprava 3–5 pracovních dní · {SHIPPING_KC} Kč
+              {t('shippingNote', { shipping: SHIPPING_KC })}
             </div>
             <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-mute">
-              ⊕ Limitovaná edice
+              {t('limitedEdition')}
             </div>
           </div>
 

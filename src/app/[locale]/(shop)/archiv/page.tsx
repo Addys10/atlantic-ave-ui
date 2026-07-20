@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState, useRef, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 
 const drops = [
   {
@@ -19,6 +20,7 @@ const drops = [
 type DropProduct = { name: string; image: string; text: string };
 
 function DropProducts({ products }: { products: readonly DropProduct[] }) {
+  const t = useTranslations('archiv');
   const [activeIdx, setActiveIdx] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -57,7 +59,7 @@ function DropProducts({ products }: { products: readonly DropProduct[] }) {
               className="flex flex-col justify-start px-6 py-8"
             >
               <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#383832] mb-4">
-                Vyprodáno
+                {t('soldOut')}
               </span>
               <h3
                 className="font-anton uppercase leading-[0.9] tracking-tight text-[#f4f1ea] mb-4"
@@ -108,7 +110,7 @@ function DropProducts({ products }: { products: readonly DropProduct[] }) {
               className={`flex flex-col justify-start px-8 py-12 border-r border-[#1f1f1f] last:border-r-0 ${i % 2 !== 0 ? 'order-1' : ''}`}
             >
               <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#383832] mb-4">
-                Vyprodáno
+                {t('soldOut')}
               </span>
               <h3
                 className="font-anton uppercase leading-[0.9] tracking-tight text-[#f4f1ea] mb-4"
@@ -130,6 +132,7 @@ function DropProducts({ products }: { products: readonly DropProduct[] }) {
 }
 
 export default function ArchivPage() {
+  const t = useTranslations('archiv');
   return (
     <div className="bg-[#0a0a0a] min-h-screen relative">
 
@@ -155,7 +158,7 @@ export default function ArchivPage() {
           >
             <div className="h-px flex-1 max-w-[40px] bg-[#1f1f1f]" />
             <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#555]">
-              Atlantic Ave — Historie dropů
+              {t('historyLabel')}
             </span>
           </motion.div>
 
@@ -167,7 +170,7 @@ export default function ArchivPage() {
               className="font-anton uppercase leading-[0.85] tracking-tight text-[#f4f1ea] select-none"
               style={{ fontSize: 'clamp(72px, 14vw, 200px)' }}
             >
-              Archiv
+              {t('title')}
             </motion.h1>
           </div>
 
@@ -179,7 +182,7 @@ export default function ArchivPage() {
           >
             <div className="flex items-end justify-between pb-5 gap-6">
               <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#555] max-w-[40ch] leading-relaxed">
-                Každý drop existoval jednou. Tady zůstává navždy.
+                {t('subtitle')}
               </p>
             </div>
           </motion.div>
@@ -233,7 +236,7 @@ export default function ArchivPage() {
         >
           <div className="flex flex-col items-start">
             <span className="font-mono text-[13px] tracking-[0.26em] uppercase text-[#555] mb-3">
-              Coming soon
+              {t('comingSoon')}
             </span>
             <h2
               className="font-anton uppercase leading-[0.88] tracking-tight text-[#f4f1ea]"

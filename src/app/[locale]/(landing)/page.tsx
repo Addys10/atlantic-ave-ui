@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 const INSTAGRAM = 'https://www.instagram.com/atlantic_ave_100th_';
 
@@ -16,13 +17,14 @@ function InstagramIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-const values = [
-  { num: '01', label: 'Limitované edice', sub: 'Každý drop jednou.' },
-  { num: '02', label: 'Vyrobeno s péčí', sub: 'Každý detail promyšlený od začátku.' },
-  { num: '03', label: 'Vlastní proces', sub: 'Od návrhu po balení — vše pod kontrolou.' },
-];
-
 export default function LandingPage() {
+  const t = useTranslations('landing');
+
+  const values = [
+    { num: '01', label: t('value1Label'), sub: t('value1Sub') },
+    { num: '02', label: t('value2Label'), sub: t('value2Sub') },
+    { num: '03', label: t('value3Label'), sub: t('value3Sub') },
+  ];
 
   return (
     <div className="bg-black">
@@ -125,14 +127,14 @@ export default function LandingPage() {
               href="/shop"
               className="group inline-flex items-center gap-3 bg-[#f4f1ea] text-[#0a0a0a] font-mono text-[11px] tracking-[0.28em] uppercase px-7 py-4 hover:bg-white transition-colors duration-200"
             >
-              <span>Vstoupit</span>
+              <span>{t('enter')}</span>
               <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
             </Link>
             <Link
               href="/behind-the-brand"
               className="font-mono text-[10px] tracking-[0.24em] uppercase text-white/40 hover:text-white/75 transition-colors duration-200 pb-px border-b border-white/20 hover:border-white/50"
             >
-              Behind the brand
+              {t('behindBrand')}
             </Link>
           </motion.div>
         </div>
@@ -186,7 +188,7 @@ export default function LandingPage() {
         >
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <span className="font-mono text-[10px] tracking-[0.36em] uppercase text-[#555]">Připravujeme</span>
+              <span className="font-mono text-[10px] tracking-[0.36em] uppercase text-[#555]">{t('coming')}</span>
               <div className="h-px flex-1 max-w-[32px] bg-[#1f1f1f]" />
             </div>
             <h2
@@ -208,11 +210,11 @@ export default function LandingPage() {
           <div className="flex flex-col gap-5 items-start md:items-end">
             <div className="flex flex-col gap-3 md:items-end">
               <span className="font-mono text-[9px] tracking-[0.32em] uppercase text-[#f4f1ea]/55 border border-[#f4f1ea]/15 px-2.5 py-1">
-                Drop 02 — Sold out
+                {t('soldOutBadge')}
               </span>
               <p className="font-mono text-[12px] tracking-[0.1em] leading-relaxed text-[#7a7a74] max-w-[38ch] md:text-right">
-                Drop 02 i restock jsou rozebrané — díky každému, kdo s námi prošel touhle vlnou.<br />
-                Drop 03 už chystáme. Sleduj Instagram pro první info.
+                {t('dropText1')}<br />
+                {t('dropText2')}
               </p>
             </div>
             <a
@@ -222,7 +224,7 @@ export default function LandingPage() {
               className="group inline-flex items-center gap-4 font-mono text-[11px] tracking-[0.28em] uppercase text-[#f4f1ea] border border-[#f4f1ea]/30 hover:border-[#f4f1ea] px-7 py-4 transition-colors duration-200"
             >
               <InstagramIcon size={14} />
-              <span>Sledovat</span>
+              <span>{t('follow')}</span>
               <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
             </a>
           </div>
@@ -235,7 +237,7 @@ export default function LandingPage() {
           </span>
           <div className="flex items-center gap-6">
             <Link href="/behind-the-brand" className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#555] hover:text-[#8a8a85] transition-colors">
-              Behind the brand
+              {t('behindBrand')}
             </Link>
             <a
               href={INSTAGRAM}
