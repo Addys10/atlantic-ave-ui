@@ -24,6 +24,7 @@ const config: Config = {
       fontFamily: {
         cloister: ["var(--font-cloister)"],
         anton: ["var(--font-anton)", "sans-serif"],
+        grotesk: ["var(--font-grotesk)", "ui-sans-serif", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
     },

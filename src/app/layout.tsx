@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { Anton, JetBrains_Mono } from "next/font/google";
+import { Anton, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -19,6 +19,12 @@ const anton = Anton({
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
+  display: "swap",
+});
+
+const grotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-grotesk",
   display: "swap",
 });
 
@@ -75,7 +81,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="cs">
-      <body className={`${cloister.variable} ${anton.variable} ${mono.variable} flex flex-col min-h-screen`}>
+      <body className={`${cloister.variable} ${anton.variable} ${mono.variable} ${grotesk.variable} flex flex-col min-h-screen`}>
         {children}
         <Analytics />
       </body>
