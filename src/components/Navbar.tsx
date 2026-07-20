@@ -1,10 +1,12 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { Menu, X, ShoppingCart } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { CartItem } from '@/types/cart';
 
 const BLUR_PLACEHOLDER = `data:image/svg+xml;base64,${btoa("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect fill='#1f1f1f' width='1' height='1'/></svg>")}`;
@@ -13,6 +15,7 @@ const BLUR_PLACEHOLDER = `data:image/svg+xml;base64,${btoa("<svg xmlns='http://w
 const SHIPPING = 129;
 
 export default function Navbar() {
+  const t = useTranslations('nav');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartCount, setCartCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -54,6 +57,7 @@ export default function Navbar() {
   }
 
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
+  const cartAria = cartCount > 0 ? t('cartAriaCount', { count: cartCount }) : t('cartAria');
 
   const linkCls = 'font-mono text-[11px] tracking-[0.18em] uppercase text-dim hover:text-bone transition-colors duration-200';
 
@@ -71,7 +75,7 @@ export default function Navbar() {
           <div className="flex items-center gap-5">
             <Link
               href="/checkout"
-              aria-label={cartCount > 0 ? `Košík — ${cartCount} položek` : 'Košík'}
+              aria-label={cartAria}
               className="relative text-dim hover:text-bone transition-colors duration-200 p-1"
             >
               <ShoppingCart size={20} strokeWidth={1.5} aria-hidden="true" />
@@ -81,7 +85,7 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
-            <button onClick={() => setMobileOpen(true)} aria-label="Otevřít menu" aria-expanded={mobileOpen} className="text-dim hover:text-bone transition-colors">
+            <button onClick={() => setMobileOpen(true)} aria-label={t('openMenu')} aria-expanded={mobileOpen} className="text-dim hover:text-bone transition-colors">
               <Menu size={18} />
             </button>
           </div>
@@ -92,8 +96,8 @@ export default function Navbar() {
 
           {/* Left */}
           <div className="flex items-center gap-7">
-            <Link href="/shop" className={linkCls}>Shop</Link>
-            <Link href="/size-guide" className={linkCls}>Size Guide</Link>
+            <Link href="/shop" className={linkCls}>{t('shop')}</Link>
+            <Link href="/size-guide" className={linkCls}>{t('sizeGuide')}</Link>
           </div>
 
           {/* Center */}
@@ -105,8 +109,10 @@ export default function Navbar() {
 
           {/* Right — desktop with cart dropdown */}
           <div className="flex items-center justify-end gap-7">
-            <Link href="/archiv" className={linkCls}>Archiv</Link>
-            <Link href="/behind-the-brand" className={linkCls}>Behind the brand</Link>
+            <Link href="/archiv" className={linkCls}>{t('archiv')}</Link>
+            <Link href="/behind-the-brand" className={linkCls}>{t('behindBrand')}</Link>
+
+            <LanguageSwitcher />
 
             {/* Cart trigger */}
             <div
@@ -116,7 +122,7 @@ export default function Navbar() {
             >
               <Link
                 href="/checkout"
-                aria-label={cartCount > 0 ? `Košík — ${cartCount} položek` : 'Košík'}
+                aria-label={cartAria}
                 className="relative text-dim hover:text-bone transition-colors duration-200 p-1"
               >
                 <ShoppingCart size={18} strokeWidth={1.5} aria-hidden="true" />
@@ -142,12 +148,12 @@ export default function Navbar() {
                     {cartItems.length === 0 ? (
                       <div className="px-5 py-8 flex flex-col items-center gap-3">
                         <span className="font-anton text-[48px] text-line leading-none select-none">∅</span>
-                        <p className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim">Košík je prázdný</p>
+                        <p className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim">{t('cartEmpty')}</p>
                         <Link
                           href="/shop"
                           className="font-mono text-[10px] tracking-[0.22em] uppercase text-bone border-b border-bone/40 hover:border-bone transition-colors pb-px"
                         >
-                          Přejít do shopu →
+                          {t('goToShop')}
                         </Link>
                       </div>
                     ) : (
@@ -155,10 +161,10 @@ export default function Navbar() {
                         {/* Header */}
                         <div className="px-4 py-3 border-b border-line flex justify-between items-center">
                           <span className="font-mono text-[10px] tracking-[0.26em] uppercase text-dim">
-                            Košík
+                            {t('cart')}
                           </span>
                           <span className="font-mono text-[10px] tracking-[0.18em] text-mute">
-                            {cartCount} {cartCount === 1 ? 'kus' : cartCount < 5 ? 'kusy' : 'kusů'}
+                            {t('pieces', { count: cartCount })}
                           </span>
                         </div>
 
@@ -174,7 +180,7 @@ export default function Navbar() {
                                   {item.name}
                                 </p>
                                 <p className="font-mono text-[10px] tracking-[0.1em] uppercase text-dim mt-0.5">
-                                  {item.selectedSize} · {item.quantity}&thinsp;ks
+                                  {item.selectedSize} · {item.quantity}&thinsp;{t('unitShort')}
                                 </p>
                               </div>
                               <div className="font-mono text-[12px] text-bone flex-shrink-0">
@@ -185,7 +191,7 @@ export default function Navbar() {
                           {cartItems.length > 4 && (
                             <div className="px-4 py-2">
                               <span className="font-mono text-[10px] tracking-[0.14em] text-mute">
-                                + {cartItems.length - 4} další {cartItems.length - 4 === 1 ? 'položka' : 'položky'}
+                                {t('moreItems', { count: cartItems.length - 4 })}
                               </span>
                             </div>
                           )}
@@ -194,18 +200,18 @@ export default function Navbar() {
                         {/* Footer */}
                         <div className="border-t border-line px-4 py-4 flex flex-col gap-3">
                           <div className="flex justify-between items-baseline">
-                            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim">Mezisoučet</span>
+                            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim">{t('subtotal')}</span>
                             <span className="font-mono text-[13px] text-bone">{subtotal.toLocaleString('cs-CZ')} Kč</span>
                           </div>
                           <div className="flex justify-between items-baseline">
-                            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim">Doprava</span>
+                            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim">{t('shipping')}</span>
                             <span className="font-mono text-[11px] text-dim">{SHIPPING} Kč</span>
                           </div>
                           <Link
                             href="/checkout"
                             className="mt-1 w-full py-3.5 bg-bone text-[#0a0a0a] font-mono text-[11px] tracking-[0.26em] uppercase text-center border border-bone hover:bg-[#0f0f0f] hover:text-bone transition-colors duration-200 block"
                           >
-                            Do košíku →
+                            {t('toCheckout')}
                           </Link>
                         </div>
                       </>
@@ -240,19 +246,19 @@ export default function Navbar() {
               style={{ background: '#0a0a0a' }}
             >
               <div className="flex items-center justify-between px-6 h-[68px] border-b border-line">
-                <span className="font-cloister text-sm text-bone tracking-widest uppercase">Menu</span>
-                <button onClick={() => setMobileOpen(false)} aria-label="Zavřít menu" className="text-dim hover:text-bone transition-colors">
+                <span className="font-cloister text-sm text-bone tracking-widest uppercase">{t('menu')}</span>
+                <button onClick={() => setMobileOpen(false)} aria-label={t('closeMenu')} className="text-dim hover:text-bone transition-colors">
                   <X size={16} />
                 </button>
               </div>
               <div className="flex flex-col gap-1 p-5 pt-6">
                 {[
-                  { label: 'Shop', href: '/shop' },
-                  { label: 'Size Guide', href: '/size-guide' },
-                  { label: 'Archiv', href: '/archiv' },
-                  { label: 'Behind the brand', href: '/behind-the-brand' },
-                  { label: 'Kontakt', href: '/kontakt' },
-                  { label: 'Košík', href: '/checkout' },
+                  { label: t('shop'), href: '/shop' },
+                  { label: t('sizeGuide'), href: '/size-guide' },
+                  { label: t('archiv'), href: '/archiv' },
+                  { label: t('behindBrand'), href: '/behind-the-brand' },
+                  { label: t('contact'), href: '/kontakt' },
+                  { label: t('cart'), href: '/checkout' },
                 ].map(item => (
                   <Link
                     key={item.href}
@@ -263,6 +269,9 @@ export default function Navbar() {
                     {item.label}
                   </Link>
                 ))}
+              </div>
+              <div className="mt-auto px-5 pb-6 pt-4 border-t border-line">
+                <LanguageSwitcher />
               </div>
             </motion.div>
           </>

@@ -1,0 +1,242 @@
+{
+  "common": {
+    "currencySuffix": "Kč"
+  },
+  "meta": {
+    "description": "Atlantic Ave — limitovaný streetwear z Ostravy. Každý drop je jedinečná edice v omezeném množství. Oblečení pro ty, kteří chtějí víc než jen oblečení.",
+    "ogTitle": "Atlantic Ave — Limitovaný Streetwear, Každý Kus je Edice",
+    "pages": {
+      "shop": { "title": "Shop", "description": "Limitovaný streetwear. Každý kus je edice." },
+      "archiv": { "title": "Archiv", "description": "Archiv limitovaných dropů Atlantic Ave. Každá kolekce je jedinečná edice — pohled do minulosti značky." },
+      "behindBrand": { "title": "Behind the Brand", "description": "Jak Atlantic Ave vzniklo — od nápadu v Americe po první limitovaný drop." },
+      "restock": { "title": "Restock", "description": "Přihlas se na čekací listinu a buď první, kdo se dozví o restocku Atlantic Ave." },
+      "checkout": { "title": "Košík", "description": "Dokončete svou objednávku." },
+      "thankYou": { "title": "Potvrzení objednávky", "description": "Vaše objednávka byla úspěšně přijata." },
+      "kontakt": { "title": "Kontakt", "description": "Kontaktujte nás" },
+      "pravni": { "title": "Právní upozornění", "description": "Právní upozornění" },
+      "sizeGuide": { "title": "Size Guide", "description": "Tabulka velikostí Atlantic Ave" }
+    }
+  },
+  "language": {
+    "label": "Jazyk",
+    "switchTo": "Přepnout do češtiny"
+  },
+  "nav": {
+    "shop": "Shop",
+    "sizeGuide": "Size Guide",
+    "archiv": "Archiv",
+    "behindBrand": "Behind the brand",
+    "contact": "Kontakt",
+    "cart": "Košík",
+    "cartAria": "Košík",
+    "cartAriaCount": "Košík — {count} položek",
+    "openMenu": "Otevřít menu",
+    "closeMenu": "Zavřít menu",
+    "menu": "Menu",
+    "cartEmpty": "Košík je prázdný",
+    "goToShop": "Přejít do shopu →",
+    "pieces": "{count, plural, one {# kus} few {# kusy} other {# kusů}}",
+    "unitShort": "ks",
+    "moreItems": "+ {count} {count, plural, one {další položka} few {další položky} other {dalších položek}}",
+    "subtotal": "Mezisoučet",
+    "shipping": "Doprava",
+    "toCheckout": "Do košíku →"
+  },
+  "footer": {
+    "tagline": "Limitované edice.",
+    "navigation": "Navigace",
+    "shop": "Shop",
+    "sizeGuide": "Size Guide",
+    "contact": "Kontakt",
+    "terms": "Podmínky",
+    "returns": "Vrácení zboží",
+    "shipping": "Doprava",
+    "termsConditions": "Obchodní podmínky",
+    "privacy": "Ochrana osobních údajů",
+    "legalNotice": "Právní upozornění",
+    "copyright": "© {year} Atlantic Ave — Všechna práva vyhrazena"
+  },
+  "landing": {
+    "value1Label": "Limitované edice",
+    "value1Sub": "Každý drop jednou.",
+    "value2Label": "Vyrobeno s péčí",
+    "value2Sub": "Každý detail promyšlený od začátku.",
+    "value3Label": "Vlastní proces",
+    "value3Sub": "Od návrhu po balení — vše pod kontrolou.",
+    "enter": "Vstoupit",
+    "behindBrand": "Behind the brand",
+    "coming": "Připravujeme",
+    "soldOutBadge": "Drop 02 — Sold out",
+    "dropText1": "Drop 02 i restock jsou rozebrané — díky každému, kdo s námi prošel touhle vlnou.",
+    "dropText2": "Drop 03 už chystáme. Sleduj Instagram pro první info.",
+    "follow": "Sledovat"
+  },
+  "shop": {
+    "soldOut": "Vyprodáno",
+    "prevPhoto": "Předchozí fotka",
+    "nextPhoto": "Další fotka",
+    "viewPiece": "Zobrazit kus",
+    "unitShort": "ks",
+    "loadError": "Nepodařilo se načíst produkty",
+    "retry": "Zkusit znovu",
+    "coming": "Připravujeme",
+    "emptyText1": "Nový drop se připravuje.",
+    "emptyText2": "Sleduj nás na Instagramu pro první info.",
+    "follow": "Sledovat",
+    "collection": "Kolekce",
+    "productUnit": "{count, plural, one {produkt} few {produkty} other {produktů}}"
+  },
+  "product": {
+    "notFound": "Produkt nenalezen",
+    "backToShop": "← Zpět na shop",
+    "addedToCart": "Přidáno do košíku",
+    "cart": "Košík →",
+    "close": "Zavřít",
+    "soldOut": "Vyprodáno",
+    "size": "Velikost",
+    "sizeWithValue": "Velikost — {size}",
+    "sizeGuide": "Tabulka velikostí →",
+    "added": "Přidáno →",
+    "addToCart": "Přidat do košíku",
+    "selectSize": "Vyberte velikost",
+    "shippingNote": "⊕ Doprava 3–5 pracovních dní · {shipping} Kč",
+    "limitedEdition": "⊕ Limitovaná edice"
+  },
+  "thankYou": {
+    "paymentError": "Chyba platby",
+    "paymentErrorText": "Při zpracování platby došlo k chybě. Zkuste to prosím znovu.",
+    "backToCart": "Zpět do košíku",
+    "confirmed": "⊕ Platba potvrzena",
+    "headline1": "Díky za",
+    "headline2": "objednávku",
+    "detail1": "Objednávka přijata a zpracována",
+    "detail2": "Expedice do 2 pracovních dnů",
+    "detail3": "Platba zpracována přes Stripe",
+    "orderNumber": "Číslo objednávky",
+    "backToShop": "Zpět do shopu →",
+    "questions": "Otázky? Napište nám na"
+  },
+  "sizeGuide": {
+    "title": "Size Guide",
+    "category": "Trička",
+    "unit": "Všechny míry jsou v centimetrech",
+    "imageAlt": "Size guide — tabulka velikostí triček Atlantic Ave"
+  },
+  "kontakt": {
+    "title": "Kontakt",
+    "emailLabel": "Email",
+    "phoneLabel": "Telefon",
+    "phoneNote": "Po–Pá: 9:00–17:00",
+    "addressLabel": "Adresa",
+    "faqTitle": "Časté dotazy",
+    "faq1Q": "Kdy obdržím odpověď?",
+    "faq1A": "Na dotazy odpovídáme do 24 hodin v pracovních dnech.",
+    "faq2Q": "Mohu zrušit objednávku?",
+    "faq2A": "Ano, objednávku lze zrušit do 24 hodin od vytvoření. Kontaktujte nás emailem nebo telefonicky.",
+    "operatorTitle": "Provozovatel"
+  },
+  "archiv": {
+    "soldOut": "Vyprodáno",
+    "historyLabel": "Atlantic Ave — Historie dropů",
+    "title": "Archiv",
+    "subtitle": "Každý drop existoval jednou. Tady zůstává navždy.",
+    "comingSoon": "Coming soon"
+  },
+  "restock": {
+    "label": "Restock · Drop 02",
+    "headline1": "Registrace",
+    "headline2": "uzavřeny.",
+    "body1": "Okno pro registraci zájmu o restock Drop 02 je uzavřeno.",
+    "body2": "Informace o dalším dropu oznámíme na Instagramu.",
+    "shop": "← Shop"
+  },
+  "behindBrand": {
+    "tag": "Atlantic Ave — O nás",
+    "subtitle": "Jak Atlantic Ave vzniklo a co za ním stojí",
+    "chapters": "{count, plural, one {# kapitola} few {# kapitoly} other {# kapitol}}",
+    "closingLabel": "Kolekce",
+    "closingText": "Každý kus je výsledek tohoto procesu. Limitovaně.",
+    "viewCollection": "Zobrazit kolekci",
+    "s1Body": [
+      "Myšlenka na vlastní značku se zrodila, když jsem žil v Americe. Nebyl to žádný jasný plán ani konkrétní cíl. Spíš jen pocit, který se občas objevil a zase odezněl.",
+      "Po návratu do Česka se mě ale tenhle nápad pustit nechtěl. Vracel se mi každý den. Přemýšlel jsem nad tím pořád dokola, až jsem jednoho dne narazil na video, kde dva týpci sprejovali na trička. A řekl jsem si: proč to nezkusit?",
+      "V tu chvíli jsem vůbec neplánoval, že by se z toho někdy měla stát skutečná značka. Neřešil jsem výrobu, fabriky, tisk, balení nebo e-shop. Bylo to jen o tom udělat první krok a něco si vyzkoušet."
+    ],
+    "s2Heading": "Od zkoušení k něčemu reálnému",
+    "s2Body": [
+      "Když jsem zjistil, že sprejování není ta správná cesta, začal jsem se víc zajímat o klasický tisk a reálnou výrobu oblečení. Objednal jsem první kusy. Zkusil natisknout první návrhy. Testoval jsem. Učil se.",
+      "A někde mezi tím mi došlo, že už vlastně netestuji. Že už pomalu vzniká něco, co má svůj vlastní směr.",
+      "Všechno to vznikalo bez velkého rozpočtu. Bez prostoru pro zbytečné chyby. Každé rozhodnutí jsem musel zvažovat mnohem víc, než bych možná chtěl. A právě to mě naučilo dát si záležet na každém detailu."
+    ],
+    "s3Heading": "Jak nad věcmi přemýšlím",
+    "s3Body": [
+      "Do každého kousku se snažím dát maximum. Neznamená to, že je vždycky všechno dokonalé — ale znamená to, že nic nevypustím do světa jen proto, že „už by to mohlo stačit\".",
+      "Často vznikne padesát návrhů a použijí se z nich jen dva. Ten zbytek beru jako nezbytnou součást cesty, ne jako chybu. Bez nich by totiž ty dva finální nikdy nevznikly.",
+      "Tenhle přístup se promítá do všeho, co tvořím — ať už jde o samotný střih, materiál, potisk nebo ty nejmenší detaily."
+    ],
+    "s4Heading": "Od návrhu po výrobu",
+    "s4Body": [
+      "Byl jsem u všeho. Od hledání fabrik přes tisk, střihy a materiály až po štítky, balení, nálepky a samotný e-shop.",
+      "Ne proto, že bych nevěřil ostatním, ale proto, že jsem chtěl rozumět celému procesu. Zjistit, jak věci vznikají. Co má reálný vliv na kvalitu. Co dělá ten rozdíl mezi průměrným a skvělým kouskem.",
+      "Nešlo mi jen o to, aby to dobře vypadalo. Chtěl jsem, aby se to dobře nosilo. Aby to něco vydrželo. Aby to dávalo smysl i za rok, nejen dnes."
+    ],
+    "s5Heading": "Limitované dropy",
+    "s5Body": [
+      "Atlantic Ave funguje na principu menších, limitovaných kolekcí.",
+      "Nejde mi o to chrlit co nejvíc kusů oblečení. Chci tvořit věci, za kterými si můžu stoprocentně stát.",
+      "První oficiální drop se vyprodal. Neberu to jako důkaz, že už „všechno umím\". Beru to spíš jako obrovské potvrzení toho, že tenhle přístup má smysl."
+    ],
+    "s6Heading": "Tohle je teprve začátek",
+    "s6Body": [
+      "Atlantic Ave není hotová věc. Je to proces, který se vyvíjí s každým dalším krokem.",
+      "Učím se. Zlepšuji se. A snažím se dělat věci vždycky o trochu lépe než minule."
+    ],
+    "s6Closing": "Tohle je teprve začátek."
+  },
+  "checkout": {
+    "empty": "Košík je prázdný",
+    "goToShop": "Přejít do shopu",
+    "stepShop": "Shop",
+    "stepCart": "Košík",
+    "stepPayment": "Platba",
+    "pieces": "{count, plural, one {# kus} few {# kusy} other {# kusů}}",
+    "unitShort": "ks",
+    "decreaseQty": "Snížit množství",
+    "increaseQty": "Zvýšit množství",
+    "continueShopping": "← Pokračovat v nákupu",
+    "summary": "Souhrn objednávky",
+    "refresh": "Obnovit stránku →",
+    "retry": "Zkusit znovu →",
+    "subtotal": "Mezisoučet",
+    "shipping": "Doprava",
+    "total": "Celkem",
+    "redirecting": "Přesměrování...",
+    "toPayment": "Pokračovat k platbě",
+    "secure": "Zabezpečená platba přes Stripe",
+    "methods": "Apple Pay · Google Pay · Karta",
+    "err409Title": "Některé položky mezitím někdo koupil",
+    "err409DetailList": "Vyprodáno: {list}. Odeber je z košíku, nebo obnov stránku pro aktuální dostupnost.",
+    "err409DetailNoList": "Obnov stránku a zkus to znovu.",
+    "errUnavailableTitle": "Produkt není dostupný",
+    "errUnavailableDetail": "Některý z produktů v košíku byl mezitím stažen z prodeje. Odeber ho a pokračuj.",
+    "errInvalidTitle": "Košík je neplatný",
+    "errInvalidDetail": "Data v košíku jsou poškozená. Obnov stránku a přidej produkty znovu.",
+    "err500Title": "Něco se pokazilo na naší straně",
+    "err500Detail": "Zkus to prosím za chvíli znovu. Pokud problém trvá, napiš nám na support@atlanticave.cz.",
+    "errGenericTitle": "Nepodařilo se vytvořit objednávku",
+    "errGenericDetail": "Zkus to prosím znovu.",
+    "errNetworkTitle": "Nepodařilo se spojit se serverem",
+    "errNetworkDetail": "Zkontroluj internetové připojení a zkus to znovu."
+  },
+  "pravniUpozorneni": {
+    "title": "Právní upozornění",
+    "s1Title": "Ilustrační fotografie a vzhled produktů",
+    "s1Body": "Fotografie produktů jsou ilustrační. Skutečné odstíny barev a drobné detaily se mohou mírně lišit v závislosti na individuálním nastavení vašeho monitoru či displeje a na světelných podmínkách při focení.",
+    "s2Title": "Autorská práva",
+    "s2Body": "Veškerý obsah tohoto internetového obchodu (zejména fotografie, texty, popisy produktů, grafika a logo) je chráněn autorským právem. Kopírování, šíření nebo jakékoli jiné komerční použití tohoto obsahu bez předchozího písemného souhlasu provozovatele je přísně zakázáno a může být právně vymáháno.",
+    "s3Title": "Vyloučení odpovědnosti a zjevné chyby",
+    "s3Body": "Obsah těchto stránek je poskytován pro informační účely. Vynakládáme maximální úsilí, abychom zajistili přesnost a aktuálnost všech informací. Vyhrazujeme si však právo na zrušení objednávky v případě, že u zboží byla vlivem technické chyby uvedena zjevně chybná cena (např. chybějící číslice), která zjevně neodpovídá obvyklé nákupní hodnotě daného zboží.",
+    "s4Title": "Odkazy na třetí strany",
+    "s4Body": "Tyto webové stránky mohou obsahovat odkazy na webové stránky třetích stran. Tyto odkazy jsou poskytovány výhradně pro vaše pohodlí. Neneseme žádnou odpovědnost za obsah, zabezpečení nebo ochranu soukromí na těchto externích stránkách."
+  }
+}

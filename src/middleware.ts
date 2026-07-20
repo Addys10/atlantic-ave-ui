@@ -1,8 +1,14 @@
+import createMiddleware from 'next-intl/middleware';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { routing } from './i18n/routing';
 
-export async function middleware(request: NextRequest) {
+const intlMiddleware = createMiddleware(routing);
+
+// Admin + admin-API auth. Left exactly as before, just extracted so the single
+// middleware entry point can dispatch between auth and i18n by path.
+async function adminAuth(request: NextRequest) {
   if (request.nextUrl.pathname === '/admin/login') return NextResponse.next();
 
   const response = NextResponse.next({
@@ -38,6 +44,24 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Admin area keeps its Supabase auth gate and stays Czech-only.
+  if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
+    return adminAuth(request);
+  }
+
+  // Everything else public runs through next-intl locale routing.
+  return intlMiddleware(request);
+}
+
 export const config = {
-  matcher: ['/admin/:path*', '/api/admin/:path*'],
+  matcher: [
+    '/admin/:path*',
+    '/api/admin/:path*',
+    // Public pages: everything except /api, /admin, /pay, Next internals,
+    // and files with an extension (favicon.ico, sitemap.xml, …).
+    '/((?!api|admin|pay|_next|_vercel|.*\\..*).*)',
+  ],
 };

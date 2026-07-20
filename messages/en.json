@@ -1,0 +1,242 @@
+{
+  "common": {
+    "currencySuffix": "Kč"
+  },
+  "meta": {
+    "description": "Atlantic Ave — limited streetwear from Ostrava. Every drop is a unique edition in limited quantity. Clothing for those who want more than just clothing.",
+    "ogTitle": "Atlantic Ave — Limited Streetwear, Every Piece an Edition",
+    "pages": {
+      "shop": { "title": "Shop", "description": "Limited streetwear. Every piece is an edition." },
+      "archiv": { "title": "Archive", "description": "Archive of Atlantic Ave limited drops. Every collection is a unique edition — a look into the brand's past." },
+      "behindBrand": { "title": "Behind the Brand", "description": "How Atlantic Ave came to be — from an idea in America to the first limited drop." },
+      "restock": { "title": "Restock", "description": "Join the waiting list and be the first to hear about an Atlantic Ave restock." },
+      "checkout": { "title": "Cart", "description": "Complete your order." },
+      "thankYou": { "title": "Order confirmation", "description": "Your order has been received successfully." },
+      "kontakt": { "title": "Contact", "description": "Contact us" },
+      "pravni": { "title": "Legal Notice", "description": "Legal notice" },
+      "sizeGuide": { "title": "Size Guide", "description": "Atlantic Ave size guide" }
+    }
+  },
+  "language": {
+    "label": "Language",
+    "switchTo": "Switch to English"
+  },
+  "nav": {
+    "shop": "Shop",
+    "sizeGuide": "Size Guide",
+    "archiv": "Archive",
+    "behindBrand": "Behind the brand",
+    "contact": "Contact",
+    "cart": "Cart",
+    "cartAria": "Cart",
+    "cartAriaCount": "Cart — {count} items",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menu": "Menu",
+    "cartEmpty": "Your cart is empty",
+    "goToShop": "Go to shop →",
+    "pieces": "{count, plural, one {# item} other {# items}}",
+    "unitShort": "pcs",
+    "moreItems": "+ {count} more {count, plural, one {item} other {items}}",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "toCheckout": "To checkout →"
+  },
+  "footer": {
+    "tagline": "Limited editions.",
+    "navigation": "Navigation",
+    "shop": "Shop",
+    "sizeGuide": "Size Guide",
+    "contact": "Contact",
+    "terms": "Terms",
+    "returns": "Returns",
+    "shipping": "Shipping",
+    "termsConditions": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "legalNotice": "Legal Notice",
+    "copyright": "© {year} Atlantic Ave — All rights reserved"
+  },
+  "landing": {
+    "value1Label": "Limited editions",
+    "value1Sub": "Each drop once.",
+    "value2Label": "Made with care",
+    "value2Sub": "Every detail considered from the start.",
+    "value3Label": "Our own process",
+    "value3Sub": "From design to packaging — everything under control.",
+    "enter": "Enter",
+    "behindBrand": "Behind the brand",
+    "coming": "Coming soon",
+    "soldOutBadge": "Drop 02 — Sold out",
+    "dropText1": "Drop 02 and the restock are gone — thanks to everyone who rode this wave with us.",
+    "dropText2": "Drop 03 is already in the works. Follow us on Instagram for the first news.",
+    "follow": "Follow"
+  },
+  "shop": {
+    "soldOut": "Sold out",
+    "prevPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
+    "viewPiece": "View piece",
+    "unitShort": "pcs",
+    "loadError": "Failed to load products",
+    "retry": "Try again",
+    "coming": "Coming soon",
+    "emptyText1": "A new drop is on the way.",
+    "emptyText2": "Follow us on Instagram for the first news.",
+    "follow": "Follow",
+    "collection": "Collection",
+    "productUnit": "{count, plural, one {product} other {products}}"
+  },
+  "product": {
+    "notFound": "Product not found",
+    "backToShop": "← Back to shop",
+    "addedToCart": "Added to cart",
+    "cart": "Cart →",
+    "close": "Close",
+    "soldOut": "Sold out",
+    "size": "Size",
+    "sizeWithValue": "Size — {size}",
+    "sizeGuide": "Size guide →",
+    "added": "Added →",
+    "addToCart": "Add to cart",
+    "selectSize": "Select a size",
+    "shippingNote": "⊕ Shipping 3–5 business days · {shipping} Kč",
+    "limitedEdition": "⊕ Limited edition"
+  },
+  "thankYou": {
+    "paymentError": "Payment error",
+    "paymentErrorText": "Something went wrong while processing your payment. Please try again.",
+    "backToCart": "Back to cart",
+    "confirmed": "⊕ Payment confirmed",
+    "headline1": "Thank you for",
+    "headline2": "your order",
+    "detail1": "Order received and processed",
+    "detail2": "Shipped within 2 business days",
+    "detail3": "Payment processed via Stripe",
+    "orderNumber": "Order number",
+    "backToShop": "Back to shop →",
+    "questions": "Questions? Email us at"
+  },
+  "sizeGuide": {
+    "title": "Size Guide",
+    "category": "T-shirts",
+    "unit": "All measurements are in centimeters",
+    "imageAlt": "Size guide — Atlantic Ave t-shirt size chart"
+  },
+  "kontakt": {
+    "title": "Contact",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "phoneNote": "Mon–Fri: 9:00–17:00",
+    "addressLabel": "Address",
+    "faqTitle": "Frequently asked questions",
+    "faq1Q": "When will I get a reply?",
+    "faq1A": "We answer questions within 24 hours on business days.",
+    "faq2Q": "Can I cancel my order?",
+    "faq2A": "Yes, an order can be cancelled within 24 hours of placing it. Contact us by email or phone.",
+    "operatorTitle": "Operated by"
+  },
+  "archiv": {
+    "soldOut": "Sold out",
+    "historyLabel": "Atlantic Ave — Drop history",
+    "title": "Archive",
+    "subtitle": "Every drop existed once. Here it stays forever.",
+    "comingSoon": "Coming soon"
+  },
+  "restock": {
+    "label": "Restock · Drop 02",
+    "headline1": "Registration",
+    "headline2": "closed.",
+    "body1": "The window to register interest in the Drop 02 restock is closed.",
+    "body2": "We'll announce the next drop on Instagram.",
+    "shop": "← Shop"
+  },
+  "behindBrand": {
+    "tag": "Atlantic Ave — About us",
+    "subtitle": "How Atlantic Ave came to be and what stands behind it",
+    "chapters": "{count, plural, one {# chapter} other {# chapters}}",
+    "closingLabel": "Collection",
+    "closingText": "Every piece is the result of this process. In limited numbers.",
+    "viewCollection": "View collection",
+    "s1Body": [
+      "The idea for my own brand was born while I was living in America. It wasn't a clear plan or a specific goal. More like a feeling that would surface now and then, and fade away again.",
+      "But after I came back to the Czech Republic, the idea wouldn't let go of me. It came back every day. I kept turning it over in my head, until one day I stumbled on a video of two guys spray-painting T-shirts. And I told myself: why not give it a try?",
+      "At that moment I had no plan for it to ever become a real brand. I wasn't thinking about production, factories, printing, packaging or an e-shop. It was just about taking the first step and trying something out."
+    ],
+    "s2Heading": "From experimenting to something real",
+    "s2Body": [
+      "When I realized that spray-painting wasn't the right path, I started looking more into classic printing and real garment production. I ordered the first pieces. Tried printing the first designs. I tested. I learned.",
+      "And somewhere along the way it hit me that I wasn't really testing anymore. That something with its own direction was slowly taking shape.",
+      "All of it came together without a big budget. Without room for pointless mistakes. I had to weigh every decision far more than I might have wanted to. And that is exactly what taught me to care about every detail."
+    ],
+    "s3Heading": "How I think about things",
+    "s3Body": [
+      "I try to put everything into each piece. That doesn't mean everything is always perfect — but it means I won't release anything into the world just because 'it would probably do'.",
+      "Often fifty designs get made and only two of them are used. I take the rest as a necessary part of the journey, not as a mistake. Without them, those two final ones would never have existed.",
+      "This approach shows in everything I create — whether it's the cut itself, the material, the print or the smallest details."
+    ],
+    "s4Heading": "From design to production",
+    "s4Body": [
+      "I was there for all of it. From finding factories to printing, cuts and materials, all the way to labels, packaging, stickers and the e-shop itself.",
+      "Not because I didn't trust others, but because I wanted to understand the whole process. To find out how things are made. What really affects quality. What makes the difference between an average and a great piece.",
+      "It wasn't just about looking good. I wanted it to wear well. To last. To still make sense a year from now, not just today."
+    ],
+    "s5Heading": "Limited drops",
+    "s5Body": [
+      "Atlantic Ave runs on the principle of smaller, limited collections.",
+      "It's not about churning out as many garments as possible. I want to create things I can stand behind one hundred percent.",
+      "The first official drop sold out. I don't take that as proof that I 'know it all' now. I take it more as huge confirmation that this approach makes sense."
+    ],
+    "s6Heading": "This is only the beginning",
+    "s6Body": [
+      "Atlantic Ave isn't a finished thing. It's a process that evolves with every next step.",
+      "I'm learning. I'm getting better. And I always try to do things a little better than last time."
+    ],
+    "s6Closing": "This is only the beginning."
+  },
+  "checkout": {
+    "empty": "Your cart is empty",
+    "goToShop": "Go to shop",
+    "stepShop": "Shop",
+    "stepCart": "Cart",
+    "stepPayment": "Payment",
+    "pieces": "{count, plural, one {# item} other {# items}}",
+    "unitShort": "pcs",
+    "decreaseQty": "Decrease quantity",
+    "increaseQty": "Increase quantity",
+    "continueShopping": "← Continue shopping",
+    "summary": "Order summary",
+    "refresh": "Refresh page →",
+    "retry": "Try again →",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+    "redirecting": "Redirecting...",
+    "toPayment": "Continue to payment",
+    "secure": "Secure payment via Stripe",
+    "methods": "Apple Pay · Google Pay · Card",
+    "err409Title": "Some items were bought in the meantime",
+    "err409DetailList": "Sold out: {list}. Remove them from your cart, or refresh the page for current availability.",
+    "err409DetailNoList": "Refresh the page and try again.",
+    "errUnavailableTitle": "Product unavailable",
+    "errUnavailableDetail": "One of the products in your cart has been withdrawn from sale. Remove it and continue.",
+    "errInvalidTitle": "Your cart is invalid",
+    "errInvalidDetail": "The cart data is corrupted. Refresh the page and add the products again.",
+    "err500Title": "Something went wrong on our side",
+    "err500Detail": "Please try again in a moment. If the problem persists, email us at support@atlanticave.cz.",
+    "errGenericTitle": "Couldn't create the order",
+    "errGenericDetail": "Please try again.",
+    "errNetworkTitle": "Couldn't connect to the server",
+    "errNetworkDetail": "Check your internet connection and try again."
+  },
+  "pravniUpozorneni": {
+    "title": "Legal Notice",
+    "s1Title": "Illustrative photos and product appearance",
+    "s1Body": "Product photos are illustrative. Actual color shades and small details may vary slightly depending on your individual monitor or display settings and the lighting conditions during the photo shoot.",
+    "s2Title": "Copyright",
+    "s2Body": "All content of this online store (in particular photographs, texts, product descriptions, graphics and the logo) is protected by copyright. Copying, distribution or any other commercial use of this content without the prior written consent of the operator is strictly prohibited and may be legally enforced.",
+    "s3Title": "Disclaimer and obvious errors",
+    "s3Body": "The content of these pages is provided for informational purposes. We make every effort to ensure the accuracy and timeliness of all information. However, we reserve the right to cancel an order if, due to a technical error, an item was listed with an obviously incorrect price (e.g. a missing digit) that clearly does not correspond to the usual purchase value of the goods in question.",
+    "s4Title": "Third-party links",
+    "s4Body": "This website may contain links to third-party websites. These links are provided solely for your convenience. We bear no responsibility for the content, security or privacy protection on these external sites."
+  }
+}
