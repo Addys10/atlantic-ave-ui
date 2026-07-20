@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { CartItem } from '@/types/cart';
 import { SHIPPING_KC } from '@/lib/constants';
 
@@ -14,6 +15,7 @@ interface CheckoutError {
 }
 
 export default function CheckoutPage() {
+  const t = useTranslations('checkout');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -67,42 +69,42 @@ export default function CheckoutPage() {
       if (res.status === 409) {
         const list = (data.items as string[])?.join(', ') ?? '';
         setError({
-          title: 'Některé položky mezitím někdo koupil',
+          title: t('err409Title'),
           detail: list
-            ? `Vyprodáno: ${list}. Odeber je z košíku, nebo obnov stránku pro aktuální dostupnost.`
-            : 'Obnov stránku a zkus to znovu.',
+            ? t('err409DetailList', { list })
+            : t('err409DetailNoList'),
           action: 'refresh',
         });
       } else if (res.status === 400 && data.error === 'Produkt není dostupný') {
         setError({
-          title: 'Produkt není dostupný',
-          detail: 'Některý z produktů v košíku byl mezitím stažen z prodeje. Odeber ho a pokračuj.',
+          title: t('errUnavailableTitle'),
+          detail: t('errUnavailableDetail'),
           action: 'refresh',
         });
       } else if (res.status === 400) {
         setError({
-          title: 'Košík je neplatný',
-          detail: 'Data v košíku jsou poškozená. Obnov stránku a přidej produkty znovu.',
+          title: t('errInvalidTitle'),
+          detail: t('errInvalidDetail'),
           action: 'refresh',
         });
       } else if (res.status >= 500) {
         setError({
-          title: 'Něco se pokazilo na naší straně',
-          detail: 'Zkus to prosím za chvíli znovu. Pokud problém trvá, napiš nám na support@atlanticave.cz.',
+          title: t('err500Title'),
+          detail: t('err500Detail'),
           action: 'retry',
         });
       } else {
         setError({
-          title: 'Nepodařilo se vytvořit objednávku',
-          detail: data.error ?? 'Zkus to prosím znovu.',
+          title: t('errGenericTitle'),
+          detail: data.error ?? t('errGenericDetail'),
           action: 'retry',
         });
       }
       setLoading(false);
     } catch {
       setError({
-        title: 'Nepodařilo se spojit se serverem',
-        detail: 'Zkontroluj internetové připojení a zkus to znovu.',
+        title: t('errNetworkTitle'),
+        detail: t('errNetworkDetail'),
         action: 'retry',
       });
       setLoading(false);
@@ -134,7 +136,7 @@ export default function CheckoutPage() {
           transition={{ duration: 0.4, delay: 0.1 }}
           className="font-mono text-[11px] tracking-[0.22em] uppercase text-dim"
         >
-          Košík je prázdný
+          {t('empty')}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -145,7 +147,7 @@ export default function CheckoutPage() {
             href="/shop"
             className="inline-flex items-center gap-3 pb-[6px] border-b border-bone font-mono text-[11px] tracking-[0.24em] uppercase text-bone hover:gap-5 transition-all duration-300"
           >
-            <span>Přejít do shopu</span>
+            <span>{t('goToShop')}</span>
             <span>→</span>
           </Link>
         </motion.div>
@@ -158,7 +160,7 @@ export default function CheckoutPage() {
 
       {/* Step breadcrumb */}
       <div className="border-b border-line px-7 md:px-14 h-12 flex items-center gap-0">
-        {['Shop', 'Košík', 'Platba'].map((step, i) => (
+        {[t('stepShop'), t('stepCart'), t('stepPayment')].map((step, i) => (
           <div key={step} className="flex items-center gap-0">
             {i > 0 && <span className="font-mono text-[10px] text-mute mx-3">—</span>}
             <span className={`font-mono text-[10px] tracking-[0.22em] uppercase ${i === 1 ? 'text-bone' : 'text-mute'}`}>
@@ -167,7 +169,7 @@ export default function CheckoutPage() {
           </div>
         ))}
         <div className="ml-auto font-mono text-[10px] tracking-[0.18em] uppercase text-mute">
-          {totalQty} {totalQty === 1 ? 'kus' : totalQty < 5 ? 'kusy' : 'kusů'}
+          {t('pieces', { count: totalQty })}
         </div>
       </div>
 
@@ -232,7 +234,7 @@ export default function CheckoutPage() {
                           <button
                             onClick={() => updateQty(index, item.quantity - 1)}
                             className="w-9 h-9 flex items-center justify-center font-mono text-dim hover:text-bone hover:bg-line transition-colors text-[16px]"
-                            aria-label="Snížit množství"
+                            aria-label={t('decreaseQty')}
                           >
                             −
                           </button>
@@ -242,7 +244,7 @@ export default function CheckoutPage() {
                           <button
                             onClick={() => updateQty(index, item.quantity + 1)}
                             className="w-9 h-9 flex items-center justify-center font-mono text-dim hover:text-bone hover:bg-line transition-colors text-[16px]"
-                            aria-label="Zvýšit množství"
+                            aria-label={t('increaseQty')}
                           >
                             +
                           </button>
@@ -273,7 +275,7 @@ export default function CheckoutPage() {
               href="/shop"
               className="font-mono text-[10px] tracking-[0.18em] uppercase text-mute hover:text-bone transition-colors"
             >
-              ← Pokračovat v nákupu
+              {t('continueShopping')}
             </Link>
           </div>
         </div>
@@ -283,7 +285,7 @@ export default function CheckoutPage() {
           <div className="p-7 md:p-10 flex flex-col gap-6 h-full">
 
             <h2 className="font-mono text-[10px] tracking-[0.3em] uppercase text-dim font-normal border-b border-line pb-5">
-              Souhrn objednávky
+              {t('summary')}
             </h2>
 
             {/* Error */}
@@ -308,7 +310,7 @@ export default function CheckoutPage() {
                       onClick={() => window.location.reload()}
                       className="self-start font-mono text-[10px] tracking-[0.22em] uppercase text-[#c0392b] hover:text-[#c0392b]/70 transition-colors pb-px border-b border-[#c0392b]/40 hover:border-[#c0392b]/20 mt-1"
                     >
-                      Obnovit stránku →
+                      {t('refresh')}
                     </button>
                   )}
                   {error.action === 'retry' && (
@@ -317,7 +319,7 @@ export default function CheckoutPage() {
                       disabled={loading}
                       className="self-start font-mono text-[10px] tracking-[0.22em] uppercase text-[#c0392b] hover:text-[#c0392b]/70 transition-colors pb-px border-b border-[#c0392b]/40 hover:border-[#c0392b]/20 mt-1 disabled:opacity-40"
                     >
-                      Zkusit znovu →
+                      {t('retry')}
                     </button>
                   )}
                 </motion.div>
@@ -334,7 +336,7 @@ export default function CheckoutPage() {
                   <div className="flex-1 min-w-0">
                     <p className="font-anton text-[14px] uppercase leading-tight text-bone truncate">{item.name}</p>
                     <p className="font-mono text-[10px] tracking-[0.1em] text-dim mt-0.5">
-                      {item.selectedSize} · {item.quantity}&thinsp;ks
+                      {item.selectedSize} · {item.quantity}&thinsp;{t('unitShort')}
                     </p>
                   </div>
                   <span className="font-mono text-[12px] text-dim flex-shrink-0">
@@ -347,17 +349,17 @@ export default function CheckoutPage() {
             {/* Totals */}
             <div className="border-t border-line pt-5 flex flex-col gap-2.5 mt-auto">
               <div className="flex justify-between font-mono text-[11px] tracking-[0.16em] uppercase text-dim">
-                <span>Mezisoučet</span>
+                <span>{t('subtotal')}</span>
                 <span>{subtotal.toLocaleString('cs-CZ')} Kč</span>
               </div>
               <div className="flex justify-between font-mono text-[11px] tracking-[0.16em] uppercase text-dim">
-                <span>Doprava</span>
+                <span>{t('shipping')}</span>
                 <span>{SHIPPING_KC} Kč</span>
               </div>
             </div>
 
             <div className="border-t border-bone/30 pt-4 flex justify-between items-baseline">
-              <span className="font-mono text-[11px] tracking-[0.22em] uppercase text-bone">Celkem</span>
+              <span className="font-mono text-[11px] tracking-[0.22em] uppercase text-bone">{t('total')}</span>
               <span className="font-anton text-[32px] uppercase leading-none text-bone">
                 {total.toLocaleString('cs-CZ')}&thinsp;<span className="text-[22px]">Kč</span>
               </span>
@@ -370,7 +372,7 @@ export default function CheckoutPage() {
               className="w-full py-[22px] bg-bone text-[#0a0a0a] font-mono text-[12px] tracking-[0.26em] uppercase border border-bone hover:bg-[#0a0a0a] hover:text-bone transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed group"
             >
               <span className="inline-flex items-center gap-3 group-hover:gap-5 transition-all duration-300">
-                {loading ? 'Přesměrování...' : 'Pokračovat k platbě'}
+                {loading ? t('redirecting') : t('toPayment')}
                 {!loading && <span>→</span>}
               </span>
             </button>
@@ -379,11 +381,11 @@ export default function CheckoutPage() {
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-center gap-2 font-mono text-[10px] tracking-[0.14em] uppercase text-mute">
                 <span>⊕</span>
-                <span>Zabezpečená platba přes Stripe</span>
+                <span>{t('secure')}</span>
               </div>
               <div className="flex items-center justify-center gap-2 font-mono text-[10px] tracking-[0.14em] uppercase text-mute">
                 <span>⊕</span>
-                <span>Apple Pay · Google Pay · Karta</span>
+                <span>{t('methods')}</span>
               </div>
             </div>
 

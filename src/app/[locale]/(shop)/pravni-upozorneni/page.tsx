@@ -1,36 +1,27 @@
+import { useTranslations } from 'next-intl';
+
 export const metadata = {
   title: 'Právní upozornění | Atlantic Ave',
   description: 'Právní upozornění',
 };
 
 export default function PravniUpozorneniPage() {
+  const t = useTranslations('pravniUpozorneni');
   const sections = [
-    {
-      title: 'Ilustrační fotografie a vzhled produktů',
-      body: 'Fotografie produktů jsou ilustrační. Skutečné odstíny barev a drobné detaily se mohou mírně lišit v závislosti na individuálním nastavení vašeho monitoru či displeje a na světelných podmínkách při focení.',
-    },
-    {
-      title: 'Autorská práva',
-      body: 'Veškerý obsah tohoto internetového obchodu (zejména fotografie, texty, popisy produktů, grafika a logo) je chráněn autorským právem. Kopírování, šíření nebo jakékoli jiné komerční použití tohoto obsahu bez předchozího písemného souhlasu provozovatele je přísně zakázáno a může být právně vymáháno.',
-    },
-    {
-      title: 'Vyloučení odpovědnosti a zjevné chyby',
-      body: 'Obsah těchto stránek je poskytován pro informační účely. Vynakládáme maximální úsilí, abychom zajistili přesnost a aktuálnost všech informací. Vyhrazujeme si však právo na zrušení objednávky v případě, že u zboží byla vlivem technické chyby uvedena zjevně chybná cena (např. chybějící číslice), která zjevně neodpovídá obvyklé nákupní hodnotě daného zboží.',
-    },
-    {
-      title: 'Odkazy na třetí strany',
-      body: 'Tyto webové stránky mohou obsahovat odkazy na webové stránky třetích stran. Tyto odkazy jsou poskytovány výhradně pro vaše pohodlí. Neneseme žádnou odpovědnost za obsah, zabezpečení nebo ochranu soukromí na těchto externích stránkách.',
-    },
+    { title: t('s1Title'), body: t('s1Body') },
+    { title: t('s2Title'), body: t('s2Body') },
+    { title: t('s3Title'), body: t('s3Body') },
+    { title: t('s4Title'), body: t('s4Body') },
   ];
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
       <div className="border-b border-line px-8 py-6">
-        <span className="font-mono text-[11px] tracking-[0.4em] uppercase text-dim">Právní upozornění</span>
+        <span className="font-mono text-[11px] tracking-[0.4em] uppercase text-dim">{t('title')}</span>
       </div>
       <div className="max-w-2xl mx-auto px-8 py-20 flex flex-col gap-16">
         <h1 className="font-anton text-[clamp(40px,5vw,72px)] uppercase leading-[0.9] tracking-tight text-bone">
-          Právní upozornění
+          {t('title')}
         </h1>
         <div className="flex flex-col">
           {sections.map(({ title, body }, i) => (
