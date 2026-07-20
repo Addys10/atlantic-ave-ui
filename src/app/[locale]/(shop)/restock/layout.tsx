@@ -1,13 +1,21 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = {
-  title: 'Restock',
-  description: 'Přihlas se na čekací listinu a buď první, kdo se dozví o restocku Atlantic Ave.',
-  openGraph: {
-    title: 'Restock — Atlantic Ave',
-    description: 'Přihlas se na čekací listinu a buď první, kdo se dozví o restocku Atlantic Ave.',
-  },
-};
+export async function generateMetadata({
+  params: { locale },
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'meta.pages.restock' });
+  return {
+    title: t('title'),
+    description: t('description'),
+    openGraph: {
+      title: `${t('title')} — Atlantic Ave`,
+      description: t('description'),
+    },
+  };
+}
 
 export default function RestockLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;

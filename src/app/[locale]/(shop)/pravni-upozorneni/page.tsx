@@ -1,9 +1,15 @@
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
 
-export const metadata = {
-  title: 'Právní upozornění | Atlantic Ave',
-  description: 'Právní upozornění',
-};
+export async function generateMetadata({
+  params: { locale },
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'meta.pages.pravni' });
+  return { title: t('title'), description: t('description') };
+}
 
 export default function PravniUpozorneniPage() {
   const t = useTranslations('pravniUpozorneni');

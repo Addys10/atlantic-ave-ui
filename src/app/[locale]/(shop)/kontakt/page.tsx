@@ -1,10 +1,16 @@
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
 
-export const metadata = {
-  title: 'Kontakt | Atlantic Ave',
-  description: 'Kontaktujte nás',
-};
+export async function generateMetadata({
+  params: { locale },
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'meta.pages.kontakt' });
+  return { title: t('title'), description: t('description') };
+}
 
 export default function KontaktPage() {
   const t = useTranslations('kontakt');

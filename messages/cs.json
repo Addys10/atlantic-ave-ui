@@ -2,6 +2,21 @@
   "common": {
     "currencySuffix": "Kč"
   },
+  "meta": {
+    "description": "Atlantic Ave — limitovaný streetwear z Ostravy. Každý drop je jedinečná edice v omezeném množství. Oblečení pro ty, kteří chtějí víc než jen oblečení.",
+    "ogTitle": "Atlantic Ave — Limitovaný Streetwear, Každý Kus je Edice",
+    "pages": {
+      "shop": { "title": "Shop", "description": "Limitovaný streetwear. Každý kus je edice." },
+      "archiv": { "title": "Archiv", "description": "Archiv limitovaných dropů Atlantic Ave. Každá kolekce je jedinečná edice — pohled do minulosti značky." },
+      "behindBrand": { "title": "Behind the Brand", "description": "Jak Atlantic Ave vzniklo — od nápadu v Americe po první limitovaný drop." },
+      "restock": { "title": "Restock", "description": "Přihlas se na čekací listinu a buď první, kdo se dozví o restocku Atlantic Ave." },
+      "checkout": { "title": "Košík", "description": "Dokončete svou objednávku." },
+      "thankYou": { "title": "Potvrzení objednávky", "description": "Vaše objednávka byla úspěšně přijata." },
+      "kontakt": { "title": "Kontakt", "description": "Kontaktujte nás" },
+      "pravni": { "title": "Právní upozornění", "description": "Právní upozornění" },
+      "sizeGuide": { "title": "Size Guide", "description": "Tabulka velikostí Atlantic Ave" }
+    }
+  },
   "language": {
     "label": "Jazyk",
     "switchTo": "Přepnout do češtiny"
@@ -104,7 +119,8 @@
   "sizeGuide": {
     "title": "Size Guide",
     "category": "Trička",
-    "unit": "Všechny míry jsou v centimetrech"
+    "unit": "Všechny míry jsou v centimetrech",
+    "imageAlt": "Size guide — tabulka velikostí triček Atlantic Ave"
   },
   "kontakt": {
     "title": "Kontakt",

@@ -2,6 +2,21 @@
   "common": {
     "currencySuffix": "Kč"
   },
+  "meta": {
+    "description": "Atlantic Ave — limited streetwear from Ostrava. Every drop is a unique edition in limited quantity. Clothing for those who want more than just clothing.",
+    "ogTitle": "Atlantic Ave — Limited Streetwear, Every Piece an Edition",
+    "pages": {
+      "shop": { "title": "Shop", "description": "Limited streetwear. Every piece is an edition." },
+      "archiv": { "title": "Archive", "description": "Archive of Atlantic Ave limited drops. Every collection is a unique edition — a look into the brand's past." },
+      "behindBrand": { "title": "Behind the Brand", "description": "How Atlantic Ave came to be — from an idea in America to the first limited drop." },
+      "restock": { "title": "Restock", "description": "Join the waiting list and be the first to hear about an Atlantic Ave restock." },
+      "checkout": { "title": "Cart", "description": "Complete your order." },
+      "thankYou": { "title": "Order confirmation", "description": "Your order has been received successfully." },
+      "kontakt": { "title": "Contact", "description": "Contact us" },
+      "pravni": { "title": "Legal Notice", "description": "Legal notice" },
+      "sizeGuide": { "title": "Size Guide", "description": "Atlantic Ave size guide" }
+    }
+  },
   "language": {
     "label": "Language",
     "switchTo": "Switch to English"
@@ -104,7 +119,8 @@
   "sizeGuide": {
     "title": "Size Guide",
     "category": "T-shirts",
-    "unit": "All measurements are in centimeters"
+    "unit": "All measurements are in centimeters",
+    "imageAlt": "Size guide — Atlantic Ave t-shirt size chart"
   },
   "kontakt": {
     "title": "Contact",

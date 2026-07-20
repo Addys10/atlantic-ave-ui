@@ -1,10 +1,16 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
 
-export const metadata = {
-  title: 'Size Guide | Atlantic Ave',
-  description: 'Tabulka velikostí Atlantic Ave',
-};
+export async function generateMetadata({
+  params: { locale },
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'meta.pages.sizeGuide' });
+  return { title: t('title'), description: t('description') };
+}
 
 export default function SizeGuidePage() {
   const t = useTranslations('sizeGuide');
@@ -29,7 +35,7 @@ export default function SizeGuidePage() {
         <div className="border border-line overflow-hidden">
           <Image
             src="/images/size-guide.png"
-            alt="Size guide — tabulka velikostí Atlantic Ave triček"
+            alt={t('imageAlt')}
             width={1200}
             height={900}
             className="w-full h-auto"
