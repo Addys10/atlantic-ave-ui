@@ -69,7 +69,7 @@ export default function Navbar() {
 
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
 
-  const linkCls = 'font-mono text-[11px] tracking-[0.18em] uppercase text-dim hover:text-bone transition-colors duration-200';
+  const linkCls = 'relative font-mono text-[11px] tracking-[0.18em] uppercase text-dim hover:text-bone transition-colors duration-200 after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-bone after:transition-transform after:duration-300 after:ease-out hover:after:scale-x-100';
 
   return (
     <>

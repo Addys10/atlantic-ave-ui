@@ -321,8 +321,6 @@ export default function ProductDetail({ params }: { params: { handle: string } }
           <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase text-dim">
             <Link href="/shop" className="hover:text-bone transition-colors">Shop</Link>
             <span className="text-mute">/</span>
-            <span className="text-mute">{product.category}</span>
-            <span className="text-mute">/</span>
             <span className="text-bone truncate">{product.name}</span>
           </div>
 
