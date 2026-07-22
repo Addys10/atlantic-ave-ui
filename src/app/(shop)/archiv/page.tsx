@@ -1,246 +1,99 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
-import { useState, useRef, useCallback } from 'react';
+import ShotsCarousel, { type Shot } from '@/components/ShotsCarousel';
 
-const drops = [
+type Drop = {
+  title: string;
+  status: string;
+  date: string;
+  shots: Shot[];
+};
+
+const drops: Drop[] = [
   {
-    num: '01',
-    year: '2025',
-    banner: '/images/formula.png',
-    products: [
-      { name: 'Apex Tee', image: '/images/drop1/Drop1Black.jpeg', text: '' },
-      { name: 'Pitstop Stories Tee', image: '/images/drop1/Drop1White.jpeg', text: '' },
+    title: 'Drop 01',
+    status: 'Vyprodáno',
+    date: '2024',
+    shots: [
+      { img: '/images/drop1/Drop1Black.jpeg', label: 'Apex Tee' },
+      { img: '/images/drop1/Drop1White.jpeg', label: 'Pitstop Stories Tee' },
+      { img: '/images/formula.png', label: 'Formula Print' },
     ],
   },
-] as const;
-
-type DropProduct = { name: string; image: string; text: string };
-
-function DropProducts({ products }: { products: readonly DropProduct[] }) {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const handleScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const idx = Math.round(el.scrollLeft / el.clientWidth);
-    setActiveIdx(idx);
-  }, []);
-
-  return (
-    <div className="border-t border-[#1f1f1f]">
-      {/* Mobile: horizontal swipe carousel */}
-      <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className="md:hidden flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-        style={{ scrollbarWidth: 'none' }}
-      >
-        {products.map((product, i) => (
-          <div key={product.name} className="flex-none w-full snap-start grid grid-cols-2">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.7, delay: i * 0.12 }}
-              className="relative aspect-[4/5] overflow-hidden border-r border-[#1f1f1f]"
-            >
-              <Image src={product.image} alt={`Atlantic Ave — ${product.name}`} fill sizes="100vw" className="object-cover" />
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.7, delay: i * 0.12 + 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col justify-start px-6 py-8"
-            >
-              <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#383832] mb-4">
-                Vyprodáno
-              </span>
-              <h3
-                className="font-anton uppercase leading-[0.9] tracking-tight text-[#f4f1ea] mb-4"
-                style={{ fontSize: 'clamp(22px, 2.8vw, 44px)' }}
-              >
-                {product.name}
-              </h3>
-              {product.text && (
-                <p className="font-mono text-[11px] tracking-[0.06em] leading-[1.8] text-[#7a7a74]">
-                  {product.text}
-                </p>
-              )}
-            </motion.div>
-          </div>
-        ))}
-      </div>
-
-      {/* Dot indicators (mobile only) */}
-      {products.length > 1 && (
-        <div className="md:hidden flex justify-center gap-2 py-3 border-b border-[#1f1f1f]">
-          {products.map((_, i) => (
-            <div
-              key={i}
-              className={`w-1 h-1 rounded-full transition-colors duration-300 ${i === activeIdx ? 'bg-[#f4f1ea]' : 'bg-[#1f1f1f]'}`}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Desktop: grid layout */}
-      <div className="hidden md:grid grid-cols-4">
-        {products.map((product, i) => (
-          <div key={product.name} className="contents">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.7, delay: i * 0.12 }}
-              className={`relative aspect-[4/5] overflow-hidden border-r border-[#1f1f1f] ${i % 2 !== 0 ? 'order-2' : ''}`}
-            >
-              <Image src={product.image} alt={`Atlantic Ave — ${product.name}`} fill sizes="50vw" className="object-cover" />
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.7, delay: i * 0.12 + 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className={`flex flex-col justify-start px-8 py-12 border-r border-[#1f1f1f] last:border-r-0 ${i % 2 !== 0 ? 'order-1' : ''}`}
-            >
-              <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#383832] mb-4">
-                Vyprodáno
-              </span>
-              <h3
-                className="font-anton uppercase leading-[0.9] tracking-tight text-[#f4f1ea] mb-4"
-                style={{ fontSize: 'clamp(22px, 2.8vw, 44px)' }}
-              >
-                {product.name}
-              </h3>
-              {product.text && (
-                <p className="font-mono text-[11px] tracking-[0.06em] leading-[1.8] text-[#7a7a74]">
-                  {product.text}
-                </p>
-              )}
-            </motion.div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+  {
+    title: 'Drop 02',
+    status: 'Vyprodáno',
+    date: '2025',
+    shots: [
+      { img: '/images/drop2/blue-m.jpeg', label: 'No Limits Tee' },
+      { img: '/images/drop2/white-j.jpeg', label: 'Rivals Tee' },
+      { img: '/images/drop2/black-m.jpeg', label: 'Burn Out Tee' },
+    ],
+  },
+];
 
 export default function ArchivPage() {
   return (
-    <div className="bg-[#0a0a0a] min-h-screen relative">
+    <div className="min-h-screen bg-[#0b0a09] text-[#eae3d6]">
+      <div className="mx-auto max-w-[1200px] px-6 pb-[120px] pt-16 md:pt-20">
 
-      {/* Grain overlay */}
-      <div
-        className="pointer-events-none fixed inset-0 z-[1] opacity-[0.025] mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundSize: '256px 256px',
-        }}
-      />
-
-      <div className="relative z-[2]">
-
-        {/* ── Hero ── */}
-        <div className="pt-8 md:pt-10 pb-0 overflow-hidden">
-
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
+        {/* ── Header ── */}
+        <div className="mb-5">
+          <motion.h1
+            initial={{ opacity: 0, y: '40%' }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="px-7 md:px-14 mb-6 md:mb-8 flex items-center gap-4"
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            className="m-0 font-anton uppercase leading-[0.86] text-[#eae3d6] select-none"
+            style={{ fontSize: 'clamp(46px, 9vw, 100px)' }}
           >
-            <div className="h-px flex-1 max-w-[40px] bg-[#1f1f1f]" />
-            <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#555]">
-              Atlantic Ave — Historie dropů
-            </span>
-          </motion.div>
-
-          <div className="px-5 md:px-10 overflow-hidden">
-            <motion.h1
-              initial={{ opacity: 0, y: '60%' }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-              className="font-anton uppercase leading-[0.85] tracking-tight text-[#f4f1ea] select-none"
-              style={{ fontSize: 'clamp(72px, 14vw, 200px)' }}
-            >
-              Archiv
-            </motion.h1>
-          </div>
-
-          <motion.div
+            Archiv
+          </motion.h1>
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-8 md:mt-10 px-5 md:px-10 pb-0 border-b border-[#1f1f1f]"
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-6 max-w-[480px] text-[15px] leading-[1.6] text-[#8a8178]"
           >
-            <div className="flex items-end justify-between pb-5 gap-6">
-              <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#555] max-w-[40ch] leading-relaxed">
-                Každý drop existoval jednou. Tady zůstává navždy.
-              </p>
-            </div>
-          </motion.div>
+            Každý drop jednou a nikdy znovu. Tady zůstává jako záznam.
+          </motion.p>
         </div>
 
-        {/* ── Drop sections ── */}
+        {/* ── Drops ── */}
         {drops.map((drop) => (
           <motion.div
-            key={drop.num}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.6 }}
-            className="border-t border-[#1f1f1f]"
+            key={drop.title}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="border-t border-[#eae3d6]/10 py-[50px]"
           >
-            {/* Drop banner */}
-            <div className="relative aspect-[16/5] overflow-hidden">
-              <Image
-                src={drop.banner}
-                alt={`Drop ${drop.num}`}
-                fill
-                sizes="100vw"
-                className="object-cover grayscale"
-              />
-              <div className="absolute inset-0 bg-[#0a0a0a]/72" />
-              <div className="absolute inset-0 flex flex-col items-start justify-end px-8 md:px-14 pb-10 md:pb-14">
-                <span className="font-mono text-[13px] tracking-[0.26em] uppercase text-[#555] mb-3">
-                  {drop.year}
-                </span>
-                <h2
-                  className="font-anton uppercase leading-[0.88] tracking-tight text-[#f4f1ea]"
-                  style={{ fontSize: 'clamp(52px, 8vw, 120px)' }}
-                >
-                  {drop.num}
-                </h2>
+            <div className="mb-[30px] flex flex-wrap items-baseline gap-5">
+              <div className="font-anton uppercase leading-[0.9] text-[#eae3d6]" style={{ fontSize: 'clamp(38px, 6vw, 64px)' }}>
+                {drop.title}
+              </div>
+              <div className="font-mono text-[12px] tracking-[0.12em] text-[#8a8178]">
+                {drop.status} — {drop.date}
               </div>
             </div>
-
-            {/* Products — mobile: swipe carousel | desktop: foto | text | foto | text */}
-            <DropProducts products={drop.products} />
+            <ShotsCarousel shots={drop.shots} />
           </motion.div>
         ))}
 
-        {/* ── Drop 02 coming soon ── */}
+        {/* ── Coming soon ── */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.6 }}
-          className="border-t border-[#1f1f1f] flex flex-col items-start justify-center px-8 md:px-14 py-10 md:py-14"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-wrap items-baseline gap-5 border-t border-[#eae3d6]/10 py-[50px]"
         >
-          <div className="flex flex-col items-start">
-            <span className="font-mono text-[13px] tracking-[0.26em] uppercase text-[#555] mb-3">
-              Coming soon
-            </span>
-            <h2
-              className="font-anton uppercase leading-[0.88] tracking-tight text-[#f4f1ea]"
-              style={{ fontSize: 'clamp(52px, 8vw, 120px)' }}
-            >
-              02
-            </h2>
+          <div className="font-anton uppercase leading-[0.9] text-[#4d463c]" style={{ fontSize: 'clamp(38px, 6vw, 64px)' }}>
+            Drop 03
+          </div>
+          <div className="font-mono text-[12px] tracking-[0.12em] text-[#8a8178]">
+            Připravujeme
           </div>
         </motion.div>
 

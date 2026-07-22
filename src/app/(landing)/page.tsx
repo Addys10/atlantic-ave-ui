@@ -6,16 +6,6 @@ import Link from 'next/link';
 
 const INSTAGRAM = 'https://www.instagram.com/atlantic_ave_100th_';
 
-function InstagramIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
 const NAV_LINKS = [
   { href: '/shop', label: 'Shop' },
   { href: '/archiv', label: 'Archiv' },
@@ -25,31 +15,6 @@ const NAV_LINKS = [
 export default function LandingPage() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#0b0a09] text-[#eae3d6]">
-
-      {/* ── NAV ── */}
-      <nav className="sticky top-0 z-[200] flex items-center justify-between gap-4 px-6 md:px-9 py-5 bg-[#0b0a09]/70 backdrop-blur-xl">
-        <Link href="/" className="font-anton text-[21px] uppercase tracking-[0.06em] text-[#eae3d6]">
-          Atlantic Ave
-        </Link>
-        <div className="flex items-center gap-6 md:gap-9 flex-wrap">
-          <div className="hidden sm:flex gap-7 font-mono text-[12px] tracking-[0.14em] uppercase">
-            {NAV_LINKS.map((l) => (
-              <Link key={l.href} href={l.href} className="text-[#8a8178] hover:text-[#eae3d6] transition-colors">
-                {l.label}
-              </Link>
-            ))}
-          </div>
-          <a
-            href={INSTAGRAM}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#8a8178] hover:text-[#eae3d6] transition-colors"
-            aria-label="Instagram"
-          >
-            <InstagramIcon size={18} />
-          </a>
-        </div>
-      </nav>
 
       {/* ── HERO ── */}
       <section className="relative flex min-h-[92vh] flex-col items-center justify-center overflow-hidden px-6 py-20 text-center">
@@ -146,92 +111,61 @@ export default function LandingPage() {
         </motion.p>
       </section>
 
-      {/* ── DROP STATUS ── */}
-      <section className="mx-auto max-w-[1100px] px-6 pb-[120px]">
-        <div className="grid gap-[30px] md:grid-cols-2">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-            className="relative aspect-[3/4]"
-          >
-            <Image
-              src="/images/drop2/white-j.jpeg"
-              alt="Atlantic Ave lookbook"
-              fill
-              sizes="(max-width: 768px) 100vw, 550px"
-              className="object-cover"
-              style={{
-                WebkitMaskImage:
-                  'radial-gradient(120% 120% at 50% 50%, #000 45%, transparent 92%)',
-                maskImage:
-                  'radial-gradient(120% 120% at 50% 50%, #000 45%, transparent 92%)',
-              }}
-            />
-            {/* Edge vignette — blends photo into background */}
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{ boxShadow: 'inset 0 0 120px 55px #0b0a09' }}
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.75, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col justify-center py-5"
-          >
-            <div className="mb-5 font-mono text-[12px] uppercase tracking-[0.2em] text-[#8a8178]">
-              Připravujeme
-            </div>
-            <div className="font-anton uppercase leading-[0.9] text-[#eae3d6]" style={{ fontSize: 'clamp(52px, 8vw, 96px)' }}>
-              Drop 03
-            </div>
-            <p className="mb-[30px] mt-[26px] max-w-[420px] text-[16px] leading-[1.6] text-[#b3a99c]">
-              Drop 02 i restock jsou rozebrané. Drop 03 už chystáme — sleduj Instagram pro první info.
-            </p>
-            <a
-              href={INSTAGRAM}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2 self-start border-b border-[#eae3d6] pb-1.5 font-mono text-[13px] uppercase tracking-[0.14em] text-[#eae3d6]"
-            >
-              <span>Sledovat</span>
-              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-            </a>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── BEHIND TEASER ── */}
-      <motion.section
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-        className="border-t border-[#eae3d6]/10"
-      >
-        <Link
-          href="/behind-the-brand"
-          className="group flex flex-col items-center px-6 py-[120px] text-center"
+      {/* ── DROP STATUS + BEHIND TEASER ── */}
+      <section className="mx-auto max-w-[760px] px-6 pb-[120px] text-center">
+        {/* Drop 03 */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col items-center pb-[90px]"
         >
-          <div className="mb-[26px] font-mono text-[12px] uppercase tracking-[0.26em] text-[#8a8178]">
-            O nás
+          <div className="mb-5 font-mono text-[12px] uppercase tracking-[0.22em] text-[#8a8178]">
+            Připravujeme
           </div>
-          <div className="font-anton uppercase leading-[0.9] text-[#eae3d6]" style={{ fontSize: 'clamp(44px, 8vw, 96px)' }}>
-            Behind the Brand
+          <div className="font-anton uppercase leading-[0.9] text-[#eae3d6]" style={{ fontSize: 'clamp(56px, 9vw, 110px)' }}>
+            Drop 03
           </div>
-          <p className="mb-[30px] mt-7 max-w-[500px] text-[16px] leading-[1.6] text-[#b3a99c]">
-            Jak Atlantic Ave vzniklo a co za ním stojí. Od nápadu v Americe po první limitovaný drop.
+          <p className="mb-[30px] mt-6 max-w-[440px] text-[16px] leading-[1.6] text-[#b3a99c]">
+            Drop 03 už chystáme — sleduj Instagram pro první info.
           </p>
-          <span className="inline-flex items-center gap-2 border-b border-[#eae3d6] pb-1.5 font-mono text-[13px] uppercase tracking-[0.14em] text-[#eae3d6]">
-            <span>Přečíst příběh</span>
+          <a
+            href={INSTAGRAM}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-2 border-b border-[#eae3d6] pb-1.5 font-mono text-[13px] uppercase tracking-[0.14em] text-[#eae3d6]"
+          >
+            <span>Sledovat</span>
             <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-          </span>
-        </Link>
-      </motion.section>
+          </a>
+        </motion.div>
+
+        {/* Behind the Brand */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          className="border-t border-[#eae3d6]/10 pt-[90px]"
+        >
+          <Link href="/behind-the-brand" className="group flex flex-col items-center">
+            <div className="mb-[26px] font-mono text-[12px] uppercase tracking-[0.26em] text-[#8a8178]">
+              O nás
+            </div>
+            <div className="font-anton uppercase leading-[0.9] text-[#eae3d6]" style={{ fontSize: 'clamp(44px, 8vw, 96px)' }}>
+              Behind the Brand
+            </div>
+            <p className="mb-[30px] mt-7 max-w-[500px] text-[16px] leading-[1.6] text-[#b3a99c]">
+              Jak Atlantic Ave vzniklo a co za ním stojí.<br />Od nápadu v Americe po první limitovaný drop.
+            </p>
+            <span className="inline-flex items-center gap-2 border-b border-[#eae3d6] pb-1.5 font-mono text-[13px] uppercase tracking-[0.14em] text-[#eae3d6]">
+              <span>Přečíst příběh</span>
+              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+            </span>
+          </Link>
+        </motion.div>
+      </section>
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-[#eae3d6]/10 px-6 md:px-9 pb-11 pt-[70px]">
