@@ -321,8 +321,6 @@ export default function ProductDetail({ params }: { params: { handle: string } }
           <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase text-dim">
             <Link href="/shop" className="hover:text-bone transition-colors">Shop</Link>
             <span className="text-mute">/</span>
-            <span className="text-mute">{product.category}</span>
-            <span className="text-mute">/</span>
             <span className="text-bone truncate">{product.name}</span>
           </div>
 
@@ -384,7 +382,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                 </div>
               </div>
 
-              <Link href="/size-guide" className="font-mono text-[10px] tracking-[0.18em] uppercase text-mute hover:text-dim transition-colors self-start border-b border-mute/40 hover:border-dim/40 pb-px">
+              <Link href="/size-guide" className="font-mono text-[10px] tracking-[0.18em] uppercase text-dim hover:text-bone transition-colors self-start border-b border-dim/40 hover:border-bone/60 pb-px">
                 Tabulka velikostí →
               </Link>
 

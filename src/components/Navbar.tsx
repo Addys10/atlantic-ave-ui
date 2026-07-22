@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ShoppingCart } from 'lucide-react';
@@ -9,6 +10,17 @@ import { CartItem } from '@/types/cart';
 
 const BLUR_PLACEHOLDER = `data:image/svg+xml;base64,${btoa("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect fill='#1f1f1f' width='1' height='1'/></svg>")}`;
 
+const INSTAGRAM = 'https://www.instagram.com/atlantic_ave_100th_';
+
+function InstagramIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
 
 const SHIPPING = 129;
 
@@ -18,6 +30,8 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout>>();
+  const pathname = usePathname();
+  const isLanding = pathname === '/';
 
   function readCart() {
     try {
@@ -55,32 +69,44 @@ export default function Navbar() {
 
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
 
-  const linkCls = 'font-mono text-[11px] tracking-[0.18em] uppercase text-dim hover:text-bone transition-colors duration-200';
+  const linkCls = 'relative font-mono text-[11px] tracking-[0.18em] uppercase text-dim hover:text-bone transition-colors duration-200 after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-bone after:transition-transform after:duration-300 after:ease-out hover:after:scale-x-100';
 
   return (
     <>
-      <nav className="sticky top-0 z-50 border-b border-line"
-           style={{ background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(14px)' }}>
+      <nav className="sticky top-0 z-50"
+           style={{ background: 'rgba(11,10,9,0.70)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
         {/* Mobile layout */}
         <div className="flex tb:hidden items-center justify-between px-7 h-[68px]">
           <Link href="/" aria-label="Atlantic Ave">
-            <span className="font-cloister text-xl font-bold text-bone tracking-[0.22em] uppercase select-none whitespace-nowrap">
+            <span className="font-cloister text-2xl font-bold text-bone tracking-[0.08em] uppercase select-none whitespace-nowrap">
               Atlantic Ave
             </span>
           </Link>
           <div className="flex items-center gap-5">
-            <Link
-              href="/checkout"
-              aria-label={cartCount > 0 ? `Košík — ${cartCount} položek` : 'Košík'}
-              className="relative text-dim hover:text-bone transition-colors duration-200 p-1"
-            >
-              <ShoppingCart size={20} strokeWidth={1.5} aria-hidden="true" />
-              {cartCount > 0 && (
-                <span aria-hidden="true" className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[9px] font-bold rounded-full w-[15px] h-[15px] leading-none select-none">
-                  {cartCount > 9 ? '9+' : cartCount}
-                </span>
-              )}
-            </Link>
+            {isLanding ? (
+              <a
+                href={INSTAGRAM}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-dim hover:text-bone transition-colors duration-200 p-1"
+              >
+                <InstagramIcon size={20} />
+              </a>
+            ) : (
+              <Link
+                href="/checkout"
+                aria-label={cartCount > 0 ? `Košík — ${cartCount} položek` : 'Košík'}
+                className="relative text-dim hover:text-bone transition-colors duration-200 p-1"
+              >
+                <ShoppingCart size={20} strokeWidth={1.5} aria-hidden="true" />
+                {cartCount > 0 && (
+                  <span aria-hidden="true" className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center bg-bone text-[#0a0a0a] font-mono text-[9px] font-bold rounded-full w-[15px] h-[15px] leading-none select-none">
+                    {cartCount > 9 ? '9+' : cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
             <button onClick={() => setMobileOpen(true)} aria-label="Otevřít menu" aria-expanded={mobileOpen} className="text-dim hover:text-bone transition-colors">
               <Menu size={18} />
             </button>
@@ -88,27 +114,33 @@ export default function Navbar() {
         </div>
 
         {/* Desktop layout */}
-        <div className="hidden tb:grid grid-cols-[1fr_auto_1fr] items-center px-7 h-[68px]">
+        <div className="hidden tb:flex items-center justify-between px-7 h-[68px]">
 
-          {/* Left */}
-          <div className="flex items-center gap-7">
-            <Link href="/shop" className={linkCls}>Shop</Link>
-            <Link href="/size-guide" className={linkCls}>Size Guide</Link>
-          </div>
-
-          {/* Center */}
+          {/* Left — brand */}
           <Link href="/" aria-label="Atlantic Ave">
-            <span className="font-cloister text-2xl font-bold text-bone tracking-[0.22em] uppercase select-none whitespace-nowrap">
+            <span className="font-cloister text-2xl font-bold text-bone tracking-[0.08em] uppercase select-none whitespace-nowrap">
               Atlantic Ave
             </span>
           </Link>
 
-          {/* Right — desktop with cart dropdown */}
-          <div className="flex items-center justify-end gap-7">
+          {/* Right — links + cart */}
+          <div className="flex items-center gap-7">
+            <Link href="/shop" className={linkCls}>Shop</Link>
             <Link href="/archiv" className={linkCls}>Archiv</Link>
             <Link href="/behind-the-brand" className={linkCls}>Behind the brand</Link>
 
-            {/* Cart trigger */}
+            {/* Landing → Instagram, jinde → košík */}
+            {isLanding ? (
+              <a
+                href={INSTAGRAM}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-dim hover:text-bone transition-colors duration-200 p-1"
+              >
+                <InstagramIcon size={18} />
+              </a>
+            ) : (
             <div
               className="relative"
               onMouseEnter={onCartEnter}
@@ -214,6 +246,7 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
             </div>
+            )}
           </div>
 
         </div>
@@ -248,7 +281,6 @@ export default function Navbar() {
               <div className="flex flex-col gap-1 p-5 pt-6">
                 {[
                   { label: 'Shop', href: '/shop' },
-                  { label: 'Size Guide', href: '/size-guide' },
                   { label: 'Archiv', href: '/archiv' },
                   { label: 'Behind the brand', href: '/behind-the-brand' },
                   { label: 'Kontakt', href: '/kontakt' },
