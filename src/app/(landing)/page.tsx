@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import Link from 'next/link';
 
 const INSTAGRAM = 'https://www.instagram.com/atlantic_ave_100th_';
@@ -24,26 +23,27 @@ export default function LandingPage() {
           animate={{ scale: 1 }}
           transition={{ duration: 3, ease: [0.0, 0.0, 0.2, 1] }}
         >
-          <Image
-            src="/images/nfl-hero.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            priority
-            quality={100}
-            className="object-contain object-[center_42%]"
-            style={{ filter: 'invert(1) grayscale(0.35) contrast(1.1)', opacity: 0.55 }}
+          {/* Looping background video (muted + playsInline are required for mobile autoplay) */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="/images/hero-poster.jpg"
+            className="h-full w-full object-cover object-center motion-reduce:hidden"
+          >
+            <source src="/videos/land-v.mp4" type="video/mp4" />
+          </video>
+          {/* Static fallback for users with reduced-motion preference */}
+          <div
+            aria-hidden="true"
+            className="hidden h-full w-full bg-cover bg-center motion-reduce:block"
+            style={{ backgroundImage: 'url(/images/hero-poster.jpg)' }}
           />
         </motion.div>
 
-        {/* Radial vignette */}
-        <div
-          className="absolute inset-0 z-[1]"
-          style={{
-            background:
-              'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(11,10,9,0.35) 0%, rgba(11,10,9,0.72) 70%, rgba(11,10,9,0.95) 100%)',
-          }}
-        />
+        {/* Light overlay — just enough to keep the wordmark legible over the video */}
+        <div className="absolute inset-0 z-[1] bg-[#0b0a09]/40" />
 
         <div className="relative z-[2] flex flex-col items-center">
           <motion.div
