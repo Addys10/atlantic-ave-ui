@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 
 const INSTAGRAM = 'https://www.instagram.com/atlantic_ave_100th_';
 
@@ -12,6 +13,22 @@ const NAV_LINKS = [
 ];
 
 export default function LandingPage() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // iOS/mobile autoplay is finicky: React doesn't always reflect the `muted`
+  // attribute to the DOM property, so we force it and kick off playback here.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    const attempt = video.play();
+    if (attempt !== undefined) {
+      // Autoplay can still be blocked (e.g. iOS Low Power Mode) — poster stays.
+      attempt.catch(() => {});
+    }
+  }, []);
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#0b0a09] text-[#eae3d6]">
 
@@ -25,10 +42,12 @@ export default function LandingPage() {
         >
           {/* Looping background video (muted + playsInline are required for mobile autoplay) */}
           <video
+            ref={videoRef}
             autoPlay
             loop
             muted
             playsInline
+            preload="auto"
             poster="/images/hero-poster.jpg"
             className="h-full w-full object-cover object-center motion-reduce:hidden"
           >
