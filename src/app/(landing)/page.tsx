@@ -18,7 +18,7 @@ export default function LandingPage() {
       {/* ── HERO ── */}
       <section className="relative flex min-h-[92vh] flex-col items-center justify-center overflow-hidden px-6 py-20 text-center">
         <motion.div
-          className="absolute inset-0 z-0 md:[-webkit-mask-image:linear-gradient(to_right,transparent_0,black_128px,black_calc(100%_-_128px),transparent_100%)] md:[mask-image:linear-gradient(to_right,transparent_0,black_128px,black_calc(100%_-_128px),transparent_100%)]"
+          className="absolute inset-0 z-0"
           initial={{ scale: 1.06 }}
           animate={{ scale: 1 }}
           transition={{ duration: 3, ease: [0.0, 0.0, 0.2, 1] }}
@@ -31,7 +31,6 @@ export default function LandingPage() {
             playsInline
             poster="/images/hero-poster.jpg"
             className="h-full w-full object-cover object-center motion-reduce:hidden"
-            style={{ filter: 'grayscale(0.4) contrast(1.08) brightness(0.88)' }}
           >
             <source src="/videos/land-v.mp4" type="video/mp4" />
           </video>
@@ -39,33 +38,12 @@ export default function LandingPage() {
           <div
             aria-hidden="true"
             className="hidden h-full w-full bg-cover bg-center motion-reduce:block"
-            style={{
-              backgroundImage: 'url(/images/hero-poster.jpg)',
-              filter: 'grayscale(0.4) contrast(1.08) brightness(0.88)',
-            }}
+            style={{ backgroundImage: 'url(/images/hero-poster.jpg)' }}
           />
         </motion.div>
 
-        {/* Base tint + radial vignette (keeps the wordmark legible over video) */}
-        <div className="absolute inset-0 z-[1] bg-[#0b0a09]/15" />
-        <div
-          className="absolute inset-0 z-[1]"
-          style={{
-            background:
-              'radial-gradient(ellipse 80% 70% at 50% 45%, rgba(11,10,9,0.12) 0%, rgba(11,10,9,0.55) 72%, rgba(11,10,9,0.90) 100%)',
-          }}
-        />
-
-        {/* Film grain — masks the low-res upscaling and gives the hero an editorial texture */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-[1] opacity-[0.14] mix-blend-overlay"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-            backgroundSize: '160px 160px',
-          }}
-        />
+        {/* Light overlay — just enough to keep the wordmark legible over the video */}
+        <div className="absolute inset-0 z-[1] bg-[#0b0a09]/40" />
 
         <div className="relative z-[2] flex flex-col items-center">
           <motion.div
