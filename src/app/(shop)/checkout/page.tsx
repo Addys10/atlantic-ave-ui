@@ -241,7 +241,8 @@ export default function CheckoutPage() {
                           </span>
                           <button
                             onClick={() => updateQty(index, item.quantity + 1)}
-                            className="w-9 h-9 flex items-center justify-center font-mono text-dim hover:text-bone hover:bg-line transition-colors text-[16px]"
+                            disabled={item.quantity >= (item.stock ?? Infinity)}
+                            className="w-9 h-9 flex items-center justify-center font-mono text-dim hover:text-bone hover:bg-line transition-colors text-[16px] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-dim disabled:cursor-not-allowed"
                             aria-label="Zvýšit množství"
                           >
                             +
