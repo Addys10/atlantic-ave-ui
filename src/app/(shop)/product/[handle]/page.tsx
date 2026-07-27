@@ -355,7 +355,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                 <h5 className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim font-normal">
                   <span>Velikost{selectedSize ? ` — ${selectedSize}` : ''}</span>
                 </h5>
-                <div className="grid grid-cols-5 gap-[6px]">
+                <div className="grid grid-cols-6 gap-[5px]">
                   {displaySizes.map(size => {
                     const isOut = !size.available;
                     const isOn = selectedSize === size.name;
@@ -364,12 +364,12 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                         key={size.name}
                         disabled={isOut}
                         onClick={() => setSelectedSize(size.name)}
-                        className={`py-4 font-mono text-[12px] tracking-[0.16em] uppercase text-center border transition-all duration-200
+                        className={`py-3 font-mono text-[11px] tracking-[0.1em] uppercase text-center border transition-all duration-200
                           ${isOut
                             ? 'border-line text-mute cursor-not-allowed'
                             : isOn
                             ? 'border-bone bg-bone text-[#0a0a0a]'
-                            : 'border-bone/35 text-dim hover:border-bone hover:text-bone'
+                            : 'border-line text-bone hover:border-[#2e2e2e]'
                           }`}
                         style={isOut ? {
                           background: 'repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,107,102,0.12) 4px 5px)',
