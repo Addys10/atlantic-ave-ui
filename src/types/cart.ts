@@ -7,4 +7,5 @@ export interface CartItem {
   image: string;
   selectedSize: string;
   quantity: number;
+  stock: number;
 }

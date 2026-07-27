@@ -93,6 +93,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
   const [thumb, setThumb] = useState(0);
   const [adding, setAdding] = useState(false);
   const [toast, setToast] = useState(false);
+  const [limitReached, setLimitReached] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>();
   const [lens, setLens] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const imgContainerRef = useRef<HTMLDivElement>(null);
@@ -132,9 +133,18 @@ export default function ProductDetail({ params }: { params: { handle: string } }
     const sizeObj = product.sizes.find(s => s.name === selectedSize);
     if (!sizeObj?.id) return;
 
-    setAdding(true);
     const cart: CartItem[] = JSON.parse(localStorage.getItem('cart') ?? '[]');
     const idx = cart.findIndex(i => i.variantId === sizeObj.id);
+    const alreadyInCart = idx > -1 ? cart[idx].quantity : 0;
+
+    if (alreadyInCart >= sizeObj.stock) {
+      setLimitReached(true);
+      clearTimeout(toastTimer.current);
+      toastTimer.current = setTimeout(() => setLimitReached(false), 3000);
+      return;
+    }
+
+    setAdding(true);
 
     if (idx > -1) {
       cart[idx].quantity += 1;
@@ -148,6 +158,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
         image: product.image,
         selectedSize,
         quantity: 1,
+        stock: sizeObj.stock,
       });
     }
 
@@ -198,6 +209,25 @@ export default function ProductDetail({ params }: { params: { handle: string } }
 
   return (
     <div className="bg-[#0a0a0a] min-h-screen">
+
+      {/* Limit toast */}
+      <AnimatePresence>
+        {limitReached && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ duration: 0.36, ease: [0.2, 0.7, 0.2, 1] }}
+            className="fixed bottom-5 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-max z-50 bg-[#0a0a0a] border border-line shadow-2xl"
+          >
+            <div className="px-5 py-4">
+              <p className="font-mono text-[12px] tracking-[0.08em] uppercase text-bone">
+                Máte v košíku vše, co je skladem
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Toast */}
       <AnimatePresence>
@@ -355,7 +385,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                 <h5 className="font-mono text-[10px] tracking-[0.22em] uppercase text-dim font-normal">
                   <span>Velikost{selectedSize ? ` — ${selectedSize}` : ''}</span>
                 </h5>
-                <div className="grid grid-cols-5 gap-[6px]">
+                <div className="grid grid-cols-6 gap-[5px]">
                   {displaySizes.map(size => {
                     const isOut = !size.available;
                     const isOn = selectedSize === size.name;
@@ -364,12 +394,12 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                         key={size.name}
                         disabled={isOut}
                         onClick={() => setSelectedSize(size.name)}
-                        className={`py-4 font-mono text-[12px] tracking-[0.16em] uppercase text-center border transition-all duration-200
+                        className={`py-3 font-mono text-[11px] tracking-[0.1em] uppercase text-center border transition-all duration-200
                           ${isOut
                             ? 'border-line text-mute cursor-not-allowed'
                             : isOn
                             ? 'border-bone bg-bone text-[#0a0a0a]'
-                            : 'border-line text-dim hover:text-bone hover:border-dim'
+                            : 'border-line text-bone hover:border-[#2e2e2e]'
                           }`}
                         style={isOut ? {
                           background: 'repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,107,102,0.12) 4px 5px)',
