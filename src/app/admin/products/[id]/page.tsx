@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { X, Upload } from 'lucide-react';
 import RichTextEditor from '@/components/RichTextEditor';
+import { sortBySize } from '@/lib/constants';
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
@@ -59,7 +60,7 @@ export default function ProductEditPage() {
       id: v.id, size: v.size, stock: v.stock,
     }));
     origVariantIds.current = loadedVariants.map(v => v.id);
-    setVariants(loadedVariants);
+    setVariants(sortBySize(loadedVariants));
     setLoading(false);
   }
 

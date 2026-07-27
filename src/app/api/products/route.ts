@@ -3,6 +3,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 import { createServiceClient } from '@/lib/supabase';
 import { Product } from '@/types/product';
 import { createLogger } from '@/lib/logger';
+import { sortBySize } from '@/lib/constants';
 
 const log = createLogger('products');
 
@@ -34,7 +35,7 @@ export async function GET() {
       image: p.images[0] ?? '',
       images: p.images,
       category: p.category,
-      sizes: p.product_variants.map(v => ({ id: v.id, name: v.size, available: v.stock > 0, stock: v.stock })),
+      sizes: sortBySize(p.product_variants).map(v => ({ id: v.id, name: v.size, available: v.stock > 0, stock: v.stock })),
     }));
 
     return NextResponse.json(products, {
