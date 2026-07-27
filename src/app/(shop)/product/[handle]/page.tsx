@@ -369,7 +369,7 @@ export default function ProductDetail({ params }: { params: { handle: string } }
                             ? 'border-line text-mute cursor-not-allowed'
                             : isOn
                             ? 'border-bone bg-bone text-[#0a0a0a]'
-                            : 'border-line text-dim hover:text-bone hover:border-dim'
+                            : 'border-bone/35 text-dim hover:border-bone hover:text-bone'
                           }`}
                         style={isOut ? {
                           background: 'repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,107,102,0.12) 4px 5px)',
